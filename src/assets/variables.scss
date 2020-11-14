@@ -1,0 +1,43 @@
+
+$color-normal: rgba(0, 0, 0, .75);
+$color-secondary: rgba(0, 0, 0, .6);
+$color-heading: rgba(0, 0, 0, .9);
+$color-dark: rgba(0, 0, 0, .9);
+$color-primary: #0073b1;
+$color-primary-visited: #0091ca;
+
+$bg-normal: #fff;
+$bg-secondary: #f3f6f8; 
+$bg-primary: #0073b1;
+
+$main-nav__bg: #004b7c;
+$main-nav__height: 52px;
+$main-nav__color: #fff;
+
+// MIXINS
+@mixin triangle($direction, $size: 6px, $color: #fff){
+  content: '';
+  display: block;
+  position: absolute;
+  height: 0; width: 0;
+  @if ($direction == 'top'){
+    border-bottom: $size solid $color;
+    border-left: $size solid transparent;
+    border-right: $size solid transparent;
+  }
+  @else if ($direction == 'bottom'){
+    border-top: $size solid $color;
+    border-left: $size solid transparent;
+    border-right: $size solid transparent;
+  }
+  @else if ($direction == 'left'){
+    border-top: $size solid transparent;
+    border-bottom: $size solid transparent;
+    border-right: $size solid $color;
+  }
+  @else if ($direction == 'right'){
+    border-top: $size solid transparent;
+    border-bottom: $size solid transparent;
+    border-left: $size solid $color;
+  }
+}
