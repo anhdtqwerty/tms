@@ -1,9 +1,7 @@
 <template>
-  <div align="start" class="mx-sm-4 px-sm-4 mx-md-10 px-md-10 xs-screen">
+  <div align="start">
     <v-form ref="form">
-      <div
-        class="text-h3 text--darken-1 amber--text font-weight-bold text-center pb-4"
-      >
+      <div class="text-h3 text--darken-1 primary--text font-weight-bold text-center pb-4">
         Đăng ký
       </div>
       <v-text-field
@@ -54,7 +52,7 @@
     <v-card-actions class="d-flex flex-column justify-content-center pt-6">
       <v-btn
         href="/confirm-email"
-        color="#FFB300"
+        color="primary"
         class="px-12 white--text"
         @click="
           {

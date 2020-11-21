@@ -5,9 +5,16 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-
-export default Vue.extend({
-  name: "App"
-});
+import { Component, Provide, Vue } from 'vue-property-decorator'
+import { AppProvider } from '@/app-provider'
+@Component
+export default class App extends Vue {
+  @Provide() providers = new AppProvider(this.$router)
+}
 </script>
+
+<style>
+.left-primary-border {
+  border-left: 4px solid #1e88e5 !important;
+}
+</style>

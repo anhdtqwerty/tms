@@ -29,8 +29,7 @@ const routes: Array<RouteConfig> = [
       {
         path: 'forgot-password',
         name: 'forgotPassword',
-        component: () =>
-          import('@/modules/auth/pages/forgot-password-page.vue'),
+        component: () => import('@/modules/auth/pages/forgot-password-page.vue'),
         meta: {
           title: 'Quên mật khẩu',
           auth: false
@@ -51,6 +50,21 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/auth/pages/reset-password-page.vue'),
         meta: {
           title: 'Tạo lại mật khẩu',
+          auth: false
+        }
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: () => import('@/modules/containers/main-container.vue'),
+    children: [
+      {
+        path: 'signin2',
+        name: 'signIn2',
+        component: () => import('@/modules/auth/pages/signin-page.vue'),
+        meta: {
+          title: 'Sign In',
           auth: false
         }
       }

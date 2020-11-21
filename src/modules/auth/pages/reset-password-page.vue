@@ -1,13 +1,13 @@
 <template>
-  <div align="start" class="pa-12">
+  <div align="start">
     <v-form ref="form" class="mx-6">
-      <h1 class="pb-12">Đặt lại mật khẩu</h1>
+      <div class="text-h4 mb-16 primary--text font-weight-bold text-center text-uppercase">Đặt lại mật khẩu</div>
       <v-text-field
         v-model="password"
         label="Mật khẩu mới"
         :type="newPassword ? 'text' : 'password'"
         :append-icon="newPassword ? 'mdi-eye' : 'mdi-eye-off'"
-        :rules="[$rules.required, $rules.minLength(4), rules.min]"
+        :rules="[$rules.required, $rules.minLength(6)]"
         @click:append="newPassword = !newPassword"
         validate-on-blur
       />
@@ -17,19 +17,13 @@
         :append-icon="checkPassword ? 'mdi-eye' : 'mdi-eye-off'"
         @click:append="checkPassword = !checkPassword"
         :type="checkPassword ? 'text' : 'password'"
-        :rules="[
-          $rules.required,
-          $rules.minLength(4),
-          passwordConfirmationRule
-        ]"
+        :rules="[$rules.required, $rules.minLength(6), passwordConfirmationRule]"
         validate-on-blur
         @keyup.enter="submit"
       />
     </v-form>
     <div align="center" justify="center" class="pt-4">
-      <v-btn color="#FFB300" class="px-12 white--text" @click="submit"
-        >Thay đổi</v-btn
-      >
+      <v-btn color="primary" class="px-12 white--text" @click="submit">Thay đổi</v-btn>
     </div>
   </div>
 </template>
@@ -44,14 +38,9 @@ export default class ResetPasswordPage extends Vue {
   passwordConfirmation = ''
   newPassword = false
   checkPassword = false
-  rules = {
-    min: (v: string) => v.length >= 6 || 'Min 6 characters',
-    emailMatch: () => "The email and password you entered don't match"
-  }
 
   get passwordConfirmationRule() {
-    return (password: string) =>
-      password === this.passwordConfirmation || 'Không chính xác'
+    return (password: string) => password === this.passwordConfirmation || 'Không chính xác'
   }
 
   submit() {
