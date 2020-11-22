@@ -85,17 +85,13 @@ router.beforeEach((to, from, next) => {
   } else {
     const store = getRootStore()
     const requriedAuth = to.matched.some(m => m.meta?.auth === true)
-    const isAuthenticated = store?.auth.authenticated ?? !!localStorage.getItem('jwt')
+    const isAuthenticated = store.auth.authenticated
 
-    console.log(`router ${to.name} requriedAuth=${requriedAuth} isAuthenticated=${isAuthenticated}`)
     if ((requriedAuth && isAuthenticated) || (!requriedAuth && !isAuthenticated)) {
-      console.log(`router ${to.name} 1`)
       next()
     } else if (!requriedAuth && isAuthenticated) {
-      console.log(`router ${to.name} 2`)
       next('dashboard')
     } else if (requriedAuth && !isAuthenticated) {
-      console.log(`router ${to.name} 3`)
       next('signin')
     } else {
       console.error(`VueRouter error ${to.name} requriedAuth=${requriedAuth} isAuthenticated=${isAuthenticated}`)
