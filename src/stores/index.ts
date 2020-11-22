@@ -14,3 +14,5 @@ export const createStore: () => RootStore = () => {
 }
 
 export const getRootStore = () => rootStore
+
+createStore()
