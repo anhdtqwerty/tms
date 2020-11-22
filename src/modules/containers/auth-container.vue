@@ -14,14 +14,23 @@
         </v-col>
       </v-row>
     </v-card>
+    <snack-bar :controller="providers.snackbar" />
   </v-main>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { AppProvider } from '@/app-provider'
+import SnackBar from '@/components/snack-bar/snack-bar.vue'
+import { Component, Inject, Vue } from 'vue-property-decorator'
 
-@Component
-export default class AuthContainer extends Vue {}
+@Component({
+  components: {
+    SnackBar: SnackBar
+  }
+})
+export default class AuthContainer extends Vue {
+  @Inject() providers: AppProvider
+}
 </script>
 
 <style scoped>

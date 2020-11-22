@@ -8,16 +8,9 @@
         Nhập địa chỉ email của bạn, chúng tôi sẽ gửi tới bạn liên kết để đặt lại mật khẩu
       </p>
       <v-text-field
-        label="Tài khoản"
-        v-model="email"
-        :rules="[$rules.required, $rules.email]"
-        validate-on-blur
-        @keyup.enter="submit"
-        type="text"
-      />
-      <v-text-field
         label="Email"
-        v-model="email"
+        :value="viewmodel.email"
+        @input="viewmodel.changeEmail"
         :rules="[$rules.required, $rules.email]"
         validate-on-blur
         @keyup.enter="submit"
@@ -31,14 +24,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-
+import { AppProvider } from '@/app-provider'
+import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
+import { ForgotPasswordViewModel } from '../viewmodels/forgot-password-viewmodel'
 @Component
 export default class ForgotPasswordPage extends Vue {
-  email = ''
-  done = false
+  @Inject() providers!: AppProvider
+  @Provide() viewmodel = new ForgotPasswordViewModel(this.providers)
   submit() {
-    this.$router.push('reset-password')
+    if ((this.$refs.form as any).validate()) {
+      this.viewmodel.submit()
+    }
   }
 }
 </script>
