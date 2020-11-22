@@ -19,23 +19,23 @@
         <overview-card icon="list_alt" title="Đã quá hạn" value="60" />
       </v-col>
     </v-row>
-    <!-- <v-row>
+    <v-row>
       <v-col cols="12" class="pa-2">
-        <task-chart-card />
+        <task-column-chart-card />
       </v-col>
-    </v-row> -->
+    </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import OverviewCard from './components/overview-card.vue'
-import TaskChartCard from './components/task-chart-card.vue'
+import TaskColumnChartCard from './components/task-column-chart-card.vue'
 
 @Component({
   components: {
-    OverviewCard: OverviewCard,
-    TaskChartCard: TaskChartCard
+    OverviewCard,
+    TaskColumnChartCard
   }
 })
 export default class DashboardPage extends Vue {}
