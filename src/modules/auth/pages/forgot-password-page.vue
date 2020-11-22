@@ -25,7 +25,7 @@
       />
     </v-form>
     <div class="mt-4" align="center" justify="center">
-      <v-btn href="/reset-password" color="primary" @click="submit">Tiếp theo</v-btn>
+      <v-btn color="primary" @click="submit">Tiếp theo</v-btn>
     </div>
   </div>
 </template>
@@ -38,7 +38,7 @@ export default class ForgotPasswordPage extends Vue {
   email = ''
   done = false
   submit() {
-    //
+    this.$router.push('reset-password')
   }
 }
 </script>

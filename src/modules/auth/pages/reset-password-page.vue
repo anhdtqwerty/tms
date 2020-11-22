@@ -44,7 +44,7 @@ export default class ResetPasswordPage extends Vue {
   }
 
   submit() {
-    //
+    this.$router.replace('signin')
   }
 }
 </script>
