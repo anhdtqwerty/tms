@@ -3,7 +3,6 @@
     :value="mainViewModel.drawer"
     @input="mainViewModel.changeDrawer"
     class="elevation-2"
-    width="264"
     app
     :permanent="$vuetify.breakpoint.smAndUp"
     :temporary="$vuetify.breakpoint.xs"
@@ -15,7 +14,7 @@
       <template v-for="item in mainViewModel.menuConfigs">
         <v-list-group :key="item.title" v-if="item.children" active-class="left-primary-border">
           <template v-slot:activator>
-            <v-icon class="mr-2">{{ item.icon }}</v-icon>
+            <v-icon class="mr-2" style="height: 56px">{{ item.icon }}</v-icon>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </template>
           <v-list class="left-primary-border py-0">
@@ -27,7 +26,7 @@
               color="primary"
               @click="mainViewModel.onSelectedMenu(menu)"
             >
-              <v-icon class="mr-2" color="transparent">{{ item.icon }}</v-icon>
+              <v-icon class="mr-2" style="height: 56px" color="transparent">{{ item.icon }}</v-icon>
               <v-list-item-title>{{ menu.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -41,7 +40,7 @@
           color="primary"
           @click="mainViewModel.onSelectedMenu(item)"
         >
-          <v-icon class="mr-2">{{ item.icon }}</v-icon>
+          <v-icon class="mr-2" style="height: 56px">{{ item.icon }}</v-icon>
           <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
       </template>

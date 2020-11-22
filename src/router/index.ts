@@ -60,11 +60,11 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/modules/containers/main-container.vue'),
     children: [
       {
-        path: 'signin2',
-        name: 'signIn2',
-        component: () => import('@/modules/auth/pages/signin-page.vue'),
+        path: 'dashboard',
+        name: 'dashboard',
+        component: () => import('@/modules/dashboard/dashboard-page.vue'),
         meta: {
-          title: 'Sign In',
+          title: 'dashboard',
           auth: false
         }
       }
