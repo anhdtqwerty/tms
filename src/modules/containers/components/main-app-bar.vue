@@ -17,7 +17,7 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <!-- <v-toolbar-items> -->
-    <v-btn icon light @click="providers.onlogout()">
+    <v-btn icon light @click="providers.onLogout()">
       <v-icon>mdi-export</v-icon>
     </v-btn>
     <!-- <user v-if="role.name === 'Manager'" />
