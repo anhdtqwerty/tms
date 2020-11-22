@@ -23,7 +23,7 @@ export class MainContainerViewModel {
     ]),
     new MenuViewModel('Tổng hợp báo cáo', 'description'),
     new MenuViewModel('Quản lý đơn vị', 'view_comfy'),
-    new MenuViewModel('Quản trị hệ thống', 'usb', [new MenuViewModel('Nhiệm vụ giao')])
+    new MenuViewModel('Quản trị hệ thống', 'usb')
   ]
 
   @observable selectedMenu: MenuViewModel = null
