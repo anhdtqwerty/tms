@@ -1,6 +1,6 @@
 import { AppProvider } from '@/app-provider'
 import { ApiService } from '@/services/api-service'
-import { action, observable } from 'mobx'
+import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
 export class SigninViewModel {
@@ -25,7 +25,7 @@ export class SigninViewModel {
       const res = yield this._api.login(this.username, this.password)
       const { jwt, user } = res
       this.providers.store.auth.onLogin(jwt, user)
-      this.providers.router.push('reset-password')
+      this.providers.router.replace('dashboard')
     } catch (error) {
       console.log(error)
     }

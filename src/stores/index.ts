@@ -1,5 +1,16 @@
 import { AuthStore } from './auth-store'
 
-export const createStore = () => ({
-  auth: new AuthStore()
-})
+export class RootStore {
+  auth: AuthStore
+}
+
+let rootStore: RootStore
+
+export const createStore: () => RootStore = () => {
+  rootStore = {
+    auth: new AuthStore()
+  }
+  return rootStore
+}
+
+export const getRootStore = () => rootStore

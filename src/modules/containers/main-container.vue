@@ -2,9 +2,9 @@
   <v-app>
     <main-app-bar />
     <main-drawer />
-    <v-content>
+    <v-main>
       <router-view />
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 

@@ -1,5 +1,6 @@
+import { getRootStore } from '@/stores'
 import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
+import VueRouter, { Route, RouteConfig } from 'vue-router'
 
 Vue.use(VueRouter)
 
@@ -65,7 +66,7 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/dashboard/dashboard-page.vue'),
         meta: {
           title: 'dashboard',
-          auth: false
+          auth: true
         }
       }
     ]
@@ -76,6 +77,30 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (!to.name) {
+    next('dashboard')
+  } else {
+    const store = getRootStore()
+    const requriedAuth = to.matched.some(m => m.meta?.auth === true)
+    const isAuthenticated = store?.auth.authenticated ?? !!localStorage.getItem('jwt')
+
+    console.log(`router ${to.name} requriedAuth=${requriedAuth} isAuthenticated=${isAuthenticated}`)
+    if ((requriedAuth && isAuthenticated) || (!requriedAuth && !isAuthenticated)) {
+      console.log(`router ${to.name} 1`)
+      next()
+    } else if (!requriedAuth && isAuthenticated) {
+      console.log(`router ${to.name} 2`)
+      next('dashboard')
+    } else if (requriedAuth && !isAuthenticated) {
+      console.log(`router ${to.name} 3`)
+      next('signin')
+    } else {
+      console.error(`VueRouter error ${to.name} requriedAuth=${requriedAuth} isAuthenticated=${isAuthenticated}`)
+    }
+  }
 })
 
 export default router

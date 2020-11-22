@@ -1,5 +1,5 @@
 import { UserModel } from '@/models/auth-model'
-import { action, observable, reaction } from 'mobx'
+import { action, computed, observable, reaction } from 'mobx'
 
 export class AuthStore {
   @observable jwt = localStorage.getItem('jwt')
@@ -26,8 +26,17 @@ export class AuthStore {
     )
   }
 
+  @action onLogout() {
+    this.jwt = null
+    this.user = null
+  }
+
   @action onLogin(jwt: string, user: UserModel) {
     this.jwt = jwt
     this.user = user
+  }
+
+  @computed get authenticated() {
+    return !!this.jwt
   }
 }
