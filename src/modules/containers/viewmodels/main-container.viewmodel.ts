@@ -2,8 +2,15 @@ import { action, computed, observable, reaction } from 'mobx'
 
 export class MenuViewModel {
   @observable selected = false
+  icon: string
+  children: MenuViewModel[]
+  link: string
 
-  constructor(public title: string, public icon?: string, public children?: MenuViewModel[]) {}
+  constructor(public title: string, options?: { icon?: string; children?: MenuViewModel[]; link?: string }) {
+    this.icon = options?.icon
+    this.children = options?.children
+    this.link = options?.link
+  }
 
   @action.bound changeSelected(value: boolean) {
     this.selected = value
@@ -13,17 +20,27 @@ export class MenuViewModel {
 export class MainContainerViewModel {
   @observable drawer = true
   @observable menuConfigs: MenuViewModel[] = [
-    new MenuViewModel('Dashboard', 'dashboard'),
-    new MenuViewModel('Quản lý nhiệm vụ', 'list', [
-      new MenuViewModel('Nhiệm vụ giao'),
-      new MenuViewModel('Đang theo dõi'),
-      new MenuViewModel('Đã quá hạn'),
-      new MenuViewModel('Chờ xác nhận'),
-      new MenuViewModel('Đã hoàn thành')
-    ]),
-    new MenuViewModel('Tổng hợp báo cáo', 'description'),
-    new MenuViewModel('Quản lý đơn vị', 'view_comfy'),
-    new MenuViewModel('Quản trị hệ thống', 'usb')
+    new MenuViewModel('Dashboard', { icon: 'dashboard', link: 'dashboard' }),
+    new MenuViewModel('Quản lý nhiệm vụ', {
+      icon: 'list',
+      children: [
+        new MenuViewModel('Nhiệm vụ giao'),
+        new MenuViewModel('Đang theo dõi'),
+        new MenuViewModel('Đã quá hạn'),
+        new MenuViewModel('Chờ xác nhận'),
+        new MenuViewModel('Đã hoàn thành')
+      ]
+    }),
+    new MenuViewModel('Tổng hợp báo cáo', { icon: 'description' }),
+    new MenuViewModel('Quản lý đơn vị', { icon: 'view_comfy' }),
+    new MenuViewModel('Quản trị hệ thống', {
+      icon: 'usb',
+      children: [
+        new MenuViewModel('Người dùng', { link: 'users' }),
+        new MenuViewModel('Vai trò'),
+        new MenuViewModel('Tra cứu log')
+      ]
+    })
   ]
 
   @observable selectedMenu: MenuViewModel = null

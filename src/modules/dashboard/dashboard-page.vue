@@ -38,7 +38,12 @@ import TaskColumnChartCard from './components/task-column-chart-card.vue'
     TaskColumnChartCard
   }
 })
-export default class DashboardPage extends Vue {}
+export default class DashboardPage extends Vue {
+  constructor() {
+    super()
+    console.log('DashboardPage ctor')
+  }
+}
 </script>
 
 <style scoped></style>

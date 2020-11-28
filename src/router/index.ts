@@ -58,6 +58,9 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/',
+    meta: {
+      title: 'Dashboard'
+    },
     component: () => import('@/modules/containers/main-container.vue'),
     children: [
       {
@@ -66,6 +69,15 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/dashboard/dashboard-page.vue'),
         meta: {
           title: 'dashboard',
+          auth: true
+        }
+      },
+      {
+        path: 'users',
+        name: 'users',
+        component: () => import('@/modules/system-manager/pages/user-manager-page.vue'),
+        meta: {
+          title: 'users',
           auth: true
         }
       }
