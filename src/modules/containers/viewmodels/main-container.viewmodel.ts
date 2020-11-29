@@ -20,7 +20,7 @@ export class MenuViewModel {
 export class MainContainerViewModel {
   @observable drawer = true
   @observable menuConfigs: MenuViewModel[] = [
-    new MenuViewModel('Dashboard', { icon: 'dashboard', link: 'dashboard' }),
+    new MenuViewModel('Dashboard', { icon: 'dashboard', link: '/dashboard' }),
     new MenuViewModel('Quản lý nhiệm vụ', {
       icon: 'list',
       children: [
@@ -36,8 +36,8 @@ export class MainContainerViewModel {
     new MenuViewModel('Quản trị hệ thống', {
       icon: 'usb',
       children: [
-        new MenuViewModel('Người dùng', { link: 'users' }),
-        new MenuViewModel('Vai trò'),
+        new MenuViewModel('Người dùng', { link: '/users' }),
+        new MenuViewModel('Vai trò', { link: '/role-sections' }),
         new MenuViewModel('Tra cứu log')
       ]
     })

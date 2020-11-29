@@ -29,9 +29,7 @@ export class ApiService {
     let jwtToken: string
     reaction(
       () => getRootStore().auth.jwt,
-      jwt => {
-        jwtToken = jwt
-      },
+      jwt => (jwtToken = jwt),
       { fireImmediately: true }
     )
     this.axios.interceptors.request.use(config => {

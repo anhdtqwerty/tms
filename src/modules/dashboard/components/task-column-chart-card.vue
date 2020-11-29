@@ -1,5 +1,5 @@
 <template>
-  <v-sheet elevation="1" rounded="rounded">
+  <v-card>
     <v-container class="pa-4" fluid>
       <v-row>
         <v-col cols="12" md="3" class="py-0">
@@ -15,7 +15,7 @@
       <card-title class="primary--text">Doanh thu</card-title>
       <v-spacer />
     </v-card-title> -->
-  </v-sheet>
+  </v-card>
 </template>
 
 <script lang="ts">

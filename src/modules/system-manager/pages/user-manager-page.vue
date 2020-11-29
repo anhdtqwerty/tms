@@ -1,60 +1,84 @@
 <template>
-  <v-container>
-    <v-row class="mx-2" justify="space-between" align="center">
-      <v-col cols="8" class="md-6 px-0 py-2">
-        <h2>Người dùng</h2>
+  <v-container fluid px-5 py-2>
+    <v-row justify="space-between" align="center">
+      <v-col cols="8" class="pa-2">
+        <div class="text-h6">Người dùng</div>
         <breadcrumbs />
       </v-col>
-
-      <v-col cols="4" class="text-right md-6 px-0">
-        <v-btn medium color="success">
+      <v-col cols="4" align="right" class="pa-2">
+        <v-btn medium color="success" @click="showAddUser = true">
           <v-icon left>add</v-icon>
           <span>Thêm mới user</span>
         </v-btn>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="12" class="pa-2">
+        <v-card>
+          <v-data-table :items="viewmodel.users" item-key="id" :headers="headers" mobile-breakpoint="0">
+            <template v-slot:top>
+              <v-container fluid class="px-5 py-0">
+                <v-row>
+                  <v-col cols="12" align="end" class="pa-2">
+                    <v-btn icon x-small>
+                      <v-icon>settings</v-icon>
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
+                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
+                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
+                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
+                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
+                    <v-btn depressed color="primary" medium>
+                      <span class="d-none d-md-flex">Tìm kiếm</span>
+                      <v-icon dark>search</v-icon>
+                    </v-btn>
+                  </v-col>
+                  <!-- <v-col class="pa-2"><v-text-field dense outlined v-model="username" label="Mã cán bộ"/></v-col>
+                  <v-col class="pa-2"><v-text-field dense outlined v-model="username" label="Mã cán bộ"/></v-col>
+                  <v-col class="pa-2"><v-text-field dense outlined v-model="username" label="Mã cán bộ"/></v-col>
+                  <v-col class="pa-2"><v-text-field dense outlined v-model="username" label="Mã cán bộ"/></v-col>
+                  <v-col class="pa-2" align="end">
+                    <v-btn class="px-2" depressed color="primary" medium>
+                      <span>Tìm kiếm</span>
+                      <v-icon dark>search</v-icon>
+                    </v-btn>
+                  </v-col> -->
+                </v-row>
+              </v-container>
+            </template>
+            <template v-slot:[`item.name`]="{ item }">
+              <router-link :to="`/user/${item.id}`">
+                {{ item.name }}
+              </router-link>
+            </template>
 
-    <v-card class="px-md-6 py-md-2 px-2 mx-md-2">
-      <v-data-table :items="viewmodel.users" item-key="id" :headers="headers" class="mt-3" mobile-breakpoint="0">
-        <template v-slot:top>
-          <v-row> </v-row>
-        </template>
-
-        <!-- <template v-slot:[`item.name`]="{ item }">
-          <user-item :data="item"></user-item>
-        </template> -->
-
-        <template v-slot:[`item.role.name`]="{ item }">
-          <div class="staff-department">{{ item.department.title }}</div>
-        </template>
-
-        <!-- <template v-slot:[`item.status`]="{ item }">
-          <v-chip :color="getColor(item.status)" dark>{{ item.status }}</v-chip>
-        </template> -->
-
-        <!-- <template v-slot:[`item.actions`]="{ item }">
-          <staff-list-actions :item="item"></staff-list-actions>
-        </template> -->
-      </v-data-table>
-    </v-card>
+            <template v-slot:[`item.role.name`]="{ item }">
+              <div class="staff-department">{{ item.department.title }}</div>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col></v-row
+    >
+    <user-add-dialog :value="showAddUser" @update:value="showAddUser = $event" />
   </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
-import Breadcrumbs from '@/router/breadcumbs.vue'
-import { UserModel } from '@/models/auth-model'
 import { AppProvider } from '@/app-provider'
 import { UserManagerViewModel } from '../viewmodels/user-manager-viewmodel'
 
 @Component({
   components: {
-    Breadcrumbs
+    UserAddDialog: () => import('../dialogs/user-add-dialog.vue')
   }
 })
 export default class UserMangerPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() viewmodel = new UserManagerViewModel(this.providers)
+
+  showAddUser = false
 
   headers = [
     { text: 'Mã cán bộ', value: 'id', align: 'left', sortable: false },

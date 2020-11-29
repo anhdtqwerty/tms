@@ -80,6 +80,33 @@ const routes: Array<RouteConfig> = [
           title: 'users',
           auth: true
         }
+      },
+      {
+        path: 'user/:id',
+        name: 'user',
+        component: () => import('@/modules/system-manager/pages/user-detail-page.vue'),
+        meta: {
+          title: 'user',
+          auth: true
+        }
+      },
+      {
+        path: 'role-sections',
+        name: 'role-sections',
+        component: () => import('@/modules/system-manager/pages/role-sections-page.vue'),
+        meta: {
+          title: 'Vai trò',
+          auth: true
+        }
+      },
+      {
+        path: 'role-manager/:id',
+        name: 'role-manager',
+        component: () => import('@/modules/system-manager/pages/role-manager-page.vue'),
+        meta: {
+          title: 'Cài đặt vai trò',
+          auth: true
+        }
       }
     ]
   }
