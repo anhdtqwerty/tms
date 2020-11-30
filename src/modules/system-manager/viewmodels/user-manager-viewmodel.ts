@@ -42,8 +42,8 @@ export class UserManagerViewModel {
         name: 'HEHE'
       }
     ]
-    // const users = yield this.provider.services.api.user.fetch()
+    const users = yield this.provider.services.api.user.fetch()
     // const users = yield this.provider.services.api.comarde.fetch()
-    // console.log(users)
+    console.log(users)
   }
 }
