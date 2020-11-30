@@ -24,7 +24,7 @@
         :type="showPassword ? 'text' : 'password'"
         :rules="[$rules.required, $rules.minLength(4)]"
         validate-on-blur
-        @keyup.enter="viewmodel.handleLogin()"
+        @keyup.enter="submit"
       />
     </v-form>
     <div class="d-flex justify-space-between align-center">
@@ -32,7 +32,7 @@
       <router-link to="forgot-password" class="text-decoration-none primary--text">Quên mật khẩu</router-link>
     </div>
     <v-card-actions class="d-flex flex-column justify-content-center">
-      <v-btn color="primary" class="white--text" @click="viewmodel.handleLogin()">Đăng Nhập</v-btn>
+      <v-btn color="primary" class="white--text" @click="submit">Đăng Nhập</v-btn>
     </v-card-actions>
   </div>
 </template>
@@ -48,6 +48,12 @@ export default class SignInPage extends Vue {
   @Provide() viewmodel = new SigninViewModel(this.providers)
 
   showPassword = false
+
+  submit() {
+    if ((this.$refs.form as any).validate()) {
+      this.viewmodel.handleLogin()
+    }
+  }
 }
 </script>
 

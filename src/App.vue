@@ -7,6 +7,7 @@
 <script lang="ts">
 import { Component, Provide, Vue } from 'vue-property-decorator'
 import { AppProvider } from '@/app-provider'
+
 @Component
 export default class App extends Vue {
   @Provide() providers = new AppProvider(this.$router)

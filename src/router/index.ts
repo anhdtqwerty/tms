@@ -58,6 +58,9 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/',
+    meta: {
+      title: 'Dashboard'
+    },
     component: () => import('@/modules/containers/main-container.vue'),
     children: [
       {
@@ -66,6 +69,42 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/dashboard/dashboard-page.vue'),
         meta: {
           title: 'dashboard',
+          auth: true
+        }
+      },
+      {
+        path: 'users',
+        name: 'users',
+        component: () => import('@/modules/system-manager/pages/user-manager-page.vue'),
+        meta: {
+          title: 'users',
+          auth: true
+        }
+      },
+      {
+        path: 'user/:id',
+        name: 'user',
+        component: () => import('@/modules/system-manager/pages/user-detail-page.vue'),
+        meta: {
+          title: 'user',
+          auth: true
+        }
+      },
+      {
+        path: 'role-sections',
+        name: 'role-sections',
+        component: () => import('@/modules/system-manager/pages/role-sections-page.vue'),
+        meta: {
+          title: 'Vai trò',
+          auth: true
+        }
+      },
+      {
+        path: 'role-manager/:id',
+        name: 'role-manager',
+        component: () => import('@/modules/system-manager/pages/role-manager-page.vue'),
+        meta: {
+          title: 'Cài đặt vai trò',
           auth: true
         }
       }

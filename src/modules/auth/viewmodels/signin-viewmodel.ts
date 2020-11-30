@@ -27,7 +27,7 @@ export class SigninViewModel {
       this.providers.store.auth.onLogin(jwt, user)
       this.providers.router.replace('dashboard')
     } catch (error) {
-      console.log(error)
+      this.providers.snackbar.commonError(error)
     }
   }
 }

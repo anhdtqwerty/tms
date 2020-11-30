@@ -23,6 +23,7 @@
               v-for="menu in item.children"
               :key="menu.title"
               :input-value="menu.selected"
+              :to="menu.link"
               color="primary"
               @click="mainViewModel.onSelectedMenu(menu)"
             >
@@ -33,6 +34,7 @@
         </v-list-group>
         <v-list-item
           link
+          :to="item.link"
           :key="item.title"
           v-else
           active-class="left-primary-border"

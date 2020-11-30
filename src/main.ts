@@ -9,6 +9,10 @@ import { inputRulesPlugin } from './plugins/rules'
 Vue.use(inputRulesPlugin)
 Vue.config.productionTip = false
 
+// Register common components
+Vue.component('breadcrumbs', () => import('./router/breadcumbs.vue'))
+Vue.component('text-link', () => import('./components/text-link/text-link.vue'))
+
 new Vue({
   router,
   vuetify,

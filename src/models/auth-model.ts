@@ -6,6 +6,7 @@ export interface UserModel {
   status?: string
   email?: string
   provider?: string
+  name?: string
   createdAt?: Date
   updatedAt?: Date
   __v?: number
@@ -15,4 +16,8 @@ export interface UserModel {
   username_indexing?: string
   username_no?: number
   id?: string
+  // FIXME: fake
+  comrade?: string
+  position?: string
+  department?: string
 }
