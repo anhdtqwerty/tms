@@ -15,17 +15,18 @@
       </v-row>
     </v-card>
     <snack-bar :controller="providers.snackbar" />
+    <alert :controller="providers.alert" />
   </v-main>
 </template>
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import SnackBar from '@/components/snack-bar/snack-bar.vue'
 import { Component, Inject, Vue } from 'vue-property-decorator'
 
 @Component({
   components: {
-    SnackBar: SnackBar
+    SnackBar: () => import('@/components/snack-bar/snack-bar.vue'),
+    Alert: () => import('@/components/alert/alert.vue')
   }
 })
 export default class AuthContainer extends Vue {

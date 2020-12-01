@@ -32,7 +32,14 @@ export class MainContainerViewModel {
       ]
     }),
     new MenuViewModel('Tổng hợp báo cáo', { icon: 'description' }),
-    new MenuViewModel('Quản lý đơn vị', { icon: 'view_comfy' }),
+    new MenuViewModel('Quản lý đơn vị', {
+      icon: 'view_comfy',
+      children: [
+        new MenuViewModel('Bộ', { link: '/ministries' }),
+        new MenuViewModel('Đơn vị', { link: '/units' }),
+        new MenuViewModel('Phòng ban', { link: '/departments' })
+      ]
+    }),
     new MenuViewModel('Quản trị hệ thống', {
       icon: 'usb',
       children: [

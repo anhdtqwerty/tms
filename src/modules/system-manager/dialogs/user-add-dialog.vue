@@ -55,10 +55,13 @@
 </template>
 
 <script lang="ts">
-import { Component, PropSync, Vue } from 'vue-property-decorator'
+import { AppProvider } from '@/app-provider'
+import { Component, Inject, PropSync, Vue } from 'vue-property-decorator'
 
 @Component
 export default class UserAddDialog extends Vue {
+  @Inject() providers: AppProvider
+
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
 
   showPassword = false
@@ -68,8 +71,9 @@ export default class UserAddDialog extends Vue {
   email = ''
   phone = ''
 
-  save() {
-    //
+  async save() {
+    const ok = await this.providers.alert.confirm('Hêllo', 'message')
+    console.log(ok)
   }
 }
 </script>

@@ -7,6 +7,7 @@ export interface SnakBarConfig {
   color?: string
   timeout?: number
 }
+
 export class SnackBarController {
   @observable config: SnakBarConfig = {
     timeout: 5000

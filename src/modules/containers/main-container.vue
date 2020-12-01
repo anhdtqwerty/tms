@@ -5,22 +5,27 @@
     <v-main>
       <router-view />
     </v-main>
+    <snack-bar :controller="providers.snackbar" />
+    <alert :controller="providers.alert" />
   </v-app>
 </template>
 
 <script lang="ts">
-import { Component, Provide, Vue } from 'vue-property-decorator'
-import MainAppBar from './components/main-app-bar.vue'
-import MainDrawer from './components/main-drawer.vue'
+import { AppProvider } from '@/app-provider'
+import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
 import { MainContainerViewModel } from './viewmodels/main-container.viewmodel'
 
 @Component({
   components: {
-    MainAppBar: MainAppBar,
-    MainDrawer: MainDrawer
+    MainAppBar: () => import('./components/main-app-bar.vue'),
+    MainDrawer: () => import('./components/main-drawer.vue'),
+    SnackBar: () => import('@/components/snack-bar/snack-bar.vue'),
+    Alert: () => import('@/components/alert/alert.vue')
   }
 })
 export default class MainContainer extends Vue {
+  @Inject() providers: AppProvider
+
   @Provide() mainViewModel = new MainContainerViewModel()
 }
 </script>

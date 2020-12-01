@@ -107,6 +107,33 @@ const routes: Array<RouteConfig> = [
           title: 'Cài đặt vai trò',
           auth: true
         }
+      },
+      {
+        path: 'departments',
+        name: 'departments',
+        component: () => import('@/modules/unit-manager/pages/department-manager-page.vue'),
+        meta: {
+          title: 'departments',
+          auth: true
+        }
+      },
+      {
+        path: 'ministries',
+        name: 'ministries',
+        component: () => import('@/modules/unit-manager/pages/ministry-manager-page.vue'),
+        meta: {
+          title: 'ministries',
+          auth: true
+        }
+      },
+      {
+        path: 'units',
+        name: 'units',
+        component: () => import('@/modules/unit-manager/pages/unit-manager-page.vue'),
+        meta: {
+          title: 'units',
+          auth: true
+        }
       }
     ]
   }

@@ -16,34 +16,6 @@ export class UserManagerViewModel {
     yield timer(300)
       .pipe(first())
       .toPromise()
-    this.users = [
-      {
-        id: 'user1',
-        comrade: 'HEHE',
-        position: 'HEHHE',
-        status: 'ccc',
-        department: 'HEHE',
-        name: 'HEHE'
-      },
-      {
-        id: 'user2',
-        comrade: 'HEHE',
-        position: 'HEHHE',
-        status: 'ccc',
-        department: 'HEHE',
-        name: 'HEHE'
-      },
-      {
-        id: 'user3',
-        comrade: 'HEHE',
-        position: 'HEHHE',
-        status: 'ccc',
-        department: 'HEHE',
-        name: 'HEHE'
-      }
-    ]
-    const users = yield this.provider.services.api.user.fetch()
-    // const users = yield this.provider.services.api.comarde.fetch()
-    console.log(users)
+    this.users = yield this.provider.services.api.user.fetch()
   }
 }
