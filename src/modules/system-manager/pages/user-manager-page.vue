@@ -58,8 +58,8 @@
             </template>
           </v-data-table>
         </v-card>
-      </v-col></v-row
-    >
+      </v-col>
+    </v-row>
     <user-add-dialog :value="showAddUser" @update:value="showAddUser = $event" />
   </v-container>
 </template>

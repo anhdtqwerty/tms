@@ -118,6 +118,15 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'department/:id',
+        name: 'department',
+        component: () => import('@/modules/unit-manager/pages/department-detail-page.vue'),
+        meta: {
+          title: 'department',
+          auth: true
+        }
+      },
+      {
         path: 'ministries',
         name: 'ministries',
         component: () => import('@/modules/unit-manager/pages/ministry-manager-page.vue'),
@@ -132,6 +141,15 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/unit-manager/pages/unit-manager-page.vue'),
         meta: {
           title: 'units',
+          auth: true
+        }
+      },
+      {
+        path: 'unit/:id',
+        name: 'unit',
+        component: () => import('@/modules/unit-manager/pages/unit-detail-page.vue'),
+        meta: {
+          title: 'unit',
           auth: true
         }
       }

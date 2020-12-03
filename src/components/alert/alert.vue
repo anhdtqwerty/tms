@@ -5,10 +5,15 @@
     scrollable
     :value="controller.show"
     @input="controller.changeShow"
+    persistent
   >
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0" fixed>
         <v-toolbar-title>{{ controller.config.title }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="controller.cancel">
+          <v-icon class="white--text">close</v-icon>
+        </v-btn>
       </v-toolbar>
       <v-card-text class="pa-0">
         <v-form ref="form">
