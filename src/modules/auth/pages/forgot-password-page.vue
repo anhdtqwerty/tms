@@ -7,7 +7,7 @@
       <p class="pt-5 mx-2 body-2">
         Nhập địa chỉ email của bạn, chúng tôi sẽ gửi tới bạn liên kết để đặt lại mật khẩu
       </p>
-      <v-text-field
+      <app-text-field
         label="Email"
         :value="viewmodel.email"
         @input="viewmodel.changeEmail"

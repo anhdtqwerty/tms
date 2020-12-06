@@ -15,20 +15,26 @@
     <v-row>
       <v-col cols="12" class="pa-2">
         <v-card>
-          <v-data-table :items="items" item-key="id" :headers="headers" mobile-breakpoint="0">
+          <v-data-table
+            :items="viewmodel.departments"
+            item-key="id"
+            :headers="headers"
+            :footer-props="{ itemsPerPageOptions: [25] }"
+            mobile-breakpoint="0"
+          >
             <template v-slot:top>
               <v-container fluid class="px-5 py-0">
                 <v-row>
                   <v-col cols="12" align="end" class="pa-2">
-                    <v-btn icon x-small>
+                    <v-btn icon small>
                       <v-icon>settings</v-icon>
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Tên đơn vị" />
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Đơn vị cha" />
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã đơn vị" />
-                    <v-btn depressed color="primary" medium>
+                    <app-text-field class="mr-4" hide-details dv-model="searchName" label="Tên đơn vị" />
+                    <app-text-field class="mr-4" hide-details v-model="searchUnitCode" label="Đơn vị cha" />
+                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã đơn vị" />
+                    <v-btn depressed color="primary" medium @click="search">
                       <span class="d-none d-md-flex">Tìm kiếm</span>
                       <v-icon dark>search</v-icon>
                     </v-btn>
@@ -36,17 +42,17 @@
                 </v-row>
               </v-container>
             </template>
-            <template v-slot:[`item.name`]="{ item }">
-              <router-link :to="`/department/${item.code}`">
-                {{ item.name }}
-              </router-link>
+            <template v-slot:[`item.title`]="{ item }">
+              <text-link :to="`/department/${item.code}`">
+                {{ item.title }}
+              </text-link>
             </template>
 
             <template v-slot:[`item.role.name`]="{ item }">
               <div class="staff-department">{{ item.department.title }}</div>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon small class="mr-2" @click="showEditDialog = true">
+              <v-icon small class="mr-2" @click="editDepartment(item)">
                 mdi-pencil
               </v-icon>
               <v-icon small @click="deleteUnit(item)">
@@ -57,13 +63,18 @@
         </v-card>
       </v-col>
     </v-row>
-    <department-add-dialog :value.sync="showAddDialog" />
-    <department-edit-dialog :value.sync="showEditDialog" />
+    <department-add-dialog :value.sync="showAddDialog" @success="viewmodel.departmentAdded" />
+    <department-edit-dialog
+      :value.sync="showEditDialog"
+      :department="editingDepartment"
+      @success="viewmodel.departmentUpdated"
+    />
   </v-container>
 </template>
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { DepartmentModel } from '@/models/department-model'
 import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
 import { DepartmentManagerViewModel } from '../viewmodels/department-manager-viewmodel'
 
@@ -77,31 +88,22 @@ export default class DepartmentManagerPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() viewmodel = new DepartmentManagerViewModel(this.providers)
 
-  name = ''
-  username = ''
+  searchName = ''
+  searchCode = ''
+  searchUnitCode = ''
 
   showAddDialog = false
   showEditDialog = false
+  editingDepartment: DepartmentModel = null
 
   headers = [
-    { text: 'Tên phòng ban', value: 'name', align: 'left', sortable: false },
-    { text: 'Đơn vị cha', value: 'parent', align: 'left', sortable: false },
-    { text: 'Mã phòng', value: 'code', align: 'left', sortable: false },
-    { text: 'Email phòng', value: 'email', align: 'left', sortable: true },
-    { text: 'SĐT phỏng', value: 'phone', align: 'left', sortable: false },
-    { text: 'Mô tả', value: 'description', align: 'left', sortable: false },
-    { value: 'actions', show: true, sortable: false }
-  ]
-
-  items = [
-    {
-      name: 'dep 1',
-      parent: 'don vi cha',
-      code: 'dep1',
-      email: 'dep1@dep.com',
-      phone: '091231231',
-      description: 'dep1 dep1 dep1'
-    }
+    { text: 'Tên phòng ban', value: 'title', sortable: false },
+    { text: 'Đơn vị cha', value: 'unit.code', sortable: false },
+    { text: 'Mã phòng', value: 'code', sortable: false },
+    { text: 'Email phòng', value: 'email', sortable: true },
+    { text: 'SĐT phỏng', value: 'phone', sortable: false },
+    { text: 'Mô tả', value: 'description', sortable: false },
+    { value: 'actions', align: 'right', sortable: false }
   ]
 
   async deleteUnit() {
@@ -110,6 +112,15 @@ export default class DepartmentManagerPage extends Vue {
     //   'Bạn có Chắc Chắn muốn xóa Nhân viên này? Bạn sẽ không thể hoàn tác thao tác.'
     // )
     // console.log(ok)
+  }
+
+  editDepartment(item: DepartmentModel) {
+    this.editingDepartment = item
+    this.showEditDialog = true
+  }
+
+  search() {
+    this.viewmodel.search(this.searchName, this.searchUnitCode, this.searchCode)
   }
 }
 </script>

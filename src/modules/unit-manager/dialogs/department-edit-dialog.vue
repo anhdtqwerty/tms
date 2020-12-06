@@ -13,12 +13,13 @@
           <v-container fluid px-5 py-2>
             <v-row>
               <v-col cols="12" class="pa-2">
-                <v-text-field dense outlined v-model="name" label="Tên phòng ban"></v-text-field>
-                <v-text-field dense outlined v-model="name" label="Đơn vị cha"></v-text-field>
-                <v-text-field dense outlined v-model="name" label="Mã đơn vị"></v-text-field>
-                <v-text-field dense outlined v-model="name" label="Email đơn vị"></v-text-field>
-                <v-text-field dense outlined v-model="name" label="Số điện thoại đơn vị"></v-text-field>
-                <v-textarea dense outlined v-model="username" label="Mô tả" counter="5000" />
+                <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên đơn vị" />
+                <app-text-field v-if="unit" :value="unit.title" disabled label="Đơn vị cha" />
+                <unit-autocomplete v-else :value.sync="selectedUnitId" label="Đơn vị cha" />
+                <app-text-field v-model="code" :rules="$appRules.unitCode" label="Mã đơn vị" />
+                <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
+                <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
+                <app-textarea v-model="description" label="Mô tả" counter="5000" />
               </v-col>
               <v-col cols="12" class="pa-2 d-flex justify-end">
                 <v-btn depressed class="mr-4" medium @click="save">
@@ -37,17 +38,59 @@
 </template>
 
 <script lang="ts">
-import { Component, PropSync, Vue } from 'vue-property-decorator'
+import { AppProvider } from '@/app-provider'
+import { DepartmentModel } from '@/models/department-model'
+import { UnitModel } from '@/models/unit-model'
+import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
-@Component
-export default class DepartmentAddDialog extends Vue {
+@Component({
+  components: {
+    UnitAutocomplete: () => import('../components/unit-autocomplete.vue')
+  }
+})
+export default class UnitEditDialog extends Vue {
+  @Inject() providers!: AppProvider
+
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
+  @Prop() department: DepartmentModel
+  @Prop() unit: UnitModel
 
-  name = ''
-  username = ''
+  @Ref('form') form: any
 
-  save() {
-    //
+  title = ''
+  selectedUnitId: string = null
+  code = ''
+  email = ''
+  phone = ''
+  description = ''
+
+  @Watch('department') onUnitChanged(val: DepartmentModel) {
+    if (val) {
+      console.log(val.unit)
+      this.title = val.title
+      this.selectedUnitId = (val.unit as UnitModel).id
+      this.code = val.code
+      this.email = val.email
+      this.phone = val.phone
+      this.description = val.description
+    }
+  }
+
+  async save() {
+    if (this.form.validate()) {
+      let department: DepartmentModel = {
+        ...this.department,
+        unit: this.unit?.id ?? this.selectedUnitId,
+        title: this.title,
+        code: this.code,
+        email: this.email,
+        phone: this.phone,
+        description: this.description
+      }
+      department = await this.providers.services.api.department.update(department.id, department)
+      this.$emit('success', department)
+      this.syncedValue = false
+    }
   }
 }
 </script>

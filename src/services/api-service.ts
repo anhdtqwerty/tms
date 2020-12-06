@@ -1,16 +1,41 @@
 import { UserModel } from '@/models/auth-model'
 import Axios, { AxiosInstance } from 'axios'
-import { getRootStore } from '@/stores'
 import { reaction } from 'mobx'
-
-const modelRouteMapping = {
-  UserModel: 'users'
-}
+import { UnitModel } from '@/models/unit-model'
+import { DepartmentModel } from '@/models/department-model'
+import { authStore } from '@/stores/auth-store'
+import qs from 'qs'
 
 export class ApiHandler<T> {
   constructor(private route: string, private axios: AxiosInstance) {}
-  async fetch(): Promise<T[]> {
-    const res = await this.axios.get(this.route)
+
+  async count(params?: any): Promise<number> {
+    const res = await this.axios.get(`${this.route}/count`, { params })
+    return res.data
+  }
+
+  async create(model: T): Promise<T> {
+    const res = await this.axios.post(this.route, model)
+    return res.data
+  }
+
+  async delete(id: any): Promise<T> {
+    const res = await this.axios.delete(`${this.route}/${id}`)
+    return res.data
+  }
+
+  async find<T>(params?: any): Promise<T[]> {
+    const res = await this.axios.get(this.route, { params })
+    return res.data
+  }
+
+  async findOne<T>(id: any): Promise<T[]> {
+    const res = await this.axios.get(`${this.route}/${id}`)
+    return res.data
+  }
+
+  async update(id: any, model: T): Promise<T> {
+    const res = await this.axios.put(`${this.route}/${id}`, model)
     return res.data
   }
 }
@@ -19,6 +44,8 @@ export class ApiService {
   axios = Axios.create({ baseURL: process.env.VUE_APP_API_ENDPOINT })
 
   user = new ApiHandler<UserModel>('users', this.axios)
+  unit = new ApiHandler<UnitModel>('units', this.axios)
+  department = new ApiHandler<DepartmentModel>('departments', this.axios)
   comarde = new ApiHandler<any>('comrades', this.axios)
 
   constructor() {
@@ -28,7 +55,7 @@ export class ApiService {
   setupAuthInjector() {
     let jwtToken: string
     reaction(
-      () => getRootStore().auth.jwt,
+      () => authStore.jwt,
       jwt => (jwtToken = jwt),
       { fireImmediately: true }
     )
@@ -39,6 +66,7 @@ export class ApiService {
           Authorization: `Bearer ${jwtToken}`
         }
       }
+      config.paramsSerializer = params => qs.stringify(params, { arrayFormat: 'repeat' })
       return config
     })
   }

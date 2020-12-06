@@ -4,7 +4,7 @@
       <div class="text-h3 text--darken-1 primary--text font-weight-bold text-center pb-4">
         Đăng ký
       </div>
-      <v-text-field
+      <app-text-field
         label="Tên đăng nhập"
         prepend-inner-icon="person"
         v-model="credentials.identifier"
@@ -14,7 +14,7 @@
         type="text"
       />
 
-      <v-text-field
+      <app-text-field
         label="Nhập email của bạn"
         prepend-inner-icon="email"
         v-model="email"
@@ -24,7 +24,7 @@
         type="text"
       />
 
-      <v-text-field
+      <app-text-field
         label="Mật Khẩu"
         v-model="password"
         :append-icon="newPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -36,7 +36,7 @@
         validate-on-blur
       />
 
-      <v-text-field
+      <app-text-field
         label="Nhập lại mật khẩu"
         v-model="passwordConfirmation"
         :append-icon="checkPassword ? 'mdi-eye' : 'mdi-eye-off'"

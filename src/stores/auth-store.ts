@@ -1,7 +1,7 @@
 import { UserModel } from '@/models/auth-model'
 import { action, computed, observable, reaction } from 'mobx'
 
-export class AuthStore {
+class AuthStore {
   @observable jwt = localStorage.getItem('jwt')
   @observable user: UserModel = null
 
@@ -40,3 +40,5 @@ export class AuthStore {
     return !!this.jwt
   }
 }
+
+export const authStore = new AuthStore()

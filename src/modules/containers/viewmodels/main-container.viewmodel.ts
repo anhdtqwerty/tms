@@ -1,4 +1,5 @@
 import { action, computed, observable, reaction } from 'mobx'
+import ToastedPlugin from 'vue-toasted'
 
 export class MenuViewModel {
   @observable selected = false
@@ -52,6 +53,8 @@ export class MainContainerViewModel {
 
   @observable selectedMenu: MenuViewModel = null
 
+  private _cachedViewModel: { [name: string]: any } = {}
+
   constructor() {
     let lastSelectedMenu: MenuViewModel
     reaction(
@@ -78,5 +81,12 @@ export class MainContainerViewModel {
 
   @action toggleDrawer() {
     this.drawer = !this.drawer
+  }
+
+  getCachedViewModel<T>(ctor: new () => T): T {
+    if (!this._cachedViewModel[ctor.name]) {
+      this._cachedViewModel[ctor.name] = new ctor()
+    }
+    return this._cachedViewModel[ctor.name]
   }
 }

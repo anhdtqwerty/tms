@@ -12,17 +12,15 @@
       <!-- :style="`max-width: ${width}px`" -->
 
       <template v-slot:activator="{ on }">
-        <v-text-field
-          outlined
+        <app-text-field
           :value="syncedValue"
           label="Chọn Ngày"
           readonly
           single-line
-          dense
           v-on="on"
           append-icon="expand_more"
           @click:append="show = true"
-        ></v-text-field>
+        />
       </template>
       <v-date-picker locale="vi" :value="syncedValue" @input="selectDate"></v-date-picker>
     </v-menu>

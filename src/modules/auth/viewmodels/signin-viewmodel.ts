@@ -1,5 +1,6 @@
 import { AppProvider } from '@/app-provider'
 import { ApiService } from '@/services/api-service'
+import { authStore } from '@/stores/auth-store'
 import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -24,7 +25,7 @@ export class SigninViewModel {
     try {
       const res = yield this._api.login(this.username, this.password)
       const { jwt, user } = res
-      this.providers.store.auth.onLogin(jwt, user)
+      authStore.onLogin(jwt, user)
       this.providers.router.replace('dashboard')
     } catch (error) {
       this.providers.snackbar.commonError(error)

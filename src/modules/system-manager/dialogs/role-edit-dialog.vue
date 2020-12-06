@@ -14,8 +14,8 @@
             <v-row>
               <v-col cols="12" sm="6" class="pa-2">
                 <div class="text-subtitle-2 pb-6">Thông tin vài trò</div>
-                <v-text-field dense outlined v-model="name" label="Tên vai trò"></v-text-field>
-                <v-textarea dense outlined v-model="username" label="Mô tả" counter="5000" />
+                <app-text-field v-model="name" label="Tên vai trò" />
+                <app-textarea v-model="username" label="Mô tả" counter="5000" />
               </v-col>
               <v-col cols="6" class="d-none d-sm-flex" />
               <v-col cols="12" class="pa-2">

@@ -6,13 +6,13 @@
         <breadcrumbs />
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="viewmodel.ministry">
       <v-col cols="12" class="pa-2">
         <div class="intro-background px-4 py-2">
           <v-row>
             <v-col cols="12" md="10" lg="8" xl="6">
               <div class="intro-wrap pa-4">
-                <div class="text-h5 font-weight-medium primary--text">Bộ giao thông vận tải</div>
+                <div class="text-h5 font-weight-medium primary--text">{{ viewmodel.ministry.title }}</div>
                 <div class="mt-6 font-weight-medium">
                   <div>Địa chỉ: 80 Trần Hưng Đạo, quận Hoàn Kiếm, Hà Nội</div>
                   <div>Mã đơn vị: gov123456</div>
@@ -106,13 +106,13 @@ export default class MinistryManagerPage extends Vue {
   @Provide() viewmodel = new MinistryManagerViewModel(this.providers)
 
   headers = [
-    { text: 'Họ và Tên', value: 'name', align: 'left', sortable: false },
-    { text: 'Mã cán bộ', value: 'id', align: 'left', sortable: false },
-    { text: 'Tên truy cập', value: 'username', align: 'left', sortable: true },
-    { text: 'Trạng Thái', value: 'status', align: 'left', sortable: false },
-    { text: 'Phòng ban', value: 'department', align: 'left', sortable: true },
-    { text: 'Chức vị', value: 'position', align: 'left', sortable: true },
-    { text: 'Email', value: 'email', align: 'left', sortable: false },
+    { text: 'Họ và Tên', value: 'name', sortable: false },
+    { text: 'Mã cán bộ', value: 'id', sortable: false },
+    { text: 'Tên truy cập', value: 'username', sortable: true },
+    { text: 'Trạng Thái', value: 'status', sortable: false },
+    { text: 'Phòng ban', value: 'department', sortable: true },
+    { text: 'Chức vị', value: 'position', sortable: true },
+    { text: 'Email', value: 'email', sortable: false },
     { text: 'Xóa', value: 'actions', show: true }
   ]
 }

@@ -15,20 +15,26 @@
     <v-row>
       <v-col cols="12" class="pa-2">
         <v-card>
-          <v-data-table :items="items" item-key="id" :headers="headers" mobile-breakpoint="0">
+          <v-data-table
+            :items="viewmodel.units"
+            item-key="id"
+            :headers="headers"
+            :footer-props="{ itemsPerPageOptions: [25] }"
+            mobile-breakpoint="0"
+          >
             <template v-slot:top>
               <v-container fluid class="px-5 py-0">
                 <v-row>
                   <v-col cols="12" align="end" class="pa-2">
-                    <v-btn icon x-small>
+                    <v-btn icon small>
                       <v-icon>settings</v-icon>
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
-                    <v-btn depressed color="primary" medium>
+                    <app-text-field class="mr-4" hide-details v-model="searchName" label="Tên đơn vị" />
+                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã đơn vị" />
+                    <app-text-field class="mr-4" hide-details v-model="searchEmail" label="Email" />
+                    <v-btn depressed color="primary" medium @click="search">
                       <span class="d-none d-md-flex">Tìm kiếm</span>
                       <v-icon dark>search</v-icon>
                     </v-btn>
@@ -36,20 +42,20 @@
                 </v-row>
               </v-container>
             </template>
-            <template v-slot:[`item.name`]="{ item }">
-              <router-link :to="`/unit/${item.code}`">
-                {{ item.name }}
-              </router-link>
+            <template v-slot:[`item.title`]="{ item }">
+              <text-link :to="`/unit/${item.id}`">
+                {{ item.title }}
+              </text-link>
             </template>
 
             <template v-slot:[`item.role.name`]="{ item }">
               <div class="staff-department">{{ item.department.title }}</div>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon small class="mr-2" @click="showEditUnit = true">
+              <v-icon small class="mr-2" @click="editUnit(item)">
                 mdi-pencil
               </v-icon>
-              <v-icon small @click="deleteUnit(item)">
+              <v-icon small @click="viewmodel.deleteUnit(item)">
                 mdi-delete
               </v-icon>
             </template>
@@ -57,13 +63,14 @@
         </v-card>
       </v-col>
     </v-row>
-    <unit-add-dialog :value.sync="showAddUnit" />
-    <unit-edit-dialog :value.sync="showEditUnit" />
+    <unit-add-dialog :value.sync="showAddUnit" @success="viewmodel.unitAdded" />
+    <unit-edit-dialog :value.sync="showEditUnit" @success="viewmodel.unitUpdated" :unit="edtingUnit" />
   </v-container>
 </template>
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { UnitModel } from '@/models/unit-model'
 import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
 import { UnitManagerViewModel } from '../viewmodels/unit-manager-viewmodel'
 
@@ -79,27 +86,28 @@ export default class UnitManagerPage extends Vue {
 
   showAddUnit = false
   showEditUnit = false
-  name = ''
-  username = ''
+  edtingUnit: UnitModel = null
+
+  searchName = ''
+  searchCode = ''
+  searchEmail = ''
+
   headers = [
-    { text: 'Tên đơn vị', value: 'name', align: 'left', sortable: false },
-    { text: 'Mã đơn vị', value: 'code', align: 'left', sortable: false },
-    { text: 'Email đơn vị', value: 'email', align: 'left', sortable: true },
-    { text: 'SĐT đơn vị', value: 'phone', align: 'left', sortable: false },
-    { text: 'Mô tả', value: 'description', align: 'left', sortable: false },
-    { value: 'actions', show: true, sortable: false }
+    { text: 'Tên đơn vị', value: 'title', sortable: false },
+    { text: 'Mã đơn vị', value: 'code', sortable: false },
+    { text: 'Email đơn vị', value: 'email', sortable: true },
+    { text: 'SĐT đơn vị', value: 'phone', sortable: false },
+    { text: 'Mô tả', value: 'description', sortable: false },
+    { value: 'actions', align: 'right', sortable: false }
   ]
 
-  items = [
-    { name: 'unit 1', code: 'unit1', email: 'unit1@unit.com', phone: '091231231', description: 'unit1 unit1 unit' }
-  ]
+  editUnit(unit: UnitModel) {
+    this.edtingUnit = unit
+    this.showEditUnit = true
+  }
 
-  async deleteUnit() {
-    const ok = await this.providers.alert.confirm(
-      'XÁC NHẬN XÓA',
-      'Bạn có Chắc Chắn muốn xóa Nhân viên này? Bạn sẽ không thể hoàn tác thao tác.'
-    )
-    console.log(ok)
+  search() {
+    this.viewmodel.search(this.searchName, this.searchCode, this.searchEmail)
   }
 }
 </script>

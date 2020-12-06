@@ -2,7 +2,7 @@
   <div align="start">
     <v-form ref="form" class="mx-6">
       <div class="text-h4 mb-16 primary--text font-weight-bold text-center text-uppercase">Đặt lại mật khẩu</div>
-      <v-text-field
+      <app-text-field
         v-model="password"
         label="Mật khẩu mới"
         :type="newPassword ? 'text' : 'password'"
@@ -11,7 +11,7 @@
         @click:append="newPassword = !newPassword"
         validate-on-blur
       />
-      <v-text-field
+      <app-text-field
         label="Nhập lại mật khẩu"
         v-model="passwordConfirmation"
         :append-icon="checkPassword ? 'mdi-eye' : 'mdi-eye-off'"

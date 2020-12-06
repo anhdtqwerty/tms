@@ -13,8 +13,8 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12" class="pa-2">
-              <v-text-field dense outlined v-model="name" label="Tên vai trò"></v-text-field>
-              <v-textarea dense outlined v-model="username" label="Mô tả" counter="5000" />
+              <app-text-field v-model="name" label="Tên vai trò" />
+              <app-textarea v-model="username" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2" align="end">
               <v-btn depressed color="primary" medium @click="save">

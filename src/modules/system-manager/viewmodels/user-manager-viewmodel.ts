@@ -16,6 +16,6 @@ export class UserManagerViewModel {
     yield timer(300)
       .pipe(first())
       .toPromise()
-    this.users = yield this.provider.services.api.user.fetch()
+    this.users = yield this.provider.services.api.user.find()
   }
 }

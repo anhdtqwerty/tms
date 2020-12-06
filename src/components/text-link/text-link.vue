@@ -1,14 +1,17 @@
 <template>
-  <div @click="$emit('click', $event)" class="primary--text" style="cursor: pointer">
+  <router-link v-if="to" :to="to" style="text-decoration: none"><slot /></router-link>
+  <div v-else @click="$emit('click', $event)" class="primary--text" style="cursor: pointer">
     <slot />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component
-export default class TextLink extends Vue {}
+export default class TextLink extends Vue {
+  @Prop() to: string
+}
 </script>
 
 <style lang="scss" scoped></style>

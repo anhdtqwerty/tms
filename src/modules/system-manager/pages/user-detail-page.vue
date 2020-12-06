@@ -18,11 +18,11 @@
                   </div>
                 </div>
                 <div class="text-subtitle-2 py-4">Thông tin người dùng</div>
-                <v-text-field dense outlined v-model="name" label="Họ và Tên"></v-text-field>
-                <v-text-field dense outlined v-model="username" label="Mã cán bộ"></v-text-field>
-                <v-text-field dense outlined v-model="phone" label="Ngày sinh"></v-text-field>
-                <v-text-field dense outlined v-model="email" label="Email" validate-on-blur></v-text-field>
-                <v-text-field dense outlined v-model="email" label="Số điện thoại" validate-on-blur></v-text-field>
+                <app-text-field v-model="name" label="Họ và Tên" />
+                <app-text-field v-model="username" label="Mã cán bộ" />
+                <app-text-field v-model="phone" label="Ngày sinh" />
+                <app-text-field v-model="email" label="Email" validate-on-blur />
+                <app-text-field v-model="email" label="Số điện thoại" validate-on-blur />
                 <div class="d-flex">
                   <div class="text-body-2 mt-2">Người dùng hoạt động</div>
                   <v-switch class="mt-0 ml-4" />
@@ -30,8 +30,8 @@
               </v-col>
               <v-col class="px-8">
                 <div class="text-subtitle-2 pb-4">Thông tin đăng nhập</div>
-                <v-text-field dense outlined v-model="name" label="Tên truy cập"></v-text-field>
-                <v-text-field
+                <app-text-field v-model="name" label="Tên truy cập" />
+                <app-text-field
                   dense
                   outlined
                   label="Mật Khẩu"
@@ -41,12 +41,12 @@
                   :type="showPassword ? 'text' : 'password'"
                   outlinedd
                 />
-                <v-text-field dense outlined v-model="name" label="Vai trò khi truy cập"></v-text-field>
+                <app-text-field v-model="name" label="Vai trò khi truy cập" />
                 <div class="text-subtitle-2 pb-4">Phòng ban Đơn vị</div>
-                <v-text-field dense outlined v-model="username" label="Mã cán bộ"></v-text-field>
-                <v-text-field dense outlined v-model="username" label="Đơn vị"></v-text-field>
-                <v-text-field dense outlined v-model="phone" label="Phòng ban"></v-text-field>
-                <v-text-field dense outlined v-model="email" label="Chức vụ"></v-text-field>
+                <app-text-field v-model="username" label="Mã cán bộ" />
+                <app-text-field v-model="username" label="Đơn vị" />
+                <app-text-field v-model="phone" label="Phòng ban" />
+                <app-text-field v-model="email" label="Chức vụ" />
               </v-col>
             </v-row>
           </v-form>

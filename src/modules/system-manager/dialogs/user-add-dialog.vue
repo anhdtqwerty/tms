@@ -14,11 +14,11 @@
           <v-row>
             <v-col cols="12" sm="6">
               <div class="text-subtitle-2 pb-6">Thông tin người dùng</div>
-              <v-text-field dense outlined v-model="name" label="Họ và Tên"></v-text-field>
-              <v-text-field dense outlined v-model="username" label="Mã cán bộ"></v-text-field>
-              <v-text-field dense outlined v-model="phone" label="Ngày sinh"></v-text-field>
-              <v-text-field dense outlined v-model="email" label="Email" validate-on-blur></v-text-field>
-              <v-text-field dense outlined v-model="email" label="Số điện thoại" validate-on-blur></v-text-field>
+              <app-text-field v-model="name" label="Họ và Tên" />
+              <app-text-field v-model="username" label="Mã cán bộ" />
+              <app-text-field v-model="phone" label="Ngày sinh" />
+              <app-text-field v-model="email" label="Email" validate-on-blur />
+              <app-text-field v-model="email" label="Số điện thoại" validate-on-blur />
               <div class="d-flex justify-space-between">
                 <div class="text-body-2">Người dùng hoạt động</div>
                 <v-switch class="ma-0" />
@@ -26,10 +26,8 @@
             </v-col>
             <v-col cols="12" sm="6">
               <div class="text-subtitle-2 pb-6">Thông tin đăng nhập</div>
-              <v-text-field dense outlined v-model="name" label="Tên truy cập"></v-text-field>
-              <v-text-field
-                dense
-                outlined
+              <app-text-field v-model="name" label="Tên truy cập" />
+              <app-text-field
                 label="Mật Khẩu"
                 v-model="password"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -38,9 +36,9 @@
                 outlinedd
               />
               <div class="text-subtitle-2 py-6">Phòng ban Đơn vị</div>
-              <v-text-field dense outlined v-model="username" label="Đơn vị"></v-text-field>
-              <v-text-field dense outlined v-model="phone" label="Phòng ban"></v-text-field>
-              <v-text-field dense outlined v-model="email" label="Chức vụ"></v-text-field>
+              <app-text-field v-model="username" label="Đơn vị" />
+              <app-text-field v-model="phone" label="Phòng ban" />
+              <app-text-field v-model="email" label="Chức vụ" />
             </v-col>
             <v-col cols="12" align="end">
               <v-btn depressed color="primary" medium @click="save">

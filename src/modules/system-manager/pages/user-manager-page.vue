@@ -25,25 +25,15 @@
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
-                    <v-text-field class="mr-4" hide-details dense outlined v-model="username" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="username" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="username" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="username" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="username" label="Mã cán bộ" />
                     <v-btn depressed color="primary" medium>
                       <span class="d-none d-md-flex">Tìm kiếm</span>
                       <v-icon dark>search</v-icon>
                     </v-btn>
                   </v-col>
-                  <!-- <v-col class="pa-2"><v-text-field dense outlined v-model="username" label="Mã cán bộ"/></v-col>
-                  <v-col class="pa-2"><v-text-field dense outlined v-model="username" label="Mã cán bộ"/></v-col>
-                  <v-col class="pa-2"><v-text-field dense outlined v-model="username" label="Mã cán bộ"/></v-col>
-                  <v-col class="pa-2"><v-text-field dense outlined v-model="username" label="Mã cán bộ"/></v-col>
-                  <v-col class="pa-2" align="end">
-                    <v-btn class="px-2" depressed color="primary" medium>
-                      <span>Tìm kiếm</span>
-                      <v-icon dark>search</v-icon>
-                    </v-btn>
-                  </v-col> -->
                 </v-row>
               </v-container>
             </template>
@@ -81,13 +71,13 @@ export default class UserMangerPage extends Vue {
   showAddUser = false
 
   headers = [
-    { text: 'Mã cán bộ', value: 'id', align: 'left', sortable: false },
-    { text: 'Họ và Tên', value: 'name', align: 'left', sortable: false },
-    { text: 'Tên truy cập', value: 'username', align: 'left', sortable: true },
-    { text: 'Trạng Thái', value: 'status', align: 'left', sortable: false },
-    { text: 'Phòng ban', value: 'department', align: 'left', sortable: true },
-    { text: 'Chức vị', value: 'position', align: 'left', sortable: true },
-    { text: 'Email', value: 'email', align: 'left', sortable: false },
+    { text: 'Mã cán bộ', value: 'id', sortable: false },
+    { text: 'Họ và Tên', value: 'name', sortable: false },
+    { text: 'Tên truy cập', value: 'username', sortable: true },
+    { text: 'Trạng Thái', value: 'status', sortable: false },
+    { text: 'Phòng ban', value: 'department', sortable: true },
+    { text: 'Chức vị', value: 'position', sortable: true },
+    { text: 'Email', value: 'email', sortable: false },
     {
       text: 'Số Điện Thoại',
       value: 'phone',

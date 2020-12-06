@@ -2,14 +2,14 @@ import VueRouter from 'vue-router'
 import { AlertController } from './components/alert/alert-controller'
 import { SnackBarController } from './components/snack-bar/snack-bar-controller'
 import { services } from './services'
-import { createStore, getRootStore } from './stores'
+import { authStore } from './stores/auth-store'
 
 export class AppProvider {
   router: VueRouter
   snackbar = new SnackBarController()
   alert = new AlertController()
   services = services
-  store = getRootStore()
+  authStore = authStore
 
   constructor(router: VueRouter) {
     console.log('AppProvider ctor')
@@ -17,8 +17,7 @@ export class AppProvider {
   }
 
   onLogout() {
-    this.store.auth.onLogout()
-    this.store = createStore()
+    this.authStore.onLogout()
     this.router.replace('signin')
   }
 }

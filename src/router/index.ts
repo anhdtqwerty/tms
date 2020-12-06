@@ -1,4 +1,4 @@
-import { getRootStore } from '@/stores'
+import { authStore } from '@/stores/auth-store'
 import Vue from 'vue'
 import VueRouter, { Route, RouteConfig } from 'vue-router'
 
@@ -82,7 +82,7 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
-        path: 'user/:id',
+        path: 'user/:userid',
         name: 'user',
         component: () => import('@/modules/system-manager/pages/user-detail-page.vue'),
         meta: {
@@ -118,7 +118,7 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
-        path: 'department/:id',
+        path: 'department/:departmentid',
         name: 'department',
         component: () => import('@/modules/unit-manager/pages/department-detail-page.vue'),
         meta: {
@@ -145,7 +145,7 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
-        path: 'unit/:id',
+        path: 'unit/:unitid',
         name: 'unit',
         component: () => import('@/modules/unit-manager/pages/unit-detail-page.vue'),
         meta: {
@@ -167,9 +167,8 @@ router.beforeEach((to, from, next) => {
   if (!to.name) {
     next('dashboard')
   } else {
-    const store = getRootStore()
     const requriedAuth = to.matched.some(m => m.meta?.auth === true)
-    const isAuthenticated = store.auth.authenticated
+    const isAuthenticated = authStore.authenticated
 
     if ((requriedAuth && isAuthenticated) || (!requriedAuth && !isAuthenticated)) {
       next()

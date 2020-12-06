@@ -38,13 +38,13 @@ import { Component, Vue } from 'vue-property-decorator'
 @Component
 export default class DepartmentDetailPage extends Vue {
   userHeaders = [
-    { text: 'Họ và Tên', value: 'name', align: 'left', sortable: false },
-    { text: 'Mã cán bộ', value: 'id', align: 'left', sortable: false },
-    { text: 'Tên truy cập', value: 'username', align: 'left', sortable: true },
-    { text: 'Trạng Thái', value: 'status', align: 'left', sortable: false },
-    { text: 'Phòng ban', value: 'department', align: 'left', sortable: true },
-    { text: 'Chức vụ', value: 'position', align: 'left', sortable: true },
-    { text: 'Email', value: 'email', align: 'left', sortable: false },
+    { text: 'Họ và Tên', value: 'name', sortable: false },
+    { text: 'Mã cán bộ', value: 'id', sortable: false },
+    { text: 'Tên truy cập', value: 'username', sortable: true },
+    { text: 'Trạng Thái', value: 'status', sortable: false },
+    { text: 'Phòng ban', value: 'department', sortable: true },
+    { text: 'Chức vụ', value: 'position', sortable: true },
+    { text: 'Email', value: 'email', sortable: false },
     { text: 'Xóa', value: 'actions', sortable: false }
   ]
 

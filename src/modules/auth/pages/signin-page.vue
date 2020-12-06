@@ -4,7 +4,7 @@
       <div class="text-h4 primary--text font-weight-bold pb-16 text-center text-uppercase">
         Đăng nhập
       </div>
-      <v-text-field
+      <app-text-field
         label="Tài Khoản"
         name="login"
         :value="viewmodel.username"
@@ -15,7 +15,7 @@
         type="text"
       />
 
-      <v-text-field
+      <app-text-field
         label="Mật Khẩu"
         :value="viewmodel.password"
         @input="viewmodel.changePassword"

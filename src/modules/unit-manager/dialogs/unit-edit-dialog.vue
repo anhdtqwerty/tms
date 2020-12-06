@@ -13,12 +13,12 @@
           <v-container fluid px-5 py-2>
             <v-row>
               <v-col cols="12" class="pa-2">
-                <v-text-field dense outlined v-model="name" label="Tên đơn vị"></v-text-field>
-                <v-text-field dense outlined v-model="name" label="Mã đơn vị"></v-text-field>
-                <v-text-field dense outlined v-model="name" label="Đơn vị cha"></v-text-field>
-                <v-text-field dense outlined v-model="name" label="Email đơn vị"></v-text-field>
-                <v-text-field dense outlined v-model="name" label="Số điện thoại đơn vị"></v-text-field>
-                <v-textarea dense outlined v-model="username" label="Mô tả" counter="5000" />
+                <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên đơn vị" />
+                <app-text-field v-model="code" :rules="$appRules.unitCode" label="Mã đơn vị" />
+                <app-text-field value="BỘ GIAO THÔNG VẬN TẢI" label="Đơn vị cha" disabled />
+                <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
+                <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
+                <app-textarea v-model="description" label="Mô tả" counter="5000" />
               </v-col>
               <v-col cols="12" class="pa-2 d-flex justify-end">
                 <v-btn depressed class="mr-4" medium @click="save">
@@ -37,17 +37,49 @@
 </template>
 
 <script lang="ts">
-import { Component, PropSync, Vue } from 'vue-property-decorator'
+import { AppProvider } from '@/app-provider'
+import { UnitModel } from '@/models/unit-model'
+import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component
 export default class UnitEditDialog extends Vue {
+  @Inject() providers!: AppProvider
+
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
+  @Prop() unit: UnitModel
 
-  name = ''
-  username = ''
+  @Ref('form') form: any
 
-  save() {
-    //
+  title = ''
+  code = ''
+  email = ''
+  phone = ''
+  description = ''
+
+  @Watch('unit') onUnitChanged(val: UnitModel) {
+    if (val) {
+      this.title = val.title
+      this.code = val.code
+      this.email = val.email
+      this.phone = val.phone
+      this.description = val.description
+    }
+  }
+
+  async save() {
+    if (this.form.validate()) {
+      let unit: UnitModel = {
+        ...this.unit,
+        title: this.title,
+        code: this.code,
+        email: this.email,
+        phone: this.phone,
+        description: this.description
+      }
+      unit = await this.providers.services.api.unit.update(unit.id, unit)
+      this.$emit('success', unit)
+      this.syncedValue = false
+    }
   }
 }
 </script>

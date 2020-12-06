@@ -49,8 +49,8 @@ export default class RoleManagerPage extends Vue {
   showEditDialog = false
 
   headers = [
-    { text: 'Tên vai trò', value: 'title', align: 'left', sortable: false },
-    { text: 'Mô tả', value: 'description', align: 'left', sortable: false }
+    { text: 'Tên vai trò', value: 'title', sortable: false },
+    { text: 'Mô tả', value: 'description', sortable: false }
   ]
 }
 </script>
