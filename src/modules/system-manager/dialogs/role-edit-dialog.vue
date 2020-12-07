@@ -11,19 +11,125 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12" sm="6" class="pa-2">
-              <div class="text-subtitle-2 pb-6">Thông tin vài trò</div>
-              <app-text-field v-model="name" label="Tên vai trò" />
-              <app-textarea v-model="username" label="Mô tả" counter="5000" />
-            </v-col>
-            <v-col cols="6" class="d-none d-sm-flex" />
             <v-col cols="12" class="pa-2">
-              <div class="text-subtitle-2 pb-6">Hiển thị phân quyền</div>
+              <div class="text-subtitle-2 pb-4">Thông tin vai trò</div>
+              <app-text-field v-model="name" label="Tên vai trò" />
+              <app-textarea v-model="description" label="Mô tả" counter="5000" />
             </v-col>
-            <v-col cols="12" sm="6" class="px-2 py-0" v-for="config in mergedRoleConfigs" :key="config.name">
-              <v-checkbox v-model="config.allow" :label="config.name" hide-details></v-checkbox>
+            <v-col cols="12" class="pa-2">
+              <div class="text-subtitle-2 pb-4">Hiển thị phân quyền</div>
+              <v-data-table
+                :items="configs.task"
+                item-key="type"
+                :headers="taskHeaders"
+                mobile-breakpoint="0"
+                hide-default-footer
+                fixed-header
+                class="mytable"
+              >
+                <template v-slot:[`item.name`]="{ item }">
+                  <div class="font-weight-medium">{{ item.name }}</div>
+                </template>
+                <template v-slot:[`item.config.full`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.full" />
+                </template>
+                <template v-slot:[`item.config.read`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.read" />
+                </template>
+                <template v-slot:[`item.config.add`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.add" />
+                </template>
+                <template v-slot:[`item.config.edit`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.edit" />
+                </template>
+                <template v-slot:[`item.config.delete`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.delete" />
+                </template>
+                <template v-slot:[`item.config.revoke`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.revoke" />
+                </template>
+                <template v-slot:[`item.config.assign`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.assign" />
+                </template>
+                <template v-slot:[`item.config.extend`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.extend" />
+                </template>
+                <template v-slot:[`item.config.return`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.return" />
+                </template>
+                <template v-slot:[`item.config.update`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.update" />
+                </template>
+                <template v-slot:[`item.config.reopen`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.reopen" />
+                </template>
+              </v-data-table>
             </v-col>
-            <v-col cols="12" class="pa-2" align="end">
+            <v-col cols="12" md="7" class="pa-2">
+              <v-data-table
+                :items="configs.system"
+                item-key="type"
+                :headers="systemHeaders"
+                mobile-breakpoint="0"
+                hide-default-footer
+                fixed-header
+              >
+                <template v-slot:[`item.name`]="{ item }">
+                  <div class="font-weight-medium">{{ item.name }}</div>
+                </template>
+                <template v-slot:[`item.config.full`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.full" />
+                </template>
+                <template v-slot:[`item.config.read`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.read" />
+                </template>
+                <template v-slot:[`item.config.add`]="{ item }">
+                  <v-simple-checkbox
+                    :ripple="false"
+                    v-model="item.config.add"
+                    :disabled="item.config.add === undefined"
+                  />
+                </template>
+                <template v-slot:[`item.config.edit`]="{ item }">
+                  <v-simple-checkbox
+                    :ripple="false"
+                    v-model="item.config.edit"
+                    :disabled="item.config.edit === undefined"
+                  />
+                </template>
+                <template v-slot:[`item.config.delete`]="{ item }">
+                  <v-simple-checkbox
+                    :ripple="false"
+                    v-model="item.config.delete"
+                    :disabled="item.config.delete === undefined"
+                  />
+                </template>
+              </v-data-table>
+            </v-col>
+            <v-col cols="12" md="5" class="pa-2">
+              <v-data-table
+                :items="configs.report"
+                item-key="type"
+                :headers="reportHeaders"
+                mobile-breakpoint="0"
+                hide-default-footer
+                fixed-header
+              >
+                <template v-slot:[`item.name`]="{ item }">
+                  <div class="font-weight-medium">{{ item.name }}</div>
+                </template>
+                <template v-slot:[`item.config.full`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.full" />
+                </template>
+                <template v-slot:[`item.config.read`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.read" />
+                </template>
+              </v-data-table>
+            </v-col>
+            <v-col cols="12" class="pa-2 d-flex justify-end">
+              <v-btn depressed class="mr-4" medium @click="cancel">
+                <span>Hủy</span>
+              </v-btn>
               <v-btn depressed color="primary" medium @click="save">
                 <span>Hoàn thành</span>
               </v-btn>
@@ -36,86 +142,161 @@
 </template>
 
 <script lang="ts">
-import { Component, PropSync, Vue } from 'vue-property-decorator'
-
-interface RoleConfigModel {
-  allow?: boolean
-  name: string
-}
+import { AppProvider } from '@/app-provider'
+import { generatePermissionConfigs, PositionModel, PositionType, toPositionConfig } from '@/models/position-model'
+import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component
 export default class RoleEditDialog extends Vue {
+  @Inject() providers!: AppProvider
+
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
+  @Prop() role: PositionModel
+  @Prop() type!: PositionType
+
+  @Ref('form') form: any
 
   name = ''
-  username = ''
+  description = ''
+  configs = generatePermissionConfigs()
 
-  leftRoleConfigs: RoleConfigModel[] = [
+  taskHeaders = [
+    { text: 'Quản lý nhiệm vụ', value: 'name', sortable: false, class: 'grey lighten-4', width: '165' },
     {
-      name: 'Nhận nhiệm vụ được giao Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+      text: 'Toàn quyền',
+      value: 'config.full',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
+    },
+    { text: 'Xem', value: 'config.read', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' },
+    { text: 'Thêm', value: 'config.add', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' },
+    { text: 'Sửa', value: 'config.edit', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' },
+    {
+      text: 'Xóa',
+      value: 'config.delete',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
     },
     {
-      name: 'Cho phép tạo nhiệm vụ mới Lorem ipsum dolor sit amet, consectetur adipiscing elit,'
+      text: 'Thu hồi',
+      value: 'config.revoke',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
     },
     {
-      name: 'Cho phép tạo nhiệm vụ mới Lorem ipsum dolor sit amet, consectetur adipiscing elit,'
+      text: 'Giao thực hiện',
+      value: 'config.assign',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
     },
     {
-      name: 'Cho phép kiểm tra quá trình thực hiện nhiệm vụ Lorem ipsum dolor sit amet, consectetur'
+      text: 'Gia hạn',
+      value: 'config.extend',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
     },
     {
-      name: 'Cho phép cập nhật/chỉnh sửa thông tin nhiệm vụ Lorem ipsum dolor sit amet, consectetur'
+      text: 'Trả lại',
+      value: 'config.return',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
     },
     {
-      name: 'Cho phép phân chia nhiệm vụ cho đơn vị cấp dưới Lorem ipsum dolor sit amet, consectetur'
+      text: 'Cập nhật',
+      value: 'config.update',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
     },
     {
-      name: 'Cho phép phân chia nhiệm vụ cho đơn vị cấp dưới Lorem ipsum dolor sit amet, consectetur'
+      text: 'Mở lại NVu',
+      value: 'config.reopen',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
     }
   ]
 
-  rightRoleConfigs: RoleConfigModel[] = [
+  systemHeaders = [
     {
-      name: 'Cho phép theo dõi quá trình thực hiện nhiệm vụ Lorem ipsum dolor sit amet, consectetur'
+      text: 'Quản trị hệ thống',
+      value: 'name',
+      sortable: false,
+      class: 'grey lighten-4',
+      width: '165'
     },
     {
-      name: 'Cho phép thêm/sửa/xóa cá nhân trong dự án Lorem ipsum dolor sit amet'
+      text: 'Toàn quyền',
+      value: 'config.full',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
     },
-    {
-      name: 'Cho phép thêm/sửa/xóa cá nhân trong dự án Lorem ipsum dolor sit amet'
-    },
-    {
-      name: 'Cho phép thêm/sửa/xóa cá nhân trong dự án Lorem ipsum dolor sit amet'
-    },
-    {
-      name: 'Cho phép thêm/sửa/xóa cá nhân trong dự án Lorem ipsum dolor sit amet'
-    },
-    {
-      name: 'Cho phép kiểm tra kết quả thực hiện nhiệm vụ Lorem ipsum dolor sit amet'
-    },
-    {
-      name: 'Báo cáo kết quả xử lý  Lorem ipsum dolor sit amet, consectetur'
-    }
+    { text: 'Xem', value: 'config.read', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' },
+    { text: 'Thêm', value: 'config.add', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' },
+    { text: 'Sửa', value: 'config.edit', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' },
+    { text: 'Xóa', value: 'config.delete', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' }
   ]
 
-  mergedRoleConfigs: RoleConfigModel[] = []
+  reportHeaders = [
+    {
+      text: 'Quản trị hệ thống',
+      value: 'name',
+      sortable: false,
+      class: 'grey lighten-4',
+      width: '165'
+    },
+    {
+      text: 'Toàn quyền',
+      value: 'config.full',
+      sortable: false,
+      class: 'grey lighten-4',
+      width: '90'
+    },
+    { text: 'Xem', value: 'config.read', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' }
+  ]
 
-  constructor() {
-    super()
-    const left = [...this.leftRoleConfigs]
-    const right = [...this.rightRoleConfigs]
-    const index = 0
-    while (left.length > 0 || right.length > 0) {
-      if (index % 2 === 0) {
-        this.mergedRoleConfigs.push(left.length > 0 ? left.shift() : right.shift())
-      } else {
-        this.mergedRoleConfigs.push(right.length > 0 ? right.shift() : left.shift())
-      }
+  @Watch('role') onUnitChanged(val: PositionModel) {
+    if (val) {
+      this.name = val.title
+      this.description = val.description
+      this.configs = generatePermissionConfigs(val.config)
     }
   }
 
-  save() {
-    //
+  cancel() {
+    this.syncedValue = false
+    this.form.reset()
+  }
+
+  async save() {
+    if (this.form.validate()) {
+      const position = await this.providers.services.api.position.update(this.role.id, {
+        ...this.role,
+        title: this.name,
+        description: this.description,
+        type: this.type,
+        config: toPositionConfig(this.configs)
+      })
+      this.$emit('success', position)
+      this.syncedValue = false
+      this.form.reset()
+    }
   }
 }
 </script>

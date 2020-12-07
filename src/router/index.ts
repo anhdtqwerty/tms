@@ -100,7 +100,7 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
-        path: 'role-manager/:id',
+        path: 'role-manager/:type',
         name: 'role-manager',
         component: () => import('@/modules/system-manager/pages/role-manager-page.vue'),
         meta: {

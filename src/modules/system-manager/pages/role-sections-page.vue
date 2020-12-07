@@ -31,13 +31,13 @@
 </template>
 
 <script lang="ts">
-import { PositionSection } from '@/models/position-model'
+import { PositionType } from '@/models/position-model'
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
 export default class RoleSectionsPage extends Vue {
   showAddUser = false
-  roleSections: { image: string; title: string; id: PositionSection }[] = [
+  roleSections: { image: string; title: string; id: PositionType }[] = [
     { image: 'role-ministry.svg', title: 'Cài đặt vai trò bộ', id: 'ministry' },
     { image: 'role-unit.svg', title: 'Cài đặt vai trò đơn vị', id: 'unit' },
     { image: 'role-department.svg', title: 'Cài đặt vai trò phòng ban', id: 'department' },

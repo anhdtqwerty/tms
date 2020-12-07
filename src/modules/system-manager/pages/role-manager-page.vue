@@ -21,17 +21,31 @@
                 {{ item.title }}
               </text-link>
             </template>
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-icon small class="mr-2" @click="edit(item)">
+                mdi-pencil
+              </v-icon>
+              <!-- <v-icon small @click="deleteUnit(item)">
+                mdi-delete
+              </v-icon> -->
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
     </v-row>
-    <role-add-dialog :value.sync="showAddDialog" />
-    <role-edit-dialog :value.sync="showEditDialog" />
+    <role-add-dialog :value.sync="showAddDialog" :type="viewmodel.type" @success="viewmodel.roleAdded" />
+    <role-edit-dialog
+      :value.sync="showEditDialog"
+      :type="viewmodel.type"
+      :role="editingModel"
+      @success="viewmodel.roleUpdated"
+    />
   </v-container>
 </template>
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { PositionModel } from '@/models/position-model'
 import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
 import { RoleManagerViewModel } from '../viewmodels/role-manager-viewmodel'
 
@@ -47,11 +61,18 @@ export default class RoleManagerPage extends Vue {
 
   showAddDialog = false
   showEditDialog = false
+  editingModel: PositionModel = null
 
   headers = [
     { text: 'Tên vai trò', value: 'title', sortable: false },
-    { text: 'Mô tả', value: 'description', sortable: false }
+    { text: 'Mô tả', value: 'description', sortable: false },
+    { value: 'actions', sortable: false, align: 'right' }
   ]
+
+  edit(item: PositionModel) {
+    this.editingModel = item
+    this.showEditDialog = true
+  }
 }
 </script>
 

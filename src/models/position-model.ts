@@ -1,7 +1,9 @@
 export interface PositionModel {
+  id?: string
   title: string
   description: string
-  config?: PositionConfigModel
+  type: PositionType
+  config: PositionConfigModel
 }
 
 export interface PositionConfigModel {
@@ -10,7 +12,7 @@ export interface PositionConfigModel {
   report?: { [name: string]: ReportPermissionConfig }
 }
 
-export type PositionSection = 'ministry' | 'unit' | 'department' | 'individual'
+export type PositionType = 'ministry' | 'unit' | 'department' | 'individual'
 
 export type TaskPermissionType = 'main' | 'sub'
 export interface TaskPermissionConfig {
@@ -99,4 +101,24 @@ export const generatePermissionConfigs = (config: PositionConfigModel = {}): Per
       }
     ]
   }
+}
+
+export const toPositionConfig = (permissions: PermissionConfig): PositionConfigModel => {
+  const result: PositionConfigModel = { task: {}, system: {}, report: {} }
+  permissions.task.forEach(({ type, config }) => {
+    const settings: any = {}
+    Object.entries(config).forEach(([cName, cValue]) => (settings[cName] = cValue))
+    result.task[type] = settings
+  })
+  permissions.system.forEach(({ type, config }) => {
+    const settings: any = {}
+    Object.entries(config).forEach(([cName, cValue]) => (settings[cName] = cValue))
+    result.system[type] = settings
+  })
+  permissions.report.forEach(({ type, config }) => {
+    const settings: any = {}
+    Object.entries(config).forEach(([cName, cValue]) => (settings[cName] = cValue))
+    result.report[type] = settings
+  })
+  return result
 }

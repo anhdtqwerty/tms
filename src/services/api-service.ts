@@ -5,6 +5,7 @@ import { UnitModel } from '@/models/unit-model'
 import { DepartmentModel } from '@/models/department-model'
 import { authStore } from '@/stores/auth-store'
 import qs from 'qs'
+import { PositionModel } from '@/models/position-model'
 
 export class ApiHandler<T> {
   constructor(private route: string, private axios: AxiosInstance) {}
@@ -46,6 +47,7 @@ export class ApiService {
   user = new ApiHandler<UserModel>('users', this.axios)
   unit = new ApiHandler<UnitModel>('units', this.axios)
   department = new ApiHandler<DepartmentModel>('departments', this.axios)
+  position = new ApiHandler<PositionModel>('positions', this.axios)
   comarde = new ApiHandler<any>('comrades', this.axios)
 
   constructor() {

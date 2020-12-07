@@ -21,7 +21,7 @@
               <app-textarea v-model="description" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
-              <v-btn depressed class="mr-4" medium @click="save">
+              <v-btn depressed class="mr-4" medium @click="cancel">
                 <span>Hủy</span>
               </v-btn>
               <v-btn depressed color="primary" medium @click="save">
@@ -72,6 +72,11 @@ export default class UnitEditDialog extends Vue {
       this.phone = val.phone
       this.description = val.description
     }
+  }
+
+  cancel() {
+    this.syncedValue = false
+    this.form.reset()
   }
 
   async save() {
