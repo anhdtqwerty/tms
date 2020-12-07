@@ -8,26 +8,24 @@
           <v-icon class="white--text">close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text class="pa-0">
-        <v-form ref="form">
-          <v-container fluid px-5 py-2>
-            <v-row>
-              <v-col cols="12" class="pa-2">
-                <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên phòng ban" />
-                <app-text-field v-model="code" :rules="$appRules.unitCode" label="Mã phòng ban" />
-                <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email phòng ban" />
-                <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại phòng ban" />
-                <app-textarea v-model="description" label="Mô tả" counter="5000" />
-              </v-col>
-              <v-col cols="12" class="pa-2" align="end">
-                <v-btn depressed color="primary" medium @click="save">
-                  <span>Hoàn thành</span>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-form>
-      </v-card-text>
+      <v-form ref="form" style="overflow-y: auto">
+        <v-container fluid px-5 py-2>
+          <v-row>
+            <v-col cols="12" class="pa-2">
+              <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên phòng ban" />
+              <app-text-field v-model="code" :rules="$appRules.unitCode" label="Mã phòng ban" />
+              <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email phòng ban" />
+              <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại phòng ban" />
+              <app-textarea v-model="description" label="Mô tả" counter="5000" />
+            </v-col>
+            <v-col cols="12" class="pa-2" align="end">
+              <v-btn depressed color="primary" medium @click="save">
+                <span>Hoàn thành</span>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>

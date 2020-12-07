@@ -9,7 +9,7 @@
         </v-btn>
       </v-toolbar>
 
-      <v-form ref="form">
+      <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12" sm="6">
