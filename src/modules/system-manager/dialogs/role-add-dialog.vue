@@ -269,7 +269,7 @@ export default class RoleAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const position = await this.providers.services.api.position.create({
+      const position = await this.providers.api.position.create({
         title: this.name,
         description: this.description,
         type: this.type,

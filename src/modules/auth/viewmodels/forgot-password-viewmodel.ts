@@ -7,7 +7,7 @@ export class ForgotPasswordViewModel {
   constructor(public providers: AppProvider) {}
 
   @action submit() {
-    this.providers.services.api.forgotPassword(this.email)
+    this.providers.api.forgotPassword(this.email)
   }
 
   @action.bound changeEmail(value: string) {

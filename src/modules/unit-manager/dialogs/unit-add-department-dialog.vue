@@ -52,7 +52,7 @@ export default class UnitAddDepartmentDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const department = await this.providers.services.api.department.create({
+      const department = await this.providers.api.department.create({
         title: this.title,
         description: this.description,
         code: this.code,

@@ -79,7 +79,7 @@ export default class UnitEditDialog extends Vue {
         phone: this.phone,
         description: this.description
       }
-      unit = await this.providers.services.api.unit.update(unit.id, unit)
+      unit = await this.providers.api.unit.update(unit.id, unit)
       this.$emit('success', unit)
       this.syncedValue = false
     }

@@ -39,7 +39,7 @@ import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decora
 
 @Component({
   components: {
-    UnitAutocomplete: () => import('../components/unit-autocomplete.vue')
+    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue')
   }
 })
 export default class DepartmentAddDialog extends Vue {
@@ -59,7 +59,7 @@ export default class DepartmentAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const department = await this.providers.services.api.department.create({
+      const department = await this.providers.api.department.create({
         title: this.title,
         unit: this.unit?.id ?? this.selectedUnitId,
         description: this.description,

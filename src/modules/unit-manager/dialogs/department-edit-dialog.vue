@@ -43,7 +43,7 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
 
 @Component({
   components: {
-    UnitAutocomplete: () => import('../components/unit-autocomplete.vue')
+    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue')
   }
 })
 export default class UnitEditDialog extends Vue {
@@ -90,7 +90,7 @@ export default class UnitEditDialog extends Vue {
         phone: this.phone,
         description: this.description
       }
-      department = await this.providers.services.api.department.update(department.id, department)
+      department = await this.providers.api.department.update(department.id, department)
       this.$emit('success', department)
       this.syncedValue = false
     }

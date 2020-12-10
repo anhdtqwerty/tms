@@ -69,7 +69,7 @@ export default class UserMangerPage extends Vue {
   @Provide() viewmodel = new UserManagerViewModel(this.providers)
 
   showAddUser = false
-
+  username = ''
   headers = [
     { text: 'Mã cán bộ', value: 'id', sortable: false },
     { text: 'Họ và Tên', value: 'name', sortable: false },

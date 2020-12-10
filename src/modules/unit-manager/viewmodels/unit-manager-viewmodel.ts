@@ -15,7 +15,7 @@ export class UnitManagerViewModel {
   }
 
   @asyncAction *loadData() {
-    this.ministry = yield this.provider.services.api.unit.find({ _limit: 1, type: 'ministry' })
+    this.ministry = yield this.provider.api.unit.find({ _limit: 1, type: 'ministry' })
   }
 
   @asyncAction *search(title: string = null, code: string = null, email: string = null) {
@@ -24,10 +24,10 @@ export class UnitManagerViewModel {
     if (code) input = { ...input, code_contains: code }
     if (email) input = { ...input, email_contains: email }
     this._searchParams = input
-    const api = this.provider.services.api
+    const api = this.provider.api
     const results = yield Promise.all([
       api.unit.count(this._searchParams),
-      this.provider.services.api.unit.find({ ...this._searchParams, _limit: 25, _sort: 'created_at:DESC' })
+      this.provider.api.unit.find({ ...this._searchParams, _limit: 25, _sort: 'created_at:DESC' })
     ])
     this.totalUnit = results[0]
     this.units = results[1]
@@ -47,7 +47,7 @@ export class UnitManagerViewModel {
       'Bạn có CHẮC CHẮN muốn xóa đơn vị này? Bạn sẽ không thể hoàn tác thao tác.'
     )
     if (ok) {
-      this.provider.services.api.unit.delete(unit.id)
+      this.provider.api.unit.delete(unit.id)
       this.units = this.units.filter(u => u.id !== unit.id)
     }
   }

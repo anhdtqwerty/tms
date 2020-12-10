@@ -15,7 +15,7 @@ export class UnitDetailViewModel {
 
   @asyncAction *loadData() {
     const unitid = this.provider.router.currentRoute.params['unitid']
-    const api = this.provider.services.api
+    const api = this.provider.api
     this.unit = yield api.unit.findOne(unitid)
     this.departments = this.unit.departments as DepartmentModel[]
   }

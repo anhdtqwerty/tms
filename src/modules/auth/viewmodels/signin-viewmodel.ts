@@ -11,7 +11,7 @@ export class SigninViewModel {
   private _api: ApiService
 
   constructor(private providers: AppProvider) {
-    this._api = this.providers.services.api
+    this._api = this.providers.api
   }
 
   @action.bound changeUsername(value: string) {

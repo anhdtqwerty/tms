@@ -6,6 +6,7 @@ import { DepartmentModel } from '@/models/department-model'
 import { authStore } from '@/stores/auth-store'
 import qs from 'qs'
 import { PositionModel } from '@/models/position-model'
+import { ComradeModel } from '@/models/comrade-model'
 
 export class ApiHandler<T> {
   constructor(private route: string, private axios: AxiosInstance) {}
@@ -48,7 +49,7 @@ export class ApiService {
   unit = new ApiHandler<UnitModel>('units', this.axios)
   department = new ApiHandler<DepartmentModel>('departments', this.axios)
   position = new ApiHandler<PositionModel>('positions', this.axios)
-  comarde = new ApiHandler<any>('comrades', this.axios)
+  comarde = new ApiHandler<ComradeModel>('comrades', this.axios)
 
   constructor() {
     this.setupAuthInjector()

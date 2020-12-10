@@ -1,39 +1,39 @@
 <template>
   <v-autocomplete
+    v-bind="$attrs"
     v-model="syncedValue"
     dense
     outlined
-    item-text="display"
-    :items="units"
+    item-text="title"
+    :items="items"
     item-value="id"
     :loading="loading"
-    return-object
   >
   </v-autocomplete>
 </template>
 
 <script lang="ts">
-import { UnitModel } from '@/models/unit-model'
-import { Component, Inject, PropSync, Vue } from 'vue-property-decorator'
+import { Component, Inject, Prop, PropSync, Vue } from 'vue-property-decorator'
 import _ from 'lodash'
 import { AppProvider } from '@/app-provider'
+import { PositionModel, PositionType } from '@/models/position-model'
 
 @Component
 export default class UnitAutoComplete extends Vue {
   @Inject() providers!: AppProvider
   @PropSync('value', { default: null }) syncedValue: string
+  @Prop() types!: PositionType[]
+  @Prop({ default: false }) autoselect: boolean
 
-  searchText = ''
-  units: UnitModel[] = []
+  items: PositionModel[] = []
   loading = false
 
   async mounted() {
     this.loading = true
     try {
-      const units = await this.providers.services.api.unit.find<UnitModel>({ type: 'unit' })
-      this.units = units.map(u => ({ ...u, display: u.code + ' - ' + u.title }))
-      if (this.units.length > 0 && !this.syncedValue) {
-        this.syncedValue = this.units[0].id
+      this.items = await this.providers.api.position.find<PositionModel>({ type_in: this.types })
+      if (this.autoselect && this.items.length > 0 && !this.syncedValue) {
+        this.syncedValue = this.items[0].id
       }
     } catch (error) {
       //

@@ -51,7 +51,7 @@ export default class UnitAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const unit = await this.providers.services.api.unit.create({
+      const unit = await this.providers.api.unit.create({
         title: this.title,
         description: this.description,
         code: this.code,

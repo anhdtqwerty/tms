@@ -13,7 +13,7 @@ export class DepartmentManagerViewModel {
   }
 
   @asyncAction *search(title: string = null, unitCode: string = null, code: string = null) {
-    const api = this.provider.services.api
+    const api = this.provider.api
     let input: any = {}
     if (title) input = { ...input, title_contains: title }
     if (unitCode) input = { ...input, 'unit.code_contains': unitCode }
@@ -21,7 +21,7 @@ export class DepartmentManagerViewModel {
     this._searchParams = input
     const results = yield Promise.all([
       api.department.count(this._searchParams),
-      this.provider.services.api.department.find({ ...this._searchParams, _limit: 25, _sort: 'created_at:DESC' })
+      this.provider.api.department.find({ ...this._searchParams, _limit: 25, _sort: 'created_at:DESC' })
     ])
     this.totalDepartment = results[0]
     this.departments = results[1]

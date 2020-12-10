@@ -29,6 +29,10 @@ export const rules = {
   equal: (target: string, msg: string) => (v: string) => !v || target === v || msg || `Must be equal to ${target}`,
   phone: (v: string) =>
     !v || (v.length >= 10 && /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/gi.test(v)) || 'Sai định dạng',
+  password: (v: string) =>
+    !v ||
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v) ||
+    'Phải có ít nhất 8 ký tự, gồm có: chữ hoa, chữ thường, số, ký tự đặc biệt',
   nospace: (v: string) => !v || !/ /.test(v.trim()) || 'Space is not allowed',
   notEmpty: (v: string) => !Array.isArray(v) || !!v.length || 'Required'
 }
@@ -37,7 +41,17 @@ export const appRules = {
   unitName: [rules.required, rules.maxLength(250)],
   unitCode: [rules.required, rules.maxLength(20)],
   unitEmail: [rules.required, rules.email],
-  unitPhone: [rules.phone]
+  unitPhone: [rules.phone],
+  comradeName: [rules.required, rules.maxLength(100)],
+  comradeCode: [rules.required, rules.maxLength(20)],
+  comradeSex: [rules.required],
+  comradeBod: [rules.required],
+  comradeGroup: [rules.required],
+  comradeTitle: [rules.maxLength(100)],
+  comradeEmail: [rules.required, rules.email, rules.maxLength(100)],
+  comradePhone: [rules.phone],
+  comradeUsername: [rules.required, rules.maxLength(20)],
+  comradePassword: [rules.required, rules.maxLength(20), rules.password]
 }
 
 export const inputRulesPlugin = {

@@ -14,12 +14,13 @@
       <template v-slot:activator="{ on }">
         <app-text-field
           :value="syncedValue"
-          label="Chọn Ngày"
+          :label="label"
           readonly
           single-line
           v-on="on"
           append-icon="expand_more"
           @click:append="show = true"
+          :rules="rules"
         />
       </template>
       <v-date-picker locale="vi" :value="syncedValue" @input="selectDate"></v-date-picker>
@@ -32,8 +33,10 @@ import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
 
 @Component
 export default class DatePickerInput extends Vue {
-  @Prop() width: number
   @PropSync('value', { type: String, default: new Date().toISOString().substr(0, 10) }) syncedValue!: string
+  @Prop() width: number
+  @Prop({ default: 'Chọn ngày' }) label: string
+  @Prop() rules: any[]
 
   show = false
 

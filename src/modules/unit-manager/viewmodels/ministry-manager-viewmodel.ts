@@ -11,7 +11,7 @@ export class MinistryManagerViewModel {
   }
 
   @asyncAction *loadData() {
-    const res = yield this.provider.services.api.unit.find({ _limit: 1, type: 'ministry' })
+    const res = yield this.provider.api.unit.find({ _limit: 1, type: 'ministry' })
     this.ministry = res[0]
   }
 }

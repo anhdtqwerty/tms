@@ -1,14 +1,14 @@
 import VueRouter from 'vue-router'
 import { AlertController } from './components/alert/alert-controller'
 import { SnackBarController } from './components/snack-bar/snack-bar-controller'
-import { services } from './services'
+import { ApiService } from './services/api-service'
 import { authStore } from './stores/auth-store'
 
 export class AppProvider {
   router: VueRouter
   snackbar = new SnackBarController()
   alert = new AlertController()
-  services = services
+  api = new ApiService()
   authStore = authStore
 
   constructor(router: VueRouter) {
