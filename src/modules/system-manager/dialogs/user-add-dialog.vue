@@ -59,7 +59,7 @@
             </v-col>
             <!-- <v-col cols="12" align="end"> </v-col> -->
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
-              <div>
+              <div class="d-flex flex-column">
                 <span class="red--text" v-for="error in submitErrors" :key="error">{{ error }}</span>
               </div>
 
@@ -114,22 +114,54 @@ export default class UserAddDialog extends Vue {
   submitErrors: string[] = []
 
   async save() {
-    // if (this.form.validate()) {
+    if (!this.form.validate()) return
     const submitErrors: string[] = []
-    const [hasComrade, hasUser] = await Promise.all([
-      this.providers.api.comarde.count({ code: this.code }).then(count => count > 0),
-      this.providers.api.user.count({ username: this.username }).then(count => count > 0)
-    ])
-    if (hasComrade) {
-      submitErrors.push(`[${this.code}]: Mã cán bộ đã được sử dụng`)
+    try {
+      const api = this.providers.api
+      const [hasComrade, hasUser] = await Promise.all([
+        api.comarde.count({ code: this.code }).then(count => count > 0),
+        api.user.count({ username: this.username }).then(count => count > 0)
+      ])
+      if (!hasComrade && !hasUser) {
+        const user = await api.user.create({
+          username: this.username,
+          email: this.email,
+          password: this.password,
+          blocked: this.active
+        })
+        try {
+          const comrade = await api.comarde.create({
+            name: this.name,
+            code: this.code,
+            phone: this.phone,
+            data: {
+              sex: this.sex,
+              title: this.title
+            },
+            department: this.department,
+            unit: this.unit,
+            position: this.position,
+            group: this.group,
+            user: user.id
+          })
+          this.$emit('success', comrade)
+        } catch (error) {
+          await api.user.delete(user.id)
+          throw error
+        }
+      } else {
+        if (hasComrade) {
+          submitErrors.push(`[${this.code}]: Mã cán bộ đã được sử dụng`)
+        }
+        if (hasUser) {
+          submitErrors.push(`[${this.username}] Tên truy cập này đã được sử dụng`)
+        }
+      }
+    } catch (error) {
+      this.providers.snackbar.commonError(error)
     }
-    if (hasUser) {
-      submitErrors.push(`[${this.username}] Tên truy cập này đã được sử dụng`)
-    }
+
     this.submitErrors = submitErrors
-    // }
-    // const ok = await this.providers.alert.confirm('Hêllo', 'message')
-    // console.log(ok)
   }
 }
 </script>

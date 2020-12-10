@@ -7,6 +7,7 @@ import { authStore } from '@/stores/auth-store'
 import qs from 'qs'
 import { PositionModel } from '@/models/position-model'
 import { ComradeModel } from '@/models/comrade-model'
+import { set } from 'vue/types/umd'
 
 export class ApiHandler<T> {
   constructor(private route: string, private axios: AxiosInstance) {}
@@ -26,7 +27,17 @@ export class ApiHandler<T> {
     return res.data
   }
 
-  async find<T>(params?: any): Promise<T[]> {
+  async find<T>(
+    params?: any,
+    settings: boolean | { _sort?: string; _limit?: number; _start?: number } = true
+  ): Promise<T[]> {
+    if (settings !== false) {
+      const settingDefault = { _sort: 'created_at:DESC', _limit: 25, _start: 0 }
+      params = { ...settingDefault, ...(params ?? {}) }
+      if (typeof settings === 'object') {
+        params = { ...settings, ...params }
+      }
+    }
     const res = await this.axios.get(this.route, { params })
     return res.data
   }

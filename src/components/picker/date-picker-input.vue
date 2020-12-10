@@ -21,6 +21,7 @@
           append-icon="expand_more"
           @click:append="show = true"
           :rules="rules"
+          validate-on-blur
         />
       </template>
       <v-date-picker locale="vi" :value="syncedValue" @input="selectDate"></v-date-picker>

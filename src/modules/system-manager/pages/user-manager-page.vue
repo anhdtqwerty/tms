@@ -15,7 +15,7 @@
     <v-row>
       <v-col cols="12" class="pa-2">
         <v-card>
-          <v-data-table :items="viewmodel.users" item-key="id" :headers="headers" mobile-breakpoint="0">
+          <v-data-table :items="viewmodel.comrades" item-key="id" :headers="headers" mobile-breakpoint="0">
             <template v-slot:top>
               <v-container fluid class="px-5 py-0">
                 <v-row>
@@ -38,19 +38,24 @@
               </v-container>
             </template>
             <template v-slot:[`item.name`]="{ item }">
-              <router-link :to="`/user/${item.id}`">
+              <text-link :to="`/user/${item.id}`">
                 {{ item.name }}
-              </router-link>
+              </text-link>
             </template>
 
-            <template v-slot:[`item.role.name`]="{ item }">
+            <!-- <template v-slot:[`item.position.name`]="{ item }">
               <div class="staff-department">{{ item.department.title }}</div>
+            </template> -->
+            <template v-slot:[`item.user.blocked`]="{ item }">
+              <v-chip v-if="item.user" :color="item.user.blocked ? 'red' : 'green'">
+                {{ item.user.blocked ? 'Blocked' : 'Hoạt động' }}
+              </v-chip>
             </template>
           </v-data-table>
         </v-card>
       </v-col>
     </v-row>
-    <user-add-dialog :value="showAddUser" @update:value="showAddUser = $event" />
+    <user-add-dialog :value.sync="showAddUser" @success="viewmodel.comradeAdded" />
   </v-container>
 </template>
 
@@ -73,11 +78,11 @@ export default class UserMangerPage extends Vue {
   headers = [
     { text: 'Mã cán bộ', value: 'id', sortable: false },
     { text: 'Họ và Tên', value: 'name', sortable: false },
-    { text: 'Tên truy cập', value: 'username', sortable: true },
-    { text: 'Trạng Thái', value: 'status', sortable: false },
-    { text: 'Phòng ban', value: 'department', sortable: true },
-    { text: 'Chức vị', value: 'position', sortable: true },
-    { text: 'Email', value: 'email', sortable: false },
+    { text: 'Tên truy cập', value: 'user.username', sortable: true },
+    { text: 'Trạng Thái', value: 'user.blocked', sortable: false },
+    { text: 'Phòng ban', value: 'department.title', sortable: true },
+    { text: 'Chức vị', value: 'position.title', sortable: true },
+    { text: 'Email', value: 'user.email', sortable: false },
     {
       text: 'Số Điện Thoại',
       value: 'phone',
