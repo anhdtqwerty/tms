@@ -9,7 +9,6 @@
     :items="items"
     item-value="id"
     :loading="loading"
-    return-object
   >
   </v-autocomplete>
 </template>

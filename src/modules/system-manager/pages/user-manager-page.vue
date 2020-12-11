@@ -25,10 +25,10 @@
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
-                    <app-text-field class="mr-4" hide-details v-model="username" label="Mã cán bộ" />
-                    <app-text-field class="mr-4" hide-details v-model="username" label="Mã cán bộ" />
-                    <app-text-field class="mr-4" hide-details v-model="username" label="Mã cán bộ" />
-                    <app-text-field class="mr-4" hide-details v-model="username" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="searchUsername" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="searchDepartment" label="Mã cán bộ" />
+                    <userstatus-select class="mr-4" hide-details label="Trạng thái" />
                     <v-btn depressed color="primary" medium>
                       <span class="d-none d-md-flex">Tìm kiếm</span>
                       <v-icon dark>search</v-icon>
@@ -66,12 +66,18 @@ import { UserManagerViewModel } from '../viewmodels/user-manager-viewmodel'
 
 @Component({
   components: {
-    UserAddDialog: () => import('../dialogs/user-add-dialog.vue')
+    UserAddDialog: () => import('../dialogs/user-add-dialog.vue'),
+    UserstatusSelect: () => import('@/components/autocomplete/userstatus-select.vue')
   }
 })
 export default class UserMangerPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() viewmodel = new UserManagerViewModel(this.providers)
+
+  searchUsername = ''
+  searchCode = ''
+  searchDepartment = ''
+  searchStatus = false
 
   showAddUser = false
   username = ''

@@ -127,7 +127,7 @@ export default class UserAddDialog extends Vue {
           username: this.username,
           email: this.email,
           password: this.password,
-          blocked: this.active
+          blocked: !this.active
         })
         try {
           const comrade = await api.comarde.create({
