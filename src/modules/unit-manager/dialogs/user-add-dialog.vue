@@ -1,18 +1,17 @@
 <template>
-  <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
+  <v-dialog :fullscreen="$vuetify.breakpoint.xs" scrollable width="600" v-model="syncedValue">
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>THÊM MỚI USER</v-toolbar-title>
+        <v-toolbar-title>THÊM MỚI NHÂN VIÊN</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
         </v-btn>
       </v-toolbar>
-
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12" sm="6">
+            <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2 pb-6">Thông tin người dùng</div>
               <app-text-field v-model="name" label="Họ và Tên" :rules="$appRules.comradeName" />
               <app-text-field v-model="code" label="Mã cán bộ" :rules="$appRules.comradeCode" />
@@ -32,12 +31,6 @@
                 <div class="text-body-2">Người dùng hoạt động</div>
                 <v-switch class="ma-0" v-model="active" />
               </div>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <div class="text-subtitle-2 pb-6">Đơn vị công tác</div>
-              <unit-autocomplete :value.sync="unit" label="Đơn vị" />
-              <department-autocomplete :value.sync="department" :unit="unit" label="Phòng ban" />
-              <app-text-field v-model="title" label="Chức vụ" />
               <div class="text-subtitle-2 pb-6">Thông tin đăng nhập</div>
               <app-text-field v-model="username" label="Tên truy cập" :rules="$appRules.comradeUsername" />
               <app-text-field
@@ -75,8 +68,10 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { Component, Inject, PropSync, Ref, Vue } from 'vue-property-decorator'
 import { ComradeSex } from '@/models/comrade-model'
+import { DepartmentModel } from '@/models/department-model'
+import { UnitModel } from '@/models/unit-model'
+import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
   components: {
@@ -87,9 +82,10 @@ import { ComradeSex } from '@/models/comrade-model'
   }
 })
 export default class UserAddDialog extends Vue {
-  @Inject() providers: AppProvider
+  @Inject() providers!: AppProvider
 
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
+  @Prop() department: DepartmentModel
 
   @Ref('form') form: any
 
@@ -101,8 +97,6 @@ export default class UserAddDialog extends Vue {
   phone = ''
   active = true
 
-  department: string = null
-  unit: string = null
   title = '' // chức vụ
   username = ''
   password = ''
@@ -138,8 +132,8 @@ export default class UserAddDialog extends Vue {
               sex: this.sex,
               title: this.title
             },
-            department: this.department,
-            unit: this.unit,
+            department: this.department.id,
+            unit: (this.department.unit as UnitModel).id,
             position: this.position,
             group: this.group,
             user: user.id

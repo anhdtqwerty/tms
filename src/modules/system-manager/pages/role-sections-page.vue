@@ -38,11 +38,11 @@ import { Component, Vue } from 'vue-property-decorator'
 export default class RoleSectionsPage extends Vue {
   showAddUser = false
   roleSections: { image: string; title: string; id: PositionType }[] = [
-    { image: 'role-ministry.svg', title: 'Cài đặt vai trò bộ', id: 'ministry' },
-    { image: 'role-unit.svg', title: 'Cài đặt vai trò đơn vị', id: 'unit' },
-    { image: 'role-department.svg', title: 'Cài đặt vai trò phòng ban', id: 'department' },
-    { image: 'role-individual.svg', title: 'Cài đặt vai trò cá nhân', id: 'individual' },
-    { image: 'role-department.svg', title: 'Cài đặt nhóm', id: 'group' }
+    // { image: 'role-ministry.svg', title: 'Cài đặt vai trò bộ', id: 'ministry' },
+    // { image: 'role-unit.svg', title: 'Cài đặt vai trò đơn vị', id: 'unit' },
+    // { image: 'role-department.svg', title: 'Cài đặt vai trò phòng ban', id: 'department' },
+    // { image: 'role-individual.svg', title: 'Cài đặt vai trò cá nhân', id: 'individual' },
+    // { image: 'role-department.svg', title: 'Cài đặt nhóm', id: 'group' }
   ]
 }
 </script>

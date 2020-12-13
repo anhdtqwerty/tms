@@ -90,18 +90,18 @@ const routes: Array<RouteConfig> = [
           auth: true
         }
       },
+      // {
+      //   path: 'role-sections',
+      //   name: 'role-sections',
+      //   component: () => import('@/modules/system-manager/pages/role-sections-page.vue'),
+      //   meta: {
+      //     title: 'Vai trò',
+      //     auth: true
+      //   }
+      // },
       {
-        path: 'role-sections',
-        name: 'role-sections',
-        component: () => import('@/modules/system-manager/pages/role-sections-page.vue'),
-        meta: {
-          title: 'Vai trò',
-          auth: true
-        }
-      },
-      {
-        path: 'role-manager/:type',
-        name: 'role-manager',
+        path: 'roles',
+        name: 'roles',
         component: () => import('@/modules/system-manager/pages/role-manager-page.vue'),
         meta: {
           title: 'Cài đặt vai trò',

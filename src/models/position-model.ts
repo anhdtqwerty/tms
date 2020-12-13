@@ -12,7 +12,7 @@ export interface PositionConfigModel {
   report?: { [name: string]: ReportPermissionConfig }
 }
 
-export type PositionType = 'ministry' | 'unit' | 'department' | 'individual' | 'group'
+export type PositionType = 'unit' | 'group' // | 'ministry' | 'department' | 'individual'
 
 export type TaskPermissionType = 'main' | 'sub'
 export interface TaskPermissionConfig {

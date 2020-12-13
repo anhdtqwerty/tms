@@ -12,8 +12,8 @@ export class RoleManagerViewModel {
   }
 
   @asyncAction *loadData() {
-    this.type = this.provider.router.currentRoute.params['type'] as PositionType
-    this.roles = yield this.provider.api.position.find({ _limit: 25, type: this.type })
+    // this.type = this.provider.router.currentRoute.params['type'] as PositionType
+    this.roles = yield this.provider.api.position.find({ _limit: 25, type: 'unit' })
   }
 
   @action.bound roleAdded(item: PositionModel) {

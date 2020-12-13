@@ -57,6 +57,11 @@
                 </v-row>
               </v-container>
             </template>
+            <template v-slot:[`item.title`]="{ item }">
+              <text-link :to="`/department/${item.id}`">
+                {{ item.title }}
+              </text-link>
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <v-icon small @click="editDepartment(item)">
                 mdi-pencil
@@ -65,7 +70,7 @@
           </v-data-table>
         </v-card>
       </v-col>
-      <v-col cols="12" class="pa-2">
+      <!-- <v-col cols="12" class="pa-2">
         <v-card>
           <v-data-table
             :items="users"
@@ -91,7 +96,7 @@
             </template>
           </v-data-table>
         </v-card>
-      </v-col>
+      </v-col> -->
     </v-row>
     <unit-edit-dialog :value.sync="showEditUnit" :unit="viewmodel.unit" @success="viewmodel.unitUpdated" />
     <department-add-dialog
@@ -139,18 +144,18 @@ export default class UnitDetailPage extends Vue {
     { value: 'actions', sortable: false }
   ]
 
-  userHeaders = [
-    { text: 'Họ và Tên', value: 'name', sortable: false },
-    { text: 'Mã cán bộ', value: 'id', sortable: false },
-    { text: 'Tên truy cập', value: 'username', sortable: true },
-    { text: 'Trạng Thái', value: 'status', sortable: false },
-    { text: 'Phòng ban', value: 'department', sortable: true },
-    { text: 'Chức vụ', value: 'position', sortable: true },
-    { text: 'Email', value: 'email', sortable: false },
-    { text: 'Xóa', value: 'actions', sortable: false }
-  ]
+  // userHeaders = [
+  //   { text: 'Họ và Tên', value: 'name', sortable: false },
+  //   { text: 'Mã cán bộ', value: 'id', sortable: false },
+  //   { text: 'Tên truy cập', value: 'username', sortable: true },
+  //   { text: 'Trạng Thái', value: 'status', sortable: false },
+  //   { text: 'Phòng ban', value: 'department', sortable: true },
+  //   { text: 'Chức vụ', value: 'position', sortable: true },
+  //   { text: 'Email', value: 'email', sortable: false },
+  //   { text: 'Xóa', value: 'actions', sortable: false }
+  // ]
 
-  users = [{ name: 'unit 1', id: 'unit1', email: 'unit1@unit.com', phone: '091231231' }]
+  // users = [{ name: 'unit 1', id: 'unit1', email: 'unit1@unit.com', phone: '091231231' }]
 
   editDepartment(item: DepartmentModel) {
     this.edtingDepartment = item

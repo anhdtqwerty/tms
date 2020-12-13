@@ -22,6 +22,7 @@
           @click:append="show = true"
           :rules="rules"
           validate-on-blur
+          :outlined="outlined"
         />
       </template>
       <v-date-picker locale="vi" :value="syncedValue" @input="selectDate"></v-date-picker>
@@ -38,6 +39,7 @@ export default class DatePickerInput extends Vue {
   @Prop() width: number
   @Prop({ default: 'Chọn ngày' }) label: string
   @Prop() rules: any[]
+  @Prop({ default: true }) outlined: boolean
 
   show = false
 

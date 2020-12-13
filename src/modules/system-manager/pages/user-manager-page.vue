@@ -25,11 +25,17 @@
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
-                    <app-text-field class="mr-4" hide-details v-model="searchUsername" label="Mã cán bộ" />
-                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã cán bộ" />
-                    <app-text-field class="mr-4" hide-details v-model="searchDepartment" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="searchName" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Họ và tên" />
+                    <department-autocomplete
+                      class="mr-4"
+                      hide-details
+                      :value.sync="searchDepartment"
+                      label="Phòng ban"
+                      :unitRequired="false"
+                    />
                     <userstatus-select class="mr-4" hide-details label="Trạng thái" />
-                    <v-btn depressed color="primary" medium>
+                    <v-btn depressed color="primary" medium @click="search">
                       <span class="d-none d-md-flex">Tìm kiếm</span>
                       <v-icon dark>search</v-icon>
                     </v-btn>
@@ -42,12 +48,8 @@
                 {{ item.name }}
               </text-link>
             </template>
-
-            <!-- <template v-slot:[`item.position.name`]="{ item }">
-              <div class="staff-department">{{ item.department.title }}</div>
-            </template> -->
             <template v-slot:[`item.user.blocked`]="{ item }">
-              <v-chip v-if="item.user" :color="item.user.blocked ? 'red' : 'green'">
+              <v-chip v-if="item.user" :color="item.user.blocked ? 'red' : 'green'" text-color="white">
                 {{ item.user.blocked ? 'Blocked' : 'Hoạt động' }}
               </v-chip>
             </template>
@@ -67,22 +69,23 @@ import { UserManagerViewModel } from '../viewmodels/user-manager-viewmodel'
 @Component({
   components: {
     UserAddDialog: () => import('../dialogs/user-add-dialog.vue'),
-    UserstatusSelect: () => import('@/components/autocomplete/userstatus-select.vue')
+    UserstatusSelect: () => import('@/components/autocomplete/userstatus-select.vue'),
+    DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue')
   }
 })
 export default class UserMangerPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() viewmodel = new UserManagerViewModel(this.providers)
 
-  searchUsername = ''
+  searchName = ''
   searchCode = ''
-  searchDepartment = ''
+  searchDepartment: string = null
   searchStatus = false
 
   showAddUser = false
   username = ''
   headers = [
-    { text: 'Mã cán bộ', value: 'id', sortable: false },
+    { text: 'Mã cán bộ', value: 'code', sortable: false },
     { text: 'Họ và Tên', value: 'name', sortable: false },
     { text: 'Tên truy cập', value: 'user.username', sortable: true },
     { text: 'Trạng Thái', value: 'user.blocked', sortable: false },
@@ -98,8 +101,8 @@ export default class UserMangerPage extends Vue {
     // { value: 'actions', show: true }
   ]
 
-  refresh() {
-    //
+  search() {
+    this.viewmodel.search(this.searchCode, this.searchName, this.searchDepartment, this.searchStatus)
   }
 }
 </script>

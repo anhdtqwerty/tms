@@ -17,7 +17,7 @@
         <v-card>
           <v-data-table :items="viewmodel.roles" item-key="id" :headers="headers" mobile-breakpoint="0">
             <template v-slot:[`item.title`]="{ item }">
-              <text-link @click="showEditDialog = true">
+              <text-link @click="edit(item)">
                 {{ item.title }}
               </text-link>
             </template>
@@ -33,13 +33,8 @@
         </v-card>
       </v-col>
     </v-row>
-    <role-add-dialog :value.sync="showAddDialog" :type="viewmodel.type" @success="viewmodel.roleAdded" />
-    <role-edit-dialog
-      :value.sync="showEditDialog"
-      :type="viewmodel.type"
-      :role="editingModel"
-      @success="viewmodel.roleUpdated"
-    />
+    <role-add-dialog :value.sync="showAddDialog" type="unit" @success="viewmodel.roleAdded" />
+    <role-edit-dialog :value.sync="showEditDialog" type="unit" :role="editingModel" @success="viewmodel.roleUpdated" />
   </v-container>
 </template>
 

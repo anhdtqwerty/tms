@@ -1,3 +1,4 @@
+import { ComradeModel } from './comrade-model'
 import { UnitModel } from './unit-model'
 
 export interface DepartmentModel {
@@ -7,7 +8,7 @@ export interface DepartmentModel {
   email: string
   phone?: string
   description: string
-  comrades?: string[]
+  comrades?: ComradeModel[]
   unit?: string | UnitModel
   config?: {}
   metadata?: {}

@@ -45,7 +45,7 @@ export class MainContainerViewModel {
       icon: 'usb',
       children: [
         new MenuViewModel('Người dùng', { link: '/users' }),
-        new MenuViewModel('Vai trò', { link: '/role-sections' }),
+        new MenuViewModel('Vai trò', { link: '/roles' }),
         new MenuViewModel('Tra cứu log')
       ]
     })

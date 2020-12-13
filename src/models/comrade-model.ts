@@ -11,6 +11,7 @@ export class ComradeModel {
   data: {
     sex: ComradeSex
     title: string
+    bod: string
   }
   department?: string | DepartmentModel
   unit?: string | UnitModel

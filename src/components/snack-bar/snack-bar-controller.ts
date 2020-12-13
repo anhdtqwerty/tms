@@ -14,16 +14,6 @@ export class SnackBarController {
   }
   @observable show = false
 
-  @action error(message: string) {
-    this.config = {
-      icon: 'error',
-      message,
-      color: 'error',
-      timeout: 8000
-    }
-    this.show = true
-  }
-
   @action commonError(err: any) {
     let message = 'Đã có lỗi xảy ra, vui lòng thử lại!'
     // strapi error
@@ -48,7 +38,29 @@ export class SnackBarController {
       icon: 'check_circle',
       message,
       color: 'success',
-      timeout: 5000
+      timeout: 4000
+    }
+    this.show = true
+  }
+
+  @action addSuccess() {
+    this.success('Thêm mới thành công')
+  }
+
+  @action updateSuccess() {
+    this.success('Lưu thành công')
+  }
+
+  @action deleteSuccess() {
+    this.success('Xóa thành công')
+  }
+
+  @action error(message: string) {
+    this.config = {
+      icon: 'error',
+      message,
+      color: 'error',
+      timeout: 8000
     }
     this.show = true
   }

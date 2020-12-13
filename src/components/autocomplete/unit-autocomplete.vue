@@ -3,7 +3,7 @@
     v-bind="$attrs"
     v-model="syncedValue"
     dense
-    outlined
+    :outlined="outlined"
     item-text="display"
     :items="items"
     item-value="id"
@@ -22,6 +22,7 @@ import { AppProvider } from '@/app-provider'
 export default class UnitAutoComplete extends Vue {
   @Inject() providers!: AppProvider
   @PropSync('value', { default: null }) syncedValue: string
+  @Prop({ default: true }) outlined: boolean
   @Prop({ default: false }) autoselect: boolean
 
   items: UnitModel[] = []

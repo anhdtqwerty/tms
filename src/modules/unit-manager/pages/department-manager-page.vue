@@ -43,7 +43,7 @@
               </v-container>
             </template>
             <template v-slot:[`item.title`]="{ item }">
-              <text-link :to="`/department/${item.code}`">
+              <text-link :to="`/department/${item.id}`">
                 {{ item.title }}
               </text-link>
             </template>
@@ -92,6 +92,7 @@ export default class DepartmentManagerPage extends Vue {
   searchCode = ''
   searchUnitCode = ''
 
+  showAddUserDialog = false
   showAddDialog = false
   showEditDialog = false
   editingDepartment: DepartmentModel = null
