@@ -8,6 +8,7 @@ import qs from 'qs'
 import { PositionModel } from '@/models/position-model'
 import { ComradeModel } from '@/models/comrade-model'
 import { set } from 'vue/types/umd'
+import { TaskModel } from '@/models/task-model'
 
 export class ApiHandler<T> {
   constructor(private route: string, private axios: AxiosInstance) {}
@@ -61,6 +62,7 @@ export class ApiService {
   department = new ApiHandler<DepartmentModel>('departments', this.axios)
   position = new ApiHandler<PositionModel>('positions', this.axios)
   comarde = new ApiHandler<ComradeModel>('comrades', this.axios)
+  task = new ApiHandler<TaskModel>('tasks', this.axios)
 
   constructor() {
     this.setupAuthInjector()

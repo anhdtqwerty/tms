@@ -25,7 +25,7 @@ export class MainContainerViewModel {
     new MenuViewModel('Quản lý nhiệm vụ', {
       icon: 'list',
       children: [
-        new MenuViewModel('Nhiệm vụ giao'),
+        new MenuViewModel('Nhiệm vụ giao', {link: '/task'}),
         new MenuViewModel('Đang theo dõi'),
         new MenuViewModel('Đã quá hạn'),
         new MenuViewModel('Chờ xác nhận'),

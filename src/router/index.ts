@@ -152,6 +152,15 @@ const routes: Array<RouteConfig> = [
           title: 'unit',
           auth: true
         }
+      },
+      {
+        path: 'task',
+        name: 'task',
+        component: () => import('@/modules/task-manager/pages/task-manager-page.vue'),
+        meta: {
+          title: 'task',
+          auth: true
+        }
       }
     ]
   }
