@@ -11,13 +11,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Inject, Prop, PropSync, Vue } from 'vue-property-decorator'
-import _ from 'lodash'
-import { AppProvider } from '@/app-provider'
+import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
 
 @Component
 export default class TaskStatusSelect extends Vue {
-  @Inject() providers!: AppProvider
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
   @Prop() unit: string

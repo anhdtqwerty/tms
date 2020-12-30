@@ -147,8 +147,6 @@
         </v-card>
       </v-col>
     </v-row>
-    <!-- <unit-add-dialog :value.sync="showAddUnit" @success="viewmodel.unitAdded" />
-    <unit-edit-dialog :value.sync="showEditUnit" @success="viewmodel.unitUpdated" :unit="edtingUnit" /> -->
   </v-container>
 </template>
 
@@ -160,9 +158,6 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
 
 @Component({
   components: {
-    // UnitAddDialog: () => import('../dialogs/unit-add-dialog.vue'),
-    // UnitEditDialog: () => import('../dialogs/unit-edit-dialog.vue')
-    DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/taskpriority-select.vue'),
     TaskStateSelect: () => import('@/components/autocomplete/taskstate-select.vue'),
     TaskStatusSelect: () => import('@/components/autocomplete/taskstatus-select.vue'),
@@ -212,7 +207,7 @@ export default class TaskManagerPage extends Vue {
   }
 
   search() {
-    //this.viewmodel.search(this.searchCode, this.searchShortDescription, this.searchPriority, this.searchState)
+    // this.viewmodel.search(this.searchCode, this.searchShortDescription, this.searchPriority, this.searchState)
   }
 
   toggle() {
