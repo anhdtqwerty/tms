@@ -12,13 +12,12 @@
 
 <script lang="ts">
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
+import { TaskPriorityType } from '@/models/task-model'
 
 @Component
 export default class TaskPrioritySelect extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
-  @Prop() unit: string
-  @Prop({ default: true }) unitRequired: boolean
   @Prop({ default: false }) autoselect: boolean
 
   taskPriorityNames: { type: TaskPriorityType; name: string }[] = [
@@ -28,8 +27,6 @@ export default class TaskPrioritySelect extends Vue {
     { type: 'urgent', name: 'Cấp thiết' }
   ]
 }
-
-export type TaskPriorityType = 'level_1' | 'level_2' | 'level_3' | 'urgent'
 </script>
 
 <style scoped></style>

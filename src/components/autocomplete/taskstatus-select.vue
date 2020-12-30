@@ -12,13 +12,12 @@
 
 <script lang="ts">
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
+import { TaskStatusType } from '@/models/task-model'
 
 @Component
 export default class TaskStatusSelect extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
-  @Prop() unit: string
-  @Prop({ default: true }) unitRequired: boolean
   @Prop({ default: false }) autoselect: boolean
 
   taskStatusNames: { type: TaskStatusType; name: string }[] = [
@@ -28,8 +27,6 @@ export default class TaskStatusSelect extends Vue {
     { type: 'done', name: 'Đã hoàn thành' }
   ]
 }
-
-export type TaskStatusType = 'toDo' | 'open' | 'doing' | 'done'
 </script>
 
 <style scoped></style>

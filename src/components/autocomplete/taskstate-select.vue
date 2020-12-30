@@ -12,13 +12,12 @@
 
 <script lang="ts">
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
+import { TaskStateType } from '@/models/task-model'
 
 @Component
 export default class TaskStateSelect extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
-  @Prop() unit: string
-  @Prop({ default: true }) unitRequired: boolean
   @Prop({ default: false }) autoselect: boolean
 
   taskStateNames: { type: TaskStateType; name: string }[] = [
@@ -26,8 +25,6 @@ export default class TaskStateSelect extends Vue {
     { type: 'approved', name: 'Đã phê duyệt' }
   ]
 }
-
-export type TaskStateType = 'pending' | 'approved'
 </script>
 
 <style scoped></style>

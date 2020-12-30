@@ -12,13 +12,12 @@
 
 <script lang="ts">
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
+import { TaskProcessingExpireType } from '@/models/task-model'
 
 @Component
 export default class TaskProcessingExpireSelect extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
-  @Prop() unit: string
-  @Prop({ default: true }) unitRequired: boolean
   @Prop({ default: false }) autoselect: boolean
 
   taskProcessingExpireNames: { type: TaskProcessingExpireType; name: string }[] = [
@@ -27,8 +26,6 @@ export default class TaskProcessingExpireSelect extends Vue {
     { type: 'almostExpired', name: 'Sắp hết hạn' }
   ]
 }
-
-export type TaskProcessingExpireType = 'inProcessing' | 'expired' | 'almostExpired'
 </script>
 
 <style scoped></style>
