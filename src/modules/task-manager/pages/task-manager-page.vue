@@ -104,7 +104,7 @@
                       </v-container>
                     </div>
                     <div class="pa-2 ">
-                      <v-btn depressed color="primary" medium @click="toggle" class="mb-4">
+                      <v-btn depressed color="primary" medium @click="toggleAdvanceSearch" class="mb-4">
                         <span class="d-none d-md-flex">Tìm kiếm nâng cao</span>
                         <v-icon dark>search</v-icon>
                       </v-btn>
@@ -118,7 +118,7 @@
                 <v-row v-else>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
                     <app-text-field class="mr-4" hide-details label="Nhập từ khóa để tìm kiếm nhiệm vụ" />
-                    <v-btn depressed color="primary" medium @click="toggle" class="mr-4 pa-2">
+                    <v-btn depressed color="primary" medium @click="toggleAdvanceSearch" class="mr-4 pa-2">
                       <span class="d-none d-md-flex">Tìm kiếm nâng cao</span>
                       <v-icon dark>search</v-icon>
                     </v-btn>
@@ -210,7 +210,7 @@ export default class TaskManagerPage extends Vue {
     // this.viewmodel.search(this.searchCode, this.searchShortDescription, this.searchPriority, this.searchState)
   }
 
-  toggle() {
+  toggleAdvanceSearch() {
     this.advanceSearch = !this.advanceSearch
   }
 }

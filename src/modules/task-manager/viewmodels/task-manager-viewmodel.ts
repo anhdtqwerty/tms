@@ -5,7 +5,7 @@ import { asyncAction } from 'mobx-utils'
 
 export class TaskManagerViewModel {
   @observable totalCount = 0
-  @observable task: TaskModel[] = []
+  @observable tasks: TaskModel[] = []
   private _searchParams = {}
 
   constructor(private provider: AppProvider) {
@@ -18,7 +18,7 @@ export class TaskManagerViewModel {
       this.provider.api.task.find<TaskModel>()
     ])
     this.totalCount = results[0]
-    this.task = results[1]
+    this.tasks = results[1]
   }
 
   @asyncAction *search(code: string = null, name: string = null) {
@@ -29,11 +29,11 @@ export class TaskManagerViewModel {
     this._searchParams = input
     const results = yield Promise.all([api.task.count(this._searchParams), api.task.find(this._searchParams)])
     this.totalCount = results[0]
-    this.task = results[1]
+    this.tasks = results[1]
   }
 
   @action.bound taskAdded(item: TaskModel) {
-    this.task = [item, ...this.task]
+    this.tasks = [item, ...this.tasks]
     this.totalCount += 1
   }
 }
