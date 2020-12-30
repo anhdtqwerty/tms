@@ -6,7 +6,7 @@
         <breadcrumbs />
       </v-col>
       <v-col cols="4" align="right" class="pa-2">
-        <v-btn medium color="success" @click="showAddUnit = true">
+        <v-btn medium color="success" @click="showAddTask = true">
           <v-icon left>add</v-icon>
           <span>Thêm nhiệm vụ</span>
         </v-btn>
@@ -126,43 +126,27 @@
                 </v-row>
               </v-container>
             </template>
-            <template v-slot:[`item.title`]="{ item }">
-              <text-link :to="`/unit/${item.id}`">
-                {{ item.title }}
-              </text-link>
-            </template>
-
-            <template v-slot:[`item.role.name`]="{ item }">
-              <div class="staff-department">{{ item.department.title }}</div>
-            </template>
-            <template v-slot:[`item.actions`]="{ item }">
-              <v-icon small class="mr-2" @click="editUnit(item)">
-                mdi-pencil
-              </v-icon>
-              <v-icon small @click="viewmodel.deleteUnit(item)">
-                mdi-delete
-              </v-icon>
-            </template>
           </v-data-table>
         </v-card>
       </v-col>
     </v-row>
+    <!-- <task-add-dialog :value.sync="showAddTask" /> -->
   </v-container>
 </template>
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { UnitModel } from '@/models/unit-model'
 import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
 import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
 
 @Component({
   components: {
-    TaskPrioritySelect: () => import('@/components/autocomplete/taskpriority-select.vue'),
-    TaskStateSelect: () => import('@/components/autocomplete/taskstate-select.vue'),
-    TaskStatusSelect: () => import('@/components/autocomplete/taskstatus-select.vue'),
-    DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
-    TaskProcessingExpireSelect: () => import('@/components/autocomplete/taskprocessingexpire-select.vue')
+    // TaskAddDialog: () => import('../dialogs/task-add-dialog.vue'),
+    TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
+    TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
+    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
+    TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
   }
 })
 export default class TaskManagerPage extends Vue {
@@ -171,9 +155,7 @@ export default class TaskManagerPage extends Vue {
 
   advanceSearch = true
 
-  showAddUnit = false
-  showEditUnit = false
-  edtingUnit: UnitModel = null
+  showAddTask = false
 
   searchCode = ''
   searchShortDescription = ''
@@ -200,11 +182,6 @@ export default class TaskManagerPage extends Vue {
     { text: 'Hạn xử lý', value: 'expireDate', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]
-
-  editUnit(unit: UnitModel) {
-    this.edtingUnit = unit
-    this.showEditUnit = true
-  }
 
   search() {
     // this.viewmodel.search(this.searchCode, this.searchShortDescription, this.searchPriority, this.searchState)
