@@ -4,9 +4,9 @@
     v-model="syncedValue"
     dense
     :outlined="outlined"
-    item-text="title"
-    item-value="value"
-    :items="items"
+    item-text="name"
+    item-value="type"
+    :items="taskProcessingExpireNames"
   />
 </template>
 
@@ -21,12 +21,14 @@ export default class TaskProcessingExpireSelect extends Vue {
   @Prop({ default: true }) unitRequired: boolean
   @Prop({ default: false }) autoselect: boolean
 
-  items: { title: string; value: string }[] = [
-    { title: 'Trong hạn', value: 'InProcessing' },
-    { title: 'Quá hạn', value: 'Expired' },
-    { title: 'Sắp hết hạn', value: 'AlmostExpired' }
+  taskProcessingExpireNames: { type: TaskProcessingExpireType; name: string }[] = [
+    { type: 'inProcessing', name: 'Trong hạn' },
+    { type: 'expired', name: 'Quá hạn' },
+    { type: 'almostExpired', name: 'Sắp hết hạn' }
   ]
 }
+
+export type TaskProcessingExpireType = 'inProcessing' | 'expired' | 'almostExpired'
 </script>
 
 <style scoped></style>

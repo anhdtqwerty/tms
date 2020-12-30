@@ -4,9 +4,9 @@
     v-model="syncedValue"
     dense
     :outlined="outlined"
-    item-text="title"
-    item-value="value"
-    :items="items"
+    item-text="name"
+    item-value="type"
+    :items="taskStatusNames"
   />
 </template>
 
@@ -21,13 +21,15 @@ export default class TaskStatusSelect extends Vue {
   @Prop({ default: true }) unitRequired: boolean
   @Prop({ default: false }) autoselect: boolean
 
-  items: { title: string; value: string }[] = [
-    { title: 'Chưa thực hiện', value: 'ToDo' },
-    { title: 'Chưa cập nhật tiến độ', value: 'Open' },
-    { title: 'Đang thực hiện', value: 'Doing' },
-    { title: 'Đã hoàn thành', value: 'Done' }
+  taskStatusNames: { type: TaskStatusType; name: string }[] = [
+    { type: 'toDo', name: 'Chưa thực hiện' },
+    { type: 'open', name: 'Chưa cập nhật tiến độ' },
+    { type: 'doing', name: 'Đang thực hiện' },
+    { type: 'done', name: 'Đã hoàn thành' }
   ]
 }
+
+export type TaskStatusType = 'toDo' | 'open' | 'doing' | 'done'
 </script>
 
 <style scoped></style>
