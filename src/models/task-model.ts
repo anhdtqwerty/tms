@@ -26,6 +26,8 @@ export const taskStateNames: { type: TaskStateType; name: string }[] = [
   { type: 'approved', name: 'Đã phê duyệt' }
 ]
 
+export type TaskApprovementStatusType = 'approve' | 'return'
+
 export type TaskStatusType = 'toDo' | 'open' | 'doing' | 'done'
 export const taskStatusNames: { type: TaskStatusType; name: string }[] = [
   { type: 'toDo', name: 'Chưa thực hiện' },
