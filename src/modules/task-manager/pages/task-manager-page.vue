@@ -130,7 +130,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <!-- <task-add-dialog :value.sync="showAddTask" /> -->
+    <task-add-dialog :value.sync="showAddTask" />
   </v-container>
 </template>
 
@@ -141,7 +141,7 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
 
 @Component({
   components: {
-    // TaskAddDialog: () => import('../dialogs/task-add-dialog.vue'),
+    TaskAddDialog: () => import('../dialogs/task-add-dialog.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
     TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
