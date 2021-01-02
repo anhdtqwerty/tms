@@ -17,15 +17,15 @@
               <unit-autocomplete label="Đơn vị thực hiện" />
               <app-text-field label="Người xử lý" />
             </v-col>
+            <v-col cols="12" class="pa-2 d-flex justify-end">
+              <v-btn depressed medium @click="syncedValue = false">
+                <span>Hủy</span>
+              </v-btn>
+              <v-btn depressed color="primary" medium @click="save">
+                <span>Chuyển xử lý</span>
+              </v-btn>
+            </v-col>
           </v-row>
-          <v-col cols="12" class="pa-2 d-flex justify-end">
-            <v-btn depressed medium @click="syncedValue = false">
-              <span>Hủy</span>
-            </v-btn>
-            <v-btn depressed color="primary" medium @click="save">
-              <span>Chuyển xử lý</span>
-            </v-btn>
-          </v-col>
         </v-container>
       </v-form>
     </v-card>

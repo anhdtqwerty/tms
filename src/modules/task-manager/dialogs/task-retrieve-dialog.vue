@@ -16,15 +16,15 @@
               <v-textarea outlined v-model="reasonRetrieve" label="Lý do thu hồi" />
               <app-text-field label="File đính kèm" />
             </v-col>
+            <v-col cols="12" class="pa-2 d-flex justify-end">
+              <v-btn depressed medium @click="syncedValue = false">
+                <span>Đóng</span>
+              </v-btn>
+              <v-btn depressed color="primary" medium @click="save">
+                <span>Thu hồi</span>
+              </v-btn>
+            </v-col>
           </v-row>
-          <v-col cols="12" class="pa-2 d-flex justify-end">
-            <v-btn depressed medium @click="syncedValue = false">
-              <span>Đóng</span>
-            </v-btn>
-            <v-btn depressed color="primary" medium @click="save">
-              <span>Thu hồi</span>
-            </v-btn>
-          </v-col>
         </v-container>
       </v-form>
     </v-card>

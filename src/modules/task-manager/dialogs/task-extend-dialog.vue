@@ -19,15 +19,15 @@
               <app-text-field label="Lý do gia hạn" />
               <app-text-field label="File đính kèm" />
             </v-col>
+            <v-col cols="12" class="pa-2 d-flex justify-end">
+              <v-btn depressed medium @click="syncedValue = false">
+                <span>Đóng</span>
+              </v-btn>
+              <v-btn depressed color="primary" medium @click="save">
+                <span>Lưu</span>
+              </v-btn>
+            </v-col>
           </v-row>
-          <v-col cols="12" class="pa-2 d-flex justify-end">
-            <v-btn depressed medium @click="syncedValue = false">
-              <span>Đóng</span>
-            </v-btn>
-            <v-btn depressed color="primary" medium @click="save">
-              <span>Lưu</span>
-            </v-btn>
-          </v-col>
         </v-container>
       </v-form>
     </v-card>
