@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>GIA HẠN NHIỆM VỤ</v-toolbar-title>
+        <v-toolbar-title>CẬP NHẬT TIẾN ĐỘ XỬ LÝ NHIỆM VỤ</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -13,12 +13,10 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12">
-              <app-text-field label="Số/ký hiệu" />
-              <date-picker-input :value.sync="expireDateOld" label="Hạn xử lý" />
-              <date-picker-input :value.sync="expireDateNew" label="Hạn xử lý mới" />
-              <app-text-field label="Nội dung nhiệm vụ" />
-              <app-text-field label="Lý do gia hạn" />
-              <app-file-input label="File đính kèm" />
+              <task-status-select hide-details :value.sync="taskStatus" label="Trạng thái" />
+              <date-picker-input label="Ngày thực hiện" />
+              <app-text-field label="Diễn giải trạng thái" />
+              <app-text-field label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed medium @click="syncedValue = false">
@@ -41,16 +39,16 @@ import { Component, Inject, PropSync, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
   components: {
+    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
   }
 })
-export default class TaskExtendDialog extends Vue {
+export default class TaskUpdateProcessingDialog extends Vue {
   @Inject() providers: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Ref('form') form: any
 
-  expireDateOld: string = null
-  expireDateNew: string = null
+  taskStatus = ''
   save() {
     //
   }

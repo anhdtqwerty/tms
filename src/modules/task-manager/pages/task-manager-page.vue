@@ -95,7 +95,7 @@
                             <app-text-field hide-details v-model="searchSupervisor" label="Cá nhân theo dõi" />
                           </v-col>
                           <v-col cols="12" md="3" class="pa-2">
-                            <app-text-field hide-details v-model="searchPushlishedDate" label="Ngày ban hành" />
+                            <date-picker-input hide-details v-model="searchPushlishedDate" label="Ngày ban hành" />
                           </v-col>
                           <v-col cols="12" md="3" class="pa-2">
                             <app-text-field hide-details v-model="searchExpiredDate" label="Thời hạn xử lý" />
@@ -103,13 +103,13 @@
                         </v-row>
                       </v-container>
                     </div>
-                    <div class="pa-2 ">
-                      <v-btn depressed color="primary" medium @click="toggleAdvanceSearch" class="mb-4">
-                        <span class="d-none d-md-flex">Tìm kiếm nâng cao</span>
-                        <v-icon dark>search</v-icon>
+                    <div class="pa-2">
+                      <v-btn depressed color="transparent" medium @click="toggleAdvanceSearch" class="mb-4">
+                        <span class="d-none d-md-flex blue--text mr-4">Tìm kiếm nâng cao</span>
+                        <v-icon color="blue">expand_more</v-icon>
                       </v-btn>
                       <v-btn depressed color="primary" medium @click="search">
-                        <span class="d-none d-md-flex">Tìm kiếm</span>
+                        <span class="d-none d-md-flex mr-4">Tìm kiếm</span>
                         <v-icon dark>search</v-icon>
                       </v-btn>
                     </div>
@@ -118,9 +118,9 @@
                 <v-row v-else>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
                     <app-text-field class="mr-4" hide-details label="Nhập từ khóa để tìm kiếm nhiệm vụ" />
-                    <v-btn depressed color="primary" medium @click="toggleAdvanceSearch" class="mr-4 pa-2">
-                      <span class="d-none d-md-flex">Tìm kiếm nâng cao</span>
-                      <v-icon dark>search</v-icon>
+                    <v-btn depressed color="transparent" medium @click="toggleAdvanceSearch" class="mr-4 pa-2">
+                      <span class="d-none d-md-flex blue--text mr-4">Tìm kiếm nâng cao</span>
+                      <v-icon color="blue">expand_less</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>

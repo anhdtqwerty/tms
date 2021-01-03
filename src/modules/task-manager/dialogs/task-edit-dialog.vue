@@ -17,7 +17,7 @@
             </v-col>
             <v-col cols="12" sm="6">
               <app-text-field v-model="code" label="Số/ký hiệu" />
-              <app-text-field v-model="pushlishedDate" label="Ngày ban hành" />
+              <date-picker-input v-model="pushlishedDate" label="Ngày ban hành" />
               <app-text-field v-model="shortDescription" label="Trích yếu" />
             </v-col>
             <v-col cols="12" sm="6">
@@ -45,7 +45,7 @@
                 :value.sync="processingExpire"
                 label="Loại hạn xử lý"
               />
-              <app-text-field label="Hạn xử lý" />
+              <date-picker-input label="Hạn xử lý" />
               <unit-autocomplete label="Đơn vị theo dõi" />
               <unit-autocomplete label="Chuyên viên theo dõi" />
               <task-status-select label="Trạng thái" />
