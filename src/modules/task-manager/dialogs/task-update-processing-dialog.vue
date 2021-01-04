@@ -16,7 +16,7 @@
               <task-status-select hide-details :value.sync="taskStatus" label="Trạng thái" />
               <date-picker-input label="Ngày thực hiện" />
               <app-text-field label="Diễn giải trạng thái" />
-              <app-text-field label="File đính kèm" />
+              <app-file-input label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed medium @click="syncedValue = false">

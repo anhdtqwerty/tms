@@ -22,7 +22,7 @@
             </v-col>
             <v-col cols="12" sm="6">
               <task-priority-select label="Mức độ quan trọng" />
-              <app-text-field label="File đính kèm" />
+              <app-file-input label="File đính kèm" />
               <app-text-field label="Thông tin văn bản đến" />
             </v-col>
           </v-row>

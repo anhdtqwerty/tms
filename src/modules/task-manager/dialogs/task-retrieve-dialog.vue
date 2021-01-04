@@ -14,7 +14,7 @@
           <v-row>
             <v-col cols="12">
               <app-textarea outlined v-model="reasonRetrieve" label="Lý do thu hồi" />
-              <app-text-field label="File đính kèm" />
+              <app-file-input label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed medium @click="syncedValue = false">
