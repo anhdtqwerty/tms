@@ -7,9 +7,9 @@ export interface PositionModel {
 }
 
 export interface PositionConfigModel {
-  task?: { [name: string]: TaskPermissionConfig }
-  system?: { [name: string]: SystemPermissionConfig }
-  report?: { [name: string]: ReportPermissionConfig }
+  task?: { [name in TaskPermissionType]?: TaskPermissionConfig }
+  system?: { [name in SystemPermissionType]?: SystemPermissionConfig }
+  report?: { [name in ReportPermissionType]?: ReportPermissionConfig }
 }
 
 export type PositionType = 'unit' | 'group' // | 'ministry' | 'department' | 'individual'
