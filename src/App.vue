@@ -18,4 +18,8 @@ export default class App extends Vue {
 .left-primary-border {
   border-left: 4px solid #1e88e5 !important;
 }
+.row {
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
 </style>

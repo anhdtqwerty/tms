@@ -2,6 +2,7 @@
   <div>
     <v-menu
       v-model="show"
+      attach
       :close-on-content-click="false"
       :nudge-top="14"
       transition="scale-transition"
@@ -9,14 +10,11 @@
       min-width="290px"
       style="width:100%"
     >
-      <!-- :style="`max-width: ${width}px`" -->
-
       <template v-slot:activator="{ on }">
         <app-text-field
           :value="syncedValue"
           :label="label"
           readonly
-          single-line
           v-on="on"
           append-icon="expand_more"
           @click:append="show = true"
