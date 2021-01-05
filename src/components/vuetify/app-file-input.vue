@@ -8,5 +8,6 @@ export default class AppFileInput extends VFileInput {
   @Prop({ default: true }) outlined!: boolean
   @Prop({ default: true }) dense!: boolean
   @Prop({ default: '' }) prependIcon!: string
+  @Prop({ default: 'publish' }) appendIcon!: string
 }
 </script>
