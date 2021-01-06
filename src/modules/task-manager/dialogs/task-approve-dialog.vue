@@ -17,12 +17,12 @@
             </v-col>
             <v-col cols="12" sm="6">
               <app-text-field v-model="code" label="Số/ký hiệu" />
-              <app-text-field v-model="executeDate" label="Ngày thực hiện" />
+              <date-picker-input v-model="executeDate" label="Ngày thực hiện" />
               <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
             </v-col>
             <v-col cols="12" sm="6">
               <task-state-select label="Trạng thái" />
-              <app-text-field label="File đính kèm" />
+              <app-file-input label="File đính kèm" />
               <app-text-field label="Diễn giải trạng thái" />
             </v-col>
           </v-row>
@@ -39,7 +39,7 @@
               <app-text-field v-model="reason" label="Lý do" />
             </v-col>
             <v-col>
-              <app-text-field label="File đính kèm" />
+              <app-file-input label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">

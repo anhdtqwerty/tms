@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>THU HỒI NHIỆM VỤ</v-toolbar-title>
+        <v-toolbar-title>CẬP NHẬT TIẾN ĐỘ XỬ LÝ NHIỆM VỤ</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -13,7 +13,9 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12">
-              <app-textarea outlined v-model="reasonRetrieve" label="Lý do thu hồi" />
+              <task-status-select hide-details :value.sync="taskStatus" label="Trạng thái" />
+              <date-picker-input label="Ngày thực hiện" />
+              <app-text-field label="Diễn giải trạng thái" />
               <app-file-input label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
@@ -21,7 +23,7 @@
                 <span>Đóng</span>
               </v-btn>
               <v-btn depressed color="primary" medium @click="save">
-                <span>Thu hồi</span>
+                <span>Lưu</span>
               </v-btn>
             </v-col>
           </v-row>
@@ -36,16 +38,17 @@ import { AppProvider } from '@/app-provider'
 import { Component, Inject, PropSync, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
-  components: {}
+  components: {
+    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
+  }
 })
-export default class TaskRetrieveDialog extends Vue {
+export default class TaskUpdateProcessingDialog extends Vue {
   @Inject() providers: AppProvider
-
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
-
   @Ref('form') form: any
 
-  reasonRetrieve = ''
+  taskStatus = ''
   save() {
     //
   }

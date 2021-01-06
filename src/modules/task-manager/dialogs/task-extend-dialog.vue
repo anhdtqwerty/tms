@@ -14,10 +14,11 @@
           <v-row>
             <v-col cols="12">
               <app-text-field label="Số/ký hiệu" />
-              <app-text-field label="Hạn xử lý" />
+              <date-picker-input :value.sync="expireDateOld" label="Hạn xử lý" />
+              <date-picker-input :value.sync="expireDateNew" label="Hạn xử lý mới" />
               <app-text-field label="Nội dung nhiệm vụ" />
               <app-text-field label="Lý do gia hạn" />
-              <app-text-field label="File đính kèm" />
+              <app-file-input label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed medium @click="syncedValue = false">
@@ -39,15 +40,17 @@ import { AppProvider } from '@/app-provider'
 import { Component, Inject, PropSync, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
-  components: {}
+  components: {
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
+  }
 })
 export default class TaskExtendDialog extends Vue {
   @Inject() providers: AppProvider
-
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
-
   @Ref('form') form: any
 
+  expireDateOld: string = null
+  expireDateNew: string = null
   save() {
     //
   }
