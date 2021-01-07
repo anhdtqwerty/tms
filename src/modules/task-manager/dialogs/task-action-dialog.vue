@@ -4,7 +4,7 @@
       <v-container fluid px-5 py-2>
         <v-row>
           <v-col cols="12" class="pa-2">
-            <div class="mb-4" @click="showTaskEditDialog = true">
+            <div class="mb-4" @click="showTaskEditDialog()">
               <v-icon color="blue" left>edit</v-icon>
               <span class="blue--text">Cập nhật thông tin</span>
             </div>
@@ -50,8 +50,6 @@
             </div>
           </v-col>
         </v-row>
-
-        <task-edit-dialog :value.sync="showTaskEditDialog" :task="taskModel" title="CẬP NHẬT THÔNG TIN NHIỆM VỤ" />
       </v-container>
     </v-card>
   </v-dialog>
@@ -59,25 +57,17 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
-import { Component, Inject, PropSync, Prop, Vue, Watch } from 'vue-property-decorator'
+import { Component, Inject, PropSync, Vue } from 'vue-property-decorator'
 
 @Component({
-  components: {
-    TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue')
-  }
+  components: {}
 })
 export default class TaskActionDialog extends Vue {
   @Inject() providers!: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
-  @Prop() task: TaskModel
 
-  showTaskEditDialog = false
-  taskModel: TaskModel = null
-  @Watch('task') onUnitChanged(val: TaskModel) {
-    if (val) {
-      this.taskModel = val
-    }
+  showTaskEditDialog() {
+    this.$emit('showTaskEditDialog')
   }
 }
 </script>

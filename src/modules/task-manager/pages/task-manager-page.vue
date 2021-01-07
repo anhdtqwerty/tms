@@ -46,8 +46,18 @@
       </v-col>
     </v-row>
     <task-add-dialog :value.sync="showAddTask" @success="viewmodel.taskAdded" />
-    <task-action-dialog :value.sync="showTaskActionDialog" :task="task" />
-    <task-detail-page :value.sync="showTaskDetailDialog" :task="task" />
+    <task-action-dialog :value.sync="viewmodel.isShowActionDialog" @showTaskEditDialog="viewmodel.showTaskEditDialog" />
+    <task-detail-page
+      :value.sync="showTaskDetailDialog"
+      @showActionDialog="viewmodel.taskDetailActionClick"
+      :task="this.viewmodel.selectedTask"
+    />
+    <task-edit-dialog
+      :value.sync="viewmodel.isShowTaskEditDialog"
+      :task="viewmodel.selectedTask"
+      title="CẬP NHẬT THÔNG TIN NHIỆM VỤ"
+      @success="viewmodel.taskUpdated"
+    />
   </v-container>
 </template>
 
@@ -66,7 +76,8 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
     TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
     TaskSearchComponent: () => import('../components/task-search-component.vue'),
     TaskActionDialog: () => import('../dialogs/task-action-dialog.vue'),
-    TaskDetailPage: () => import('./task-detail-page.vue')
+    TaskDetailPage: () => import('./task-detail-page.vue'),
+    TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue')
   }
 })
 export default class TaskManagerPage extends Vue {
@@ -74,7 +85,6 @@ export default class TaskManagerPage extends Vue {
   @Provide() viewmodel = new TaskManagerViewModel(this.providers)
 
   showAddTask = false
-  showTaskActionDialog = false
   showTaskDetailDialog = false
   task: TaskModel = null
 
@@ -90,12 +100,12 @@ export default class TaskManagerPage extends Vue {
   ]
 
   taskAction(item: TaskModel) {
-    this.task = item
-    this.showTaskActionDialog = true
+    this.viewmodel.selectedTask = item
+    this.viewmodel.isShowActionDialog = true
   }
 
   taskDetail(item: TaskModel) {
-    this.task = item
+    this.viewmodel.selectedTask = item
     this.showTaskDetailDialog = true
   }
 

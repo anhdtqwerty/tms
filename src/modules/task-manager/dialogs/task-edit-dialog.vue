@@ -117,8 +117,18 @@ export default class TaskEditDialog extends Vue {
     }
   }
 
-  save() {
-    //
+  async save() {
+    if (this.form.validate()) {
+      let task: TaskModel = {
+        ...this.task,
+        title: this.title,
+        code: this.code,
+        description: this.description
+      }
+      task = await this.providers.api.task.update(task.id, task)
+      this.$emit('success', task)
+      this.syncedValue = false
+    }
   }
 }
 </script>

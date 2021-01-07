@@ -11,7 +11,7 @@
       <v-container style="overflow-y: auto" fluid px-5 py-2>
         <v-row>
           <v-col cols="12" align="right" class="pa-2">
-            <v-btn medium color="success" @click="showTaskActionDialog = true">
+            <v-btn medium color="success" @click="taskAction()">
               <span>Hành động</span>
               <v-icon right>expand_more</v-icon>
             </v-btn>
@@ -211,8 +211,6 @@
             </v-card>
           </v-col>
         </v-row>
-
-        <task-action-dialog :value.sync="showTaskActionDialog" :task="taskModel" />
       </v-container>
     </v-card>
   </v-dialog>
@@ -242,18 +240,18 @@ export default class TaskDetailPage extends Vue {
   supervisorUnit = ''
   executeUnit = ''
 
-  showTaskActionDialog = false
-  taskModel: TaskModel = null
-
   @Watch('task') onUnitChanged(val: TaskModel) {
     if (val) {
-      this.taskModel = val
       this.code = val.code
       this.description = val.description
       this.status = val.status
       this.supervisorUnit = (val.supervisorUnit as UnitModel).title
       this.executeUnit = (val.executeUnit as UnitModel).title
     }
+  }
+
+  taskAction() {
+    this.$emit('showActionDialog', this.task)
   }
 
   processingHeaders = [
