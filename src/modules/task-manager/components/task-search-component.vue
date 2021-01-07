@@ -28,7 +28,7 @@
               <v-col cols="12" md="3" class="d-none d-sm-flex pa-2 align-center">
                 <task-state-select
                   hide-details
-                  :value.sync="searchState"
+                  :value.sync="searchApprovementState"
                   label="Trạng thái phê duyệt"
                   :unitRequired="false"
                 />
@@ -120,7 +120,7 @@ export default class TaskSearchComponent extends Vue {
   searchCode = ''
   searchShortDescription = ''
   searchPriority: string = null
-  searchState: string = null
+  searchApprovementState: string = null
 
   searchExecuteUnit = ''
   searchExecuteStaff = ''

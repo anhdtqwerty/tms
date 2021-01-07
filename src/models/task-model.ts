@@ -1,8 +1,20 @@
+import { DepartmentModel } from './department-model'
+import { UnitModel } from './unit-model'
 
 export interface TaskModel {
     id?: string
     title: string
+    code: string
     description: string
+    executeDepartment: string | DepartmentModel
+    executeUnit: string | UnitModel
+    priority: TaskPriorityType
+    state: TaskApprovementStateType
+    status: TaskStatusType
+    supervisorDepartment: string | DepartmentModel
+    supervisorUnit: string | UnitModel
+    suportDepartment: string | DepartmentModel
+    suportUnit: string | UnitModel
   }
 
 export type TaskPriorityType = 'level_1' | 'level_2' | 'level_3' | 'urgent'
@@ -20,8 +32,8 @@ export const taskProcessingExpireNames: { type: TaskProcessingExpireType; name: 
   { type: 'almostExpired', name: 'Sắp hết hạn' }
 ]
 
-export type TaskStateType = 'pending' | 'approved'
-export const taskStateNames: { type: TaskStateType; name: string }[] = [
+export type TaskApprovementStateType = 'pending' | 'approved'
+export const taskStateNames: { type: TaskApprovementStateType; name: string }[] = [
   { type: 'pending', name: 'Chờ phê duyệt' },
   { type: 'approved', name: 'Đã phê duyệt' }
 ]

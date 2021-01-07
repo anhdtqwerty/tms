@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="true" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>QUẢN LÝ NHIỆM VỤ GIAO</v-toolbar-title>
+        <v-toolbar-title>QUẢN LÝ NHIỆM VỤ GIAO | CHI TIẾT NHIỆM VỤ {{ code }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -11,7 +11,7 @@
       <v-container style="overflow-y: auto" fluid px-5 py-2>
         <v-row>
           <v-col cols="12" align="right" class="pa-2">
-            <v-btn medium color="success">
+            <v-btn medium color="success" @click="showTaskActionDialog = true">
               <span>Hành động</span>
               <v-icon right>expand_more</v-icon>
             </v-btn>
@@ -27,7 +27,7 @@
                     <div>Số ký hiệu</div>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <div class="font-weight-bold">26BTP-VPCP</div>
+                    <div class="font-weight-bold">{{ code }}</div>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -35,7 +35,7 @@
                     <div>Ngày ban hành</div>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <div class="font-weight-bold">01/01/2021</div>
+                    <div class="font-weight-bold">{{ publishedDate }}</div>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -43,7 +43,7 @@
                     <div>Trích yếu</div>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <div class="font-weight-bold">26BTP-VPCP</div>
+                    <div class="font-weight-bold">{{ shortDescription }}</div>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -51,7 +51,7 @@
                     <div>Mức độ</div>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <div class="font-weight-bold">Quan trọng</div>
+                    <div class="font-weight-bold">{{ priority }}</div>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -60,7 +60,7 @@
                   </v-col>
                   <v-col cols="12" sm="6">
                     <!-- <v-btn color="primary"> -->
-                    <div>Đang thực hiện</div>
+                    <div>{{ status }}</div>
                     <!-- </v-btn> -->
                   </v-col>
                 </v-row>
@@ -91,7 +91,7 @@
                     <div>Thời hạn xử lý</div>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <div class="font-weight-bold">01/01/2021</div>
+                    <div class="font-weight-bold">{{ expireDate }}</div>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -99,7 +99,7 @@
                     <div>Nội dung nhiệm vụ</div>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <div class="font-weight-bold">abc xyz</div>
+                    <div class="font-weight-bold">{{ description }}</div>
                   </v-col>
                 </v-row>
               </div>
@@ -109,7 +109,7 @@
             <v-card height="100%" class="pa-4">
               <div>
                 <div>Theo dõi</div>
-                <div class="font-weight-bold">Vụ kế hoạch và đầu tư</div>
+                <div class="font-weight-bold">{{ supervisorUnit }}</div>
                 <div>Chuyên viên</div>
                 <div>Lâm Chấn Khang</div>
               </div>
@@ -119,7 +119,7 @@
             <v-card height="100%" class="pa-4">
               <div>
                 <div>Thực hiện</div>
-                <div class="font-weight-bold">Vụ kế hoạch và đầu tư</div>
+                <div class="font-weight-bold">{{ executeUnit }}</div>
                 <div>Chuyên viên</div>
                 <div>Lâm Chấn Khang</div>
               </div>
@@ -211,20 +211,50 @@
             </v-card>
           </v-col>
         </v-row>
+
+        <task-action-dialog :value.sync="showTaskActionDialog" :task="taskModel" />
       </v-container>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang="ts">
-import { Component, PropSync, Vue } from 'vue-property-decorator'
+import { TaskModel } from '@/models/task-model'
+import { UnitModel } from '@/models/unit-model'
+import { Component, PropSync, Prop, Vue, Watch } from 'vue-property-decorator'
 @Component({
   components: {
-    TaskSearchComponent: () => import('../components/task-search-component.vue')
+    TaskSearchComponent: () => import('../components/task-search-component.vue'),
+    TaskActionDialog: () => import('../dialogs/task-action-dialog.vue')
   }
 })
-export default class TaskDetailManagerPage extends Vue {
+export default class TaskDetailPage extends Vue {
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
+  @Prop() task: TaskModel
+
+  code = ''
+  publishedDate = ''
+  shortDescription = ''
+  description = ''
+  priority = ''
+  status = ''
+  expireDate = ''
+  supervisorUnit = ''
+  executeUnit = ''
+
+  showTaskActionDialog = false
+  taskModel: TaskModel = null
+
+  @Watch('task') onUnitChanged(val: TaskModel) {
+    if (val) {
+      this.taskModel = val
+      this.code = val.code
+      this.description = val.description
+      this.status = val.status
+      this.supervisorUnit = (val.supervisorUnit as UnitModel).title
+      this.executeUnit = (val.executeUnit as UnitModel).title
+    }
+  }
 
   processingHeaders = [
     { text: 'Ngày cập nhật', value: 'updateDate', sortable: false },
