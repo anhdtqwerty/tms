@@ -4,31 +4,31 @@
       <v-container fluid px-5 py-2>
         <v-row>
           <v-col cols="12" class="pa-2">
-            <div class="mb-4" @click="showEdit()">
+            <div class="mb-4" @click="showEdit">
               <v-icon color="blue" left>edit</v-icon>
               <span class="blue--text">Cập nhật thông tin</span>
             </div>
-            <div class="mb-4">
+            <div class="mb-4" @click="showRetrive">
               <v-icon color="blue" left>replay</v-icon>
               <span class="blue--text">Thu hồi nhiệm vụ</span>
             </div>
-            <div class="mb-4">
+            <div class="mb-4" @click="showExtend">
               <v-icon color="blue" left>access_time</v-icon>
               <span class="blue--text">Gia hạn nhiệm vụ</span>
             </div>
-            <div class="mb-4">
+            <div class="mb-4" @click="showReturn">
               <v-icon color="blue" left>replay</v-icon>
               <span class="blue--text">Trả lại nhiệm vụ</span>
             </div>
-            <div class="mb-4">
+            <div class="mb-4" @click="showAssign">
               <v-icon color="blue" left>pan_tool</v-icon>
               <span class="blue--text">Giao thực hiện</span>
             </div>
-            <div class="mb-4">
+            <div class="mb-4" @click="showApprove">
               <v-icon color="blue" left>offline_pin</v-icon>
               <span class="blue--text">Phê duyệt nhiệm vụ</span>
             </div>
-            <div class="mb-4">
+            <div class="mb-4" @click="showEditStatus">
               <v-icon color="blue" left>account_box</v-icon>
               <span class="blue--text">Cập nhật tiến độ</span>
             </div>
@@ -68,6 +68,30 @@ export default class TaskActionDialog extends Vue {
 
   showEdit() {
     this.$emit('showEdit')
+  }
+
+  showRetrive() {
+    this.$emit('showRetrive')
+  }
+
+  showExtend() {
+    this.$emit('showExtend')
+  }
+
+  showAssign() {
+    this.$emit('showAssign')
+  }
+
+  showApprove() {
+    this.$emit('showApprove')
+  }
+
+  showReturn() {
+    this.$emit('showReturn')
+  }
+
+  showEditStatus() {
+    this.$emit('showEditStatus')
   }
 }
 </script>

@@ -46,7 +46,16 @@
       </v-col>
     </v-row>
     <task-add-dialog :value.sync="showAddTask" @success="viewmodel.taskAdded" />
-    <task-action-dialog :value.sync="showActionDialog" @showEdit="showEdit" />
+    <task-action-dialog
+      :value.sync="showActionDialog"
+      @showEdit="showEdit"
+      @showRetrive="showRetrive"
+      @showExtend="showExtend"
+      @showAssign="showAssign"
+      @showApprove="showApprove"
+      @showReturn="showReturn"
+      @showEditStatus="showEditStatus"
+    />
     <task-detail-page
       :value.sync="showDetailDialog"
       @showActionDialog="showActionDialog = true"
@@ -55,7 +64,36 @@
     <task-edit-dialog
       :value.sync="showEditDialog"
       :task="this.viewmodel.selectedTask"
-      title="CẬP NHẬT THÔNG TIN NHIỆM VỤ"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-retrieve-dialog
+      :value.sync="showRetriveDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-extend-dialog
+      :value.sync="showExtendDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-assign-dialog
+      :value.sync="showAssignDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-approve-dialog
+      :value.sync="showApproveDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-return-dialog
+      :value.sync="showReturnDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-update-processing-dialog
+      :value.sync="showEditStatusDialog"
+      :task="this.viewmodel.selectedTask"
       @success="viewmodel.taskUpdated"
     />
   </v-container>
@@ -77,7 +115,13 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
     TaskSearchComponent: () => import('../components/task-search-component.vue'),
     TaskActionDialog: () => import('../dialogs/task-action-dialog.vue'),
     TaskDetailPage: () => import('./task-detail-page.vue'),
-    TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue')
+    TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue'),
+    TaskRetrieveDialog: () => import('../dialogs/task-retrieve-dialog.vue'),
+    TaskExtendDialog: () => import('../dialogs/task-extend-dialog.vue'),
+    TaskAssignDialog: () => import('../dialogs/task-assign-dialog.vue'),
+    TaskApproveDialog: () => import('../dialogs/task-approve-dialog.vue'),
+    TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
+    TaskUpdateProcessingDialog: () => import('../dialogs/task-update-processing-dialog.vue')
   }
 })
 export default class TaskManagerPage extends Vue {
@@ -88,6 +132,12 @@ export default class TaskManagerPage extends Vue {
   showDetailDialog = false
   showActionDialog = false
   showEditDialog = false
+  showRetriveDialog = false
+  showExtendDialog = false
+  showAssignDialog = false
+  showReturnDialog = false
+  showApproveDialog = false
+  showEditStatusDialog = false
 
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
@@ -112,6 +162,36 @@ export default class TaskManagerPage extends Vue {
 
   showEdit() {
     this.showEditDialog = true
+    this.showActionDialog = false
+  }
+
+  showRetrive() {
+    this.showRetriveDialog = true
+    this.showActionDialog = false
+  }
+
+  showExtend() {
+    this.showExtendDialog = true
+    this.showActionDialog = false
+  }
+
+  showAssign() {
+    this.showAssignDialog = true
+    this.showActionDialog = false
+  }
+
+  showApprove() {
+    this.showApproveDialog = true
+    this.showActionDialog = false
+  }
+
+  showReturn() {
+    this.showReturnDialog = true
+    this.showActionDialog = false
+  }
+
+  showEditStatus() {
+    this.showEditStatusDialog = true
     this.showActionDialog = false
   }
 

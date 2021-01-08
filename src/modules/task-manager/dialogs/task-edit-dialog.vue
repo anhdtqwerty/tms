@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>{{ title }} {{ code }}</v-toolbar-title>
+        <v-toolbar-title>CẬP NHẬT THÔNG TIN NHIỆM VỤ {{ code }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -86,7 +86,6 @@ export default class TaskEditDialog extends Vue {
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Ref('form') form: any
   @Prop() task: TaskModel
-  @Prop() title!: string
 
   code = ''
   pushlishedDate = ''
@@ -106,7 +105,7 @@ export default class TaskEditDialog extends Vue {
   supervisorUnit = ''
   expireDate = ''
 
-  @Watch('task') onUnitChanged(val: TaskModel) {
+  @Watch('task') onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.description = val.description
@@ -121,7 +120,6 @@ export default class TaskEditDialog extends Vue {
     if (this.form.validate()) {
       let task: TaskModel = {
         ...this.task,
-        title: this.title,
         code: this.code,
         description: this.description
       }

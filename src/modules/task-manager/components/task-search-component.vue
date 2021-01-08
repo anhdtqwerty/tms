@@ -91,7 +91,13 @@
     </v-row>
     <v-row v-else>
       <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
-        <app-text-field class="mr-4" hide-details label="Nhập từ khóa để tìm kiếm nhiệm vụ" />
+        <app-text-field
+          class="mr-4 search-input"
+          hide-details
+          label="Nhập từ khóa để tìm kiếm nhiệm vụ"
+          append-icon="search"
+          @click:append="search"
+        />
         <v-btn depressed color="transparent" medium @click="toggleAdvanceSearch">
           <span class="d-none d-md-flex blue--text mr-4">Tìm kiếm nâng cao</span>
           <v-icon color="blue">expand_less</v-icon>
@@ -142,4 +148,8 @@ export default class TaskSearchComponent extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+>>> .v-input__icon--append .v-icon {
+  color: #2196f3;
+}
+</style>
