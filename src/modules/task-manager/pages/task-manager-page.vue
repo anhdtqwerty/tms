@@ -18,7 +18,7 @@
           <v-data-table
             :items="viewmodel.tasks"
             item-key="id"
-            @click:row="taskDetail"
+            @click:row="showDetail"
             :headers="headers"
             :footer-props="{ itemsPerPageOptions: [25] }"
             mobile-breakpoint="0"
@@ -37,7 +37,7 @@
             </template>
 
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon small class="mr-2" @click.stop="taskAction(item)">
+              <v-icon small class="mr-2" @click.stop="showAction(item)">
                 more_vert
               </v-icon>
             </template>
@@ -46,15 +46,15 @@
       </v-col>
     </v-row>
     <task-add-dialog :value.sync="showAddTask" @success="viewmodel.taskAdded" />
-    <task-action-dialog :value.sync="viewmodel.isShowActionDialog" @showTaskEditDialog="viewmodel.showTaskEditDialog" />
+    <task-action-dialog :value.sync="showActionDialog" @showEdit="showEdit" />
     <task-detail-page
-      :value.sync="showTaskDetailDialog"
-      @showActionDialog="viewmodel.taskDetailActionClick"
+      :value.sync="showDetailDialog"
+      @showActionDialog="showActionDialog = true"
       :task="this.viewmodel.selectedTask"
     />
     <task-edit-dialog
-      :value.sync="viewmodel.isShowTaskEditDialog"
-      :task="viewmodel.selectedTask"
+      :value.sync="showEditDialog"
+      :task="this.viewmodel.selectedTask"
       title="CẬP NHẬT THÔNG TIN NHIỆM VỤ"
       @success="viewmodel.taskUpdated"
     />
@@ -85,8 +85,9 @@ export default class TaskManagerPage extends Vue {
   @Provide() viewmodel = new TaskManagerViewModel(this.providers)
 
   showAddTask = false
-  showTaskDetailDialog = false
-  task: TaskModel = null
+  showDetailDialog = false
+  showActionDialog = false
+  showEditDialog = false
 
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
@@ -99,14 +100,19 @@ export default class TaskManagerPage extends Vue {
     { value: 'actions', align: 'right', sortable: false }
   ]
 
-  taskAction(item: TaskModel) {
+  showAction(item: TaskModel) {
     this.viewmodel.selectedTask = item
-    this.viewmodel.isShowActionDialog = true
+    this.showActionDialog = true
   }
 
-  taskDetail(item: TaskModel) {
+  showDetail(item: TaskModel) {
     this.viewmodel.selectedTask = item
-    this.showTaskDetailDialog = true
+    this.showDetailDialog = true
+  }
+
+  showEdit() {
+    this.showEditDialog = true
+    this.showActionDialog = false
   }
 
   search() {

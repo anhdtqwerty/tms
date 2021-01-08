@@ -4,7 +4,7 @@
       <v-container fluid px-5 py-2>
         <v-row>
           <v-col cols="12" class="pa-2">
-            <div class="mb-4" @click="showTaskEditDialog()">
+            <div class="mb-4" @click="showEdit()">
               <v-icon color="blue" left>edit</v-icon>
               <span class="blue--text">Cập nhật thông tin</span>
             </div>
@@ -66,8 +66,8 @@ export default class TaskActionDialog extends Vue {
   @Inject() providers!: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
 
-  showTaskEditDialog() {
-    this.$emit('showTaskEditDialog')
+  showEdit() {
+    this.$emit('showEdit')
   }
 }
 </script>

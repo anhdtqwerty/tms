@@ -7,8 +7,6 @@ export class TaskManagerViewModel {
   @observable totalCount = 0
   @observable tasks: TaskModel[] = []
   private _searchParams = {}
-  isShowActionDialog = false
-  isShowTaskEditDialog = false
   selectedTask: TaskModel = null
 
   constructor(private provider: AppProvider) {
@@ -43,15 +41,5 @@ export class TaskManagerViewModel {
   @action.bound taskUpdated(task: TaskModel) {
     this.tasks = this.tasks.map(t => (t.id === task.id ? task : t))
     this.selectedTask = task
-  }
-
-  @action.bound taskDetailActionClick(task: TaskModel) {
-    this.isShowActionDialog = true
-    this.selectedTask = task
-  }
-
-  @action.bound showTaskEditDialog() {
-    this.isShowActionDialog = false
-    this.isShowTaskEditDialog = true
   }
 }
