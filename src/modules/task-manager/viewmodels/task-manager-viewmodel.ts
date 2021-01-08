@@ -7,6 +7,7 @@ export class TaskManagerViewModel {
   @observable totalCount = 0
   @observable tasks: TaskModel[] = []
   private _searchParams = {}
+  selectedTask: TaskModel = null
 
   constructor(private provider: AppProvider) {
     this.search()
@@ -35,5 +36,10 @@ export class TaskManagerViewModel {
   @action.bound taskAdded(item: TaskModel) {
     this.tasks = [item, ...this.tasks]
     this.totalCount += 1
+  }
+
+  @action.bound taskUpdated(task: TaskModel) {
+    this.tasks = this.tasks.map(t => (t.id === task.id ? task : t))
+    this.selectedTask = task
   }
 }
