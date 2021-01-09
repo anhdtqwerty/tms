@@ -67,7 +67,7 @@
                 <date-picker-input hide-details :value.sync="searchPushlishedDate" label="Ngày ban hành" />
               </v-col>
               <v-col cols="12" md="3" class="pa-2">
-                <date-picker-input hide-details :value.sync="searchRangeDate" label="Thời hạn xử lý" />
+                <date-range-picker-input hide-details :value.sync="searchRangeDate" label="Thời hạn xử lý" />
               </v-col>
             </v-row>
           </v-container>
@@ -118,7 +118,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
     TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
     TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
-    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
+    DateRangePickerInput: () => import('@/components/picker/date-range-picker-input.vue')
   }
 })
 export default class TaskSearchComponent extends Vue {
@@ -138,7 +139,7 @@ export default class TaskSearchComponent extends Vue {
   searchSupervisorUnit = ''
   searchSupervisor = ''
   searchPushlishedDate: string = null
-  searchRangeDate = ''
+  searchRangeDate: string[] = []
 
   search() {
     //
