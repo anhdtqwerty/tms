@@ -96,7 +96,7 @@
           hide-details
           label="Nhập từ khóa để tìm kiếm nhiệm vụ"
           @click:append="search"
-          ><v-icon slot="append" color="#2196f3">
+          ><v-icon slot="append" color="blue">
             search
           </v-icon>
         </app-text-field>

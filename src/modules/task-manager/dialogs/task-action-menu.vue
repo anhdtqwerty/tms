@@ -1,6 +1,6 @@
 <template>
   <v-menu
-    top
+    absolute
     :close-on-content-click="true"
     :nudge-top="14"
     transition="scale-transition"
@@ -9,10 +9,9 @@
     style="width:100%"
   >
     <template v-slot:activator="{ on, attrs }">
-      <v-btn medium color="success" v-bind="attrs" v-on="on">
-        <span>Hành động</span>
-        <v-icon right>expand_more</v-icon>
-      </v-btn>
+      <div v-bind="attrs" v-on="on">
+        <slot></slot>
+      </div>
     </template>
 
     <v-card>
@@ -55,7 +54,7 @@
               <v-icon color="blue" left>delete</v-icon>
               <span class="blue--text">Xóa cập nhật</span>
             </div>
-            <div class="mb-4">
+            <div class="mb-4" @click="taskActionCommon('reOpen')">
               <v-icon color="blue" left>lock_open</v-icon>
               <span class="blue--text">Mở lại nhiệm vụ</span>
             </div>

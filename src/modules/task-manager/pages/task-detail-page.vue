@@ -11,7 +11,12 @@
       <v-container style="overflow-y: auto" fluid px-5 py-2>
         <v-row>
           <v-col cols="12" align="right" class="pa-2">
-            <task-action-menu @task-action="taskActionCommon" />
+            <task-action-menu @task-action="taskActionCommon">
+              <v-btn medium color="success">
+                <span>Hành động</span>
+                <v-icon right>expand_more</v-icon>
+              </v-btn>
+            </task-action-menu>
           </v-col>
         </v-row>
 

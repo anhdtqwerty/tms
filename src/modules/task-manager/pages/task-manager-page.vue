@@ -37,9 +37,11 @@
             </template>
 
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon small class="mr-2" @click.stop="showAction(item)">
-                more_vert
-              </v-icon>
+              <task-action-menu @task-action="taskAction">
+                <v-icon small class="mr-2" @click.stop="showAction(item)">
+                  more_vert
+                </v-icon>
+              </task-action-menu>
             </template>
           </v-data-table>
         </v-card>
@@ -82,6 +84,11 @@
       :task="this.viewmodel.selectedTask"
       @success="viewmodel.taskUpdated"
     />
+    <task-reopen-dialog
+      :value.sync="showReopenDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
   </v-container>
 </template>
 
@@ -106,7 +113,9 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
     TaskAssignDialog: () => import('../dialogs/task-assign-dialog.vue'),
     TaskApproveDialog: () => import('../dialogs/task-approve-dialog.vue'),
     TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
-    TaskUpdateProcessingDialog: () => import('../dialogs/task-update-processing-dialog.vue')
+    TaskUpdateProcessingDialog: () => import('../dialogs/task-update-processing-dialog.vue'),
+    TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
+    TaskActionMenu: () => import('../dialogs/task-action-menu.vue')
   }
 })
 export default class TaskManagerPage extends Vue {
@@ -122,6 +131,7 @@ export default class TaskManagerPage extends Vue {
   showReturnDialog = false
   showApproveDialog = false
   showEditStatusDialog = false
+  showReopenDialog = false
 
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
@@ -157,10 +167,17 @@ export default class TaskManagerPage extends Vue {
       case 'editStatus':
         this.showEditStatusDialog = true
         break
+      case 'reOpen':
+        this.showReopenDialog = true
+        break
 
       default:
         break
     }
+  }
+
+  showAction(item: TaskModel) {
+    this.viewmodel.selectedTask = item
   }
 
   showDetail(item: TaskModel) {
