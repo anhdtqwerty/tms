@@ -98,8 +98,8 @@
           @click:append="search"
           ><v-icon slot="append" color="#2196f3">
             search
-          </v-icon></app-text-field
-        >
+          </v-icon>
+        </app-text-field>
         <v-btn depressed color="transparent" medium @click="toggleAdvanceSearch">
           <span class="d-none d-md-flex blue--text mr-4">Tìm kiếm nâng cao</span>
           <v-icon color="blue">expand_less</v-icon>
