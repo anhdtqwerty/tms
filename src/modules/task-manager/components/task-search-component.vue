@@ -95,9 +95,11 @@
           class="mr-4 search-input"
           hide-details
           label="Nhập từ khóa để tìm kiếm nhiệm vụ"
-          append-icon="search"
           @click:append="search"
-        />
+          ><v-icon slot="append" color="#2196f3">
+            search
+          </v-icon></app-text-field
+        >
         <v-btn depressed color="transparent" medium @click="toggleAdvanceSearch">
           <span class="d-none d-md-flex blue--text mr-4">Tìm kiếm nâng cao</span>
           <v-icon color="blue">expand_less</v-icon>
@@ -148,8 +150,4 @@ export default class TaskSearchComponent extends Vue {
 }
 </script>
 
-<style scoped>
->>> .v-input__icon--append .v-icon {
-  color: #2196f3;
-}
-</style>
+<style scoped></style>
