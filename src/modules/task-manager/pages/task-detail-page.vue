@@ -11,12 +11,15 @@
       <v-container style="overflow-y: auto" fluid px-5 py-2>
         <v-row>
           <v-col cols="12" align="right" class="pa-2">
-            <task-action-menu @task-action="taskActionCommon">
-              <v-btn medium color="success">
-                <span>Hành động</span>
-                <v-icon right>expand_more</v-icon>
-              </v-btn>
-            </task-action-menu>
+            <v-menu attach :close-on-content-click="true" transition="scale-transition" left>
+              <template v-slot:activator="{ on }">
+                <v-btn medium color="success" v-on="on">
+                  <span>Hành động</span>
+                  <v-icon right>expand_more</v-icon>
+                </v-btn>
+              </template>
+              <task-action-component @task-action="taskActionCommon" />
+            </v-menu>
           </v-col>
         </v-row>
 
@@ -225,7 +228,7 @@ import { Component, PropSync, Prop, Vue, Watch } from 'vue-property-decorator'
 @Component({
   components: {
     TaskSearchComponent: () => import('../components/task-search-component.vue'),
-    TaskActionMenu: () => import('../dialogs/task-action-menu.vue')
+    TaskActionComponent: () => import('../components/task-action-component.vue')
   }
 })
 export default class TaskDetailPage extends Vue {

@@ -37,7 +37,16 @@
             </template>
 
             <template v-slot:[`item.actions`]="">
-              <task-action-menu @task-action="taskAction" />
+              <v-menu attach :close-on-content-click="true" transition="scale-transition" left>
+                <template v-slot:activator="{ on }">
+                  <v-btn small icon v-on="on">
+                    <v-icon>
+                      more_vert
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <task-action-component />
+              </v-menu>
             </template>
           </v-data-table>
         </v-card>
@@ -111,7 +120,7 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
     TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
     TaskUpdateProcessingDialog: () => import('../dialogs/task-update-processing-dialog.vue'),
     TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
-    TaskActionMenu: () => import('../dialogs/task-action-menu.vue')
+    TaskActionComponent: () => import('../components/task-action-component.vue')
   }
 })
 export default class TaskManagerPage extends Vue {

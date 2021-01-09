@@ -21,7 +21,7 @@
               <app-file-input label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
-              <v-btn depressed medium @click="syncedValue = false">
+              <v-btn depressed outlined medium @click="syncedValue = false">
                 <span>Đóng</span>
               </v-btn>
               <v-btn depressed color="primary" class="ml-8" medium @click="save">
