@@ -46,16 +46,40 @@
       </v-col>
     </v-row>
     <task-add-dialog :value.sync="showAddTask" @success="viewmodel.taskAdded" />
-    <task-action-dialog :value.sync="showActionDialog" @showEdit="showEdit" />
-    <task-detail-page
-      :value.sync="showDetailDialog"
-      @showActionDialog="showActionDialog = true"
-      :task="this.viewmodel.selectedTask"
-    />
+    <task-detail-page :value.sync="showDetailDialog" @task-action="taskAction" :task="this.viewmodel.selectedTask" />
     <task-edit-dialog
       :value.sync="showEditDialog"
       :task="this.viewmodel.selectedTask"
-      title="CẬP NHẬT THÔNG TIN NHIỆM VỤ"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-retrieve-dialog
+      :value.sync="showRetriveDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-extend-dialog
+      :value.sync="showExtendDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-assign-dialog
+      :value.sync="showAssignDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-approve-dialog
+      :value.sync="showApproveDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-return-dialog
+      :value.sync="showReturnDialog"
+      :task="this.viewmodel.selectedTask"
+      @success="viewmodel.taskUpdated"
+    />
+    <task-update-processing-dialog
+      :value.sync="showEditStatusDialog"
+      :task="this.viewmodel.selectedTask"
       @success="viewmodel.taskUpdated"
     />
   </v-container>
@@ -75,9 +99,14 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
     TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
     TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
     TaskSearchComponent: () => import('../components/task-search-component.vue'),
-    TaskActionDialog: () => import('../dialogs/task-action-dialog.vue'),
     TaskDetailPage: () => import('./task-detail-page.vue'),
-    TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue')
+    TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue'),
+    TaskRetrieveDialog: () => import('../dialogs/task-retrieve-dialog.vue'),
+    TaskExtendDialog: () => import('../dialogs/task-extend-dialog.vue'),
+    TaskAssignDialog: () => import('../dialogs/task-assign-dialog.vue'),
+    TaskApproveDialog: () => import('../dialogs/task-approve-dialog.vue'),
+    TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
+    TaskUpdateProcessingDialog: () => import('../dialogs/task-update-processing-dialog.vue')
   }
 })
 export default class TaskManagerPage extends Vue {
@@ -86,8 +115,13 @@ export default class TaskManagerPage extends Vue {
 
   showAddTask = false
   showDetailDialog = false
-  showActionDialog = false
   showEditDialog = false
+  showRetriveDialog = false
+  showExtendDialog = false
+  showAssignDialog = false
+  showReturnDialog = false
+  showApproveDialog = false
+  showEditStatusDialog = false
 
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
@@ -100,19 +134,38 @@ export default class TaskManagerPage extends Vue {
     { value: 'actions', align: 'right', sortable: false }
   ]
 
-  showAction(item: TaskModel) {
-    this.viewmodel.selectedTask = item
-    this.showActionDialog = true
+  taskAction(typeAction: string) {
+    switch (typeAction) {
+      case 'edit':
+        this.showEditDialog = true
+        break
+      case 'retrive':
+        this.showRetriveDialog = true
+        break
+      case 'extend':
+        this.showExtendDialog = true
+        break
+      case 'return':
+        this.showReturnDialog = true
+        break
+      case 'assign':
+        this.showAssignDialog = true
+        break
+      case 'approve':
+        this.showApproveDialog = true
+        break
+      case 'editStatus':
+        this.showEditStatusDialog = true
+        break
+
+      default:
+        break
+    }
   }
 
   showDetail(item: TaskModel) {
     this.viewmodel.selectedTask = item
     this.showDetailDialog = true
-  }
-
-  showEdit() {
-    this.showEditDialog = true
-    this.showActionDialog = false
   }
 
   search() {

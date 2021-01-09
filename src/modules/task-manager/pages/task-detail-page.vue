@@ -11,10 +11,7 @@
       <v-container style="overflow-y: auto" fluid px-5 py-2>
         <v-row>
           <v-col cols="12" align="right" class="pa-2">
-            <v-btn medium color="success" @click="taskAction()">
-              <span>Hành động</span>
-              <v-icon right>expand_more</v-icon>
-            </v-btn>
+            <task-action-menu @task-action="taskActionCommon" />
           </v-col>
         </v-row>
 
@@ -223,7 +220,7 @@ import { Component, PropSync, Prop, Vue, Watch } from 'vue-property-decorator'
 @Component({
   components: {
     TaskSearchComponent: () => import('../components/task-search-component.vue'),
-    TaskActionDialog: () => import('../dialogs/task-action-dialog.vue')
+    TaskActionMenu: () => import('../dialogs/task-action-menu.vue')
   }
 })
 export default class TaskDetailPage extends Vue {
@@ -240,7 +237,7 @@ export default class TaskDetailPage extends Vue {
   supervisorUnit = ''
   executeUnit = ''
 
-  @Watch('task') onUnitChanged(val: TaskModel) {
+  @Watch('task') onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.description = val.description
@@ -250,8 +247,8 @@ export default class TaskDetailPage extends Vue {
     }
   }
 
-  taskAction() {
-    this.$emit('showActionDialog', this.task)
+  taskActionCommon(typeAction: string) {
+    this.$emit('task-action', typeAction)
   }
 
   processingHeaders = [
