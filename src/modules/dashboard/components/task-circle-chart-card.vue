@@ -2,11 +2,8 @@
   <v-card>
     <v-container class="pa-4" fluid>
       <v-row>
-        <v-col cols="12" md="3" class="pa-2">
+        <v-col cols="12" class="pa-2 d-flex justify-space-between">
           <div class="primary--text text-h6">Nhiệm vụ</div>
-        </v-col>
-        <v-col cols="12" md="9" class="pa-2 d-flex" :class="{ 'justify-end': $vuetify.breakpoint.mdAndUp }">
-          <!-- <v-select class="selector" item-color="primary" :items="years" label="Năm" single-line outlined dense /> -->
           <date-picker-input
             class="date-picker pl-4"
             :value.sync="selectedMonth"
@@ -18,12 +15,12 @@
         </v-col>
         <v-col cols="12" class="pa-2">
           <apexchart
-            v-if="viewmodel.unitTaskChart"
+            v-if="viewmodel.personalTaskChart"
             width="100%"
             height="300"
-            type="bar"
-            :options="viewmodel.unitTaskChart.options"
-            :series="viewmodel.unitTaskChart.series"
+            type="pie"
+            :options="viewmodel.personalTaskChart.options"
+            :series="viewmodel.personalTaskChart.series"
           ></apexchart>
         </v-col>
       </v-row>
@@ -43,7 +40,7 @@ import { Observer } from 'mobx-vue'
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
   }
 })
-export default class TaskColumnChartCard extends Vue {
+export default class TaskCircleChartCard extends Vue {
   @Inject() viewmodel: DashboardViewModel
 
   selectedMonth = moment().format('YYYY-MM')
