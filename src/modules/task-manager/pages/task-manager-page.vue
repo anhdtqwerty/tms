@@ -181,10 +181,6 @@ export default class TaskManagerPage extends Vue {
     }
   }
 
-  showAction(item: TaskModel) {
-    this.viewmodel.selectedTask = item
-  }
-
   showDetail(item: TaskModel) {
     this.viewmodel.selectedTask = item
     this.showDetailDialog = true
