@@ -36,12 +36,8 @@
               </task-search-component>
             </template>
 
-            <template v-slot:[`item.actions`]="{ item }">
-              <task-action-menu @task-action="taskAction">
-                <v-icon small class="mr-2" @click.stop="showAction(item)">
-                  more_vert
-                </v-icon>
-              </task-action-menu>
+            <template v-slot:[`item.actions`]="">
+              <task-action-menu @task-action="taskAction" />
             </template>
           </v-data-table>
         </v-card>
