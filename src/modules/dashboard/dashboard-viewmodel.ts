@@ -1,5 +1,5 @@
 import { AppProvider } from '@/app-provider'
-import { observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 import { timer } from 'rxjs'
 import { take } from 'rxjs/operators'
@@ -16,6 +16,10 @@ export class DashboardViewModel {
   @observable intimeDoneTask = 99
   @observable outtimeDoneTask = 1
   @observable outtimeTask = 60
+
+  @observable unupdatedTasks: string[] = []
+  @observable updatedTasks: { title: string; updatedDate: string; updatedComrade: string }[] = []
+  @observable updatedTaskFilter: 'new' | 'soon_expired' | 'exipred' = 'new'
 
   constructor(private provider: AppProvider) {
     this.loadData()
@@ -48,5 +52,29 @@ export class DashboardViewModel {
       },
       series: [30, 40, 45, 50]
     }
+    this.updatedTasks = [
+      { title: 'Nhiệm vụ 1', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' }
+    ]
+    this.unupdatedTasks = [
+      'Nhiệm vụ a',
+      'Nhiệm vụ b',
+      'Nhiệm vụ c',
+      'Nhiệm vụ c',
+      'Nhiệm vụ c',
+      'Nhiệm vụ c',
+      'Nhiệm vụ c',
+      'Nhiệm vụ c'
+    ]
+  }
+
+  @action changeUpdatedTaskFilter(val: any) {
+    this.updatedTaskFilter = val
   }
 }

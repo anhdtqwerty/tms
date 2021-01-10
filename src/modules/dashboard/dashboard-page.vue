@@ -23,8 +23,68 @@
       <v-col cols="12" class="pa-2">
         <task-column-chart-card />
       </v-col>
-      <v-col cols="12" class="pa-2">
+      <v-col cols="12" md="6" class="pa-2">
         <task-circle-chart-card />
+      </v-col>
+      <v-col cols="12" md="6" class="pa-2">
+        <v-card>
+          <div>
+            <div class="primary--text text-h6 px-4 pt-4">Nhiệm vụ chưa cập nhật</div>
+            <v-list>
+              <v-list-item v-for="(item, index) in viewmodel.unupdatedTasks" :key="index">
+                <v-list-item-action>
+                  {{ index + 1 }}
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title>{{ item }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </div>
+        </v-card>
+      </v-col>
+      <v-col cols="12" class="pa-2">
+        <v-card>
+          <v-data-table
+            :items="viewmodel.updatedTasks"
+            item-key="title"
+            :headers="headers"
+            :footer-props="{ itemsPerPageOptions: [25] }"
+            mobile-breakpoint="0"
+          >
+            <template v-slot:top>
+              <div class="d-flex flex-column">
+                <div class="primary--text text-h6 px-4 pt-4 pb-2">Các nhiệm vụ cập nhật</div>
+                <div class="px-4">
+                  <v-btn
+                    :text="viewmodel.updatedTaskFilter !== 'new'"
+                    :outlined="viewmodel.updatedTaskFilter === 'new'"
+                    color="primary"
+                    small
+                    @click="viewmodel.changeUpdatedTaskFilter('new')"
+                    >Nhiệm vụ mới</v-btn
+                  >
+                  <v-btn
+                    :text="viewmodel.updatedTaskFilter !== 'soon_expired'"
+                    :outlined="viewmodel.updatedTaskFilter === 'soon_expired'"
+                    color="error"
+                    small
+                    @click="viewmodel.changeUpdatedTaskFilter('soon_expired')"
+                    >Sắp hết hạn</v-btn
+                  >
+                  <v-btn
+                    :text="viewmodel.updatedTaskFilter !== 'expired'"
+                    :outlined="viewmodel.updatedTaskFilter === 'expired'"
+                    color="grey"
+                    small
+                    @click="viewmodel.changeUpdatedTaskFilter('expired')"
+                    >Quá hạn</v-btn
+                  >
+                </div>
+              </div>
+            </template>
+          </v-data-table>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -45,6 +105,12 @@ import { DashboardViewModel } from './dashboard-viewmodel'
 export default class DashboardPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() viewmodel = new DashboardViewModel(this.providers)
+
+  headers = [
+    { text: 'Tên nhiệm vụ', value: 'title', sortable: false },
+    { text: 'Thời gian cập nhật', value: 'updatedDate', sortable: false },
+    { text: 'Người cập nhật', value: 'updatedComrade', sortable: false }
+  ]
 }
 </script>
 
