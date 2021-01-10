@@ -36,7 +36,7 @@
               </task-search-component>
             </template>
 
-            <template v-slot:[`item.actions`]="">
+            <template v-slot:[`item.actions`]="{ item }">
               <v-menu attach :close-on-content-click="true" transition="scale-transition" left>
                 <template v-slot:activator="{ on }">
                   <v-btn small icon v-on="on">
@@ -45,7 +45,7 @@
                     </v-icon>
                   </v-btn>
                 </template>
-                <task-action-component />
+                <task-action-component @task-action="taskActionCommon($event, item)" />
               </v-menu>
             </template>
           </v-data-table>
@@ -53,47 +53,18 @@
       </v-col>
     </v-row>
     <task-add-dialog :value.sync="showAddTask" @success="viewmodel.taskAdded" />
-    <task-detail-page :value.sync="showDetailDialog" @task-action="taskAction" :task="this.viewmodel.selectedTask" />
-    <task-edit-dialog
-      :value.sync="showEditDialog"
-      :task="this.viewmodel.selectedTask"
-      @success="viewmodel.taskUpdated"
-    />
-    <task-retrieve-dialog
-      :value.sync="showRetriveDialog"
-      :task="this.viewmodel.selectedTask"
-      @success="viewmodel.taskUpdated"
-    />
-    <task-extend-dialog
-      :value.sync="showExtendDialog"
-      :task="this.viewmodel.selectedTask"
-      @success="viewmodel.taskUpdated"
-    />
-    <task-assign-dialog
-      :value.sync="showAssignDialog"
-      :task="this.viewmodel.selectedTask"
-      @success="viewmodel.taskUpdated"
-    />
-    <task-approve-dialog
-      :value.sync="showApproveDialog"
-      :task="this.viewmodel.selectedTask"
-      @success="viewmodel.taskUpdated"
-    />
-    <task-return-dialog
-      :value.sync="showReturnDialog"
-      :task="this.viewmodel.selectedTask"
-      @success="viewmodel.taskUpdated"
-    />
+    <task-edit-dialog :value.sync="showEditDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
+    <task-retrieve-dialog :value.sync="showRetriveDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
+    <task-extend-dialog :value.sync="showExtendDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
+    <task-assign-dialog :value.sync="showAssignDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
+    <task-approve-dialog :value.sync="showApproveDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
+    <task-return-dialog :value.sync="showReturnDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-update-processing-dialog
       :value.sync="showEditStatusDialog"
-      :task="this.viewmodel.selectedTask"
+      :task="selectedTask"
       @success="viewmodel.taskUpdated"
     />
-    <task-reopen-dialog
-      :value.sync="showReopenDialog"
-      :task="this.viewmodel.selectedTask"
-      @success="viewmodel.taskUpdated"
-    />
+    <task-reopen-dialog :value.sync="showReopenDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
   </v-container>
 </template>
 
@@ -138,6 +109,8 @@ export default class TaskManagerPage extends Vue {
   showEditStatusDialog = false
   showReopenDialog = false
 
+  selectedTask: TaskModel = null
+
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
     { text: 'Ngày ban hành', value: 'publishedDate', sortable: false },
@@ -149,31 +122,39 @@ export default class TaskManagerPage extends Vue {
     { value: 'actions', align: 'right', sortable: false }
   ]
 
-  taskAction(typeAction: string) {
+  taskActionCommon(typeAction: any, item: any) {
     switch (typeAction) {
       case 'edit':
         this.showEditDialog = true
+        this.selectedTask = item
         break
       case 'retrive':
         this.showRetriveDialog = true
+        this.selectedTask = item
         break
       case 'extend':
         this.showExtendDialog = true
+        this.selectedTask = item
         break
       case 'return':
         this.showReturnDialog = true
+        this.selectedTask = item
         break
       case 'assign':
         this.showAssignDialog = true
+        this.selectedTask = item
         break
       case 'approve':
         this.showApproveDialog = true
+        this.selectedTask = item
         break
       case 'editStatus':
         this.showEditStatusDialog = true
+        this.selectedTask = item
         break
       case 'reOpen':
         this.showReopenDialog = true
+        this.selectedTask = item
         break
 
       default:
@@ -182,8 +163,7 @@ export default class TaskManagerPage extends Vue {
   }
 
   showDetail(item: TaskModel) {
-    this.viewmodel.selectedTask = item
-    this.showDetailDialog = true
+    this.$router.push({ path: '/task/' + item.id })
   }
 
   search() {

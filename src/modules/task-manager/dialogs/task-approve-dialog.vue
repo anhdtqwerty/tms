@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>PHÊ DUYỆT NHIỆM VỤ {{ code }}</v-toolbar-title>
+        <v-toolbar-title>PHÊ DUYỆT NHIỆM VỤ {{ task && task.code }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -17,7 +17,7 @@
             </v-col>
             <v-col cols="12" sm="6">
               <app-text-field v-model="code" label="Số/ký hiệu" />
-              <date-picker-input :value.sync="executeDate" label="Ngày thực hiện" />
+              <date-picker-input :value.sync="executedDate" label="Ngày thực hiện" />
               <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
             </v-col>
             <v-col cols="12" sm="6">
@@ -75,14 +75,14 @@ export default class TaskApproveDialog extends Vue {
   @Prop() task: TaskModel
 
   code = ''
-  executeDate = ''
+  executedDate = ''
   description = ''
   reason = ''
   approvementState = ''
   explain = ''
   approveStatus: TaskApprovementStatusType = 'return'
 
-  @Watch('task') onTaskChanged(val: TaskModel) {
+  @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.description = val.description

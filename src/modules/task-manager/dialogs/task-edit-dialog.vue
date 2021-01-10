@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>CẬP NHẬT THÔNG TIN NHIỆM VỤ {{ code }}</v-toolbar-title>
+        <v-toolbar-title>CẬP NHẬT THÔNG TIN NHIỆM VỤ {{ task && task.code }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -17,8 +17,8 @@
             </v-col>
             <v-col cols="12" sm="6">
               <app-text-field v-model="code" label="Số/ký hiệu" />
-              <date-picker-input :value.sync="pushlishedDate" label="Ngày ban hành" />
-              <app-text-field v-model="shortDescription" label="Trích yếu" />
+              <date-picker-input :value.sync="publishedDate" label="Ngày ban hành" />
+              <app-text-field v-model="title" label="Trích yếu" />
             </v-col>
             <v-col cols="12" sm="6">
               <task-priority-select :value.sync="priority" label="Mức độ quan trọng" />
@@ -33,10 +33,10 @@
             </v-col>
             <v-col cols="12" sm="6">
               <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
-              <unit-autocomplete :value.sync="executeUnit" label="Đơn vị thực hiện" />
-              <unit-autocomplete :value.sync="supportUnit" label="Đơn vị phối hợp" />
-              <unit-autocomplete :value.sync="executeStaff" label="Chuyên viên thực hiện" />
-              <unit-autocomplete :value.sync="supportStaff" label="Chuyên viên phối hợp" />
+              <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị thực hiện" />
+              <unit-autocomplete :value.sync="supportedUnitIds" multiple label="Đơn vị phối hợp" />
+              <comrade-autocomplete :value.sync="executedComradeId" label="Chuyên viên thực hiện" />
+              <comrade-autocomplete :value.sync="supportedComradeIds" multiple label="Chuyên viên phối hợp" />
             </v-col>
             <v-col>
               <task-processing-expire-select
@@ -45,9 +45,9 @@
                 :value.sync="processingExpire"
                 label="Loại hạn xử lý"
               />
-              <date-picker-input :value.sync="expireDate" label="Hạn xử lý" />
-              <unit-autocomplete :value.sync="supervisorUnit" label="Đơn vị theo dõi" />
-              <unit-autocomplete :value.sync="supervisorStaff" label="Chuyên viên theo dõi" />
+              <date-picker-input :value.sync="expiredDate" label="Hạn xử lý" />
+              <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
+              <comrade-autocomplete :value.sync="supervisorIds" multiple label="Chuyên viên theo dõi" />
               <task-status-select :value.sync="status" label="Trạng thái" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
@@ -68,6 +68,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { ComradeModel } from '@/models/comrade-model'
 import { TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
@@ -75,10 +76,11 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
 @Component({
   components: {
     UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
+    ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
     TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
-    TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
+    TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue')
   }
 })
 export default class TaskEditDialog extends Vue {
@@ -88,31 +90,34 @@ export default class TaskEditDialog extends Vue {
   @Prop() task: TaskModel
 
   code = ''
-  pushlishedDate = ''
-  shortDescription = ''
+  publishedDate = ''
+  title = ''
   priority = ''
   attachFile = ''
   documentInfo = ''
   description = ''
-  executeUnit = ''
-  supportUnit = ''
-  executeStaff = ''
-  supportStaff = ''
-
+  executedUnitId = ''
+  supportedUnitIds: []
+  executedComradeId = ''
+  supportedComradeIds: []
   processingExpire = ''
   status = ''
-  supervisorStaff = ''
-  supervisorUnit = ''
-  expireDate = ''
+  supervisorIds: []
+  supervisorUnitId = ''
+  expiredDate = ''
 
-  @Watch('task') onTaskChanged(val: TaskModel) {
+  @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.description = val.description
-      this.executeUnit = (val.executeUnit as UnitModel).title
-      this.supportUnit = (val.suportUnit as UnitModel).title
-      // this.executeStaff =
-      // this.supportStaff =
+      this.executedUnitId = (val.executedUnit as UnitModel)?.id
+      this.supervisorUnitId = (val.supervisorUnit as UnitModel)?.id
+      this.supportedUnitIds = (val.supportedUnits as UnitModel[])?.map(x => x.id) as []
+      this.executedComradeId = (val.executedComrade as ComradeModel)?.id
+      this.supportedComradeIds = (val.supportedComrades as ComradeModel[])?.map(x => x.id) as []
+      this.supervisorIds = (val.supervisors as ComradeModel[])?.map(x => x.id) as []
+      this.expiredDate = val.expiredDate
+      this.status = val.status
     }
   }
 
@@ -121,7 +126,13 @@ export default class TaskEditDialog extends Vue {
       let task: TaskModel = {
         ...this.task,
         code: this.code,
-        description: this.description
+        description: this.description,
+        executedUnit: this.executedUnitId,
+        supervisorUnit: this.supervisorUnitId,
+        supportedUnits: this.supportedUnitIds,
+        executedComrade: this.executedComradeId,
+        supportedComrades: this.supportedComradeIds,
+        supervisors: this.supervisorIds
       }
       task = await this.providers.api.task.update(task.id, task)
       this.$emit('success', task)

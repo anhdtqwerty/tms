@@ -154,9 +154,18 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
-        path: 'task/:tasktype',
-        name: 'task',
+        path: 'tasks/:tasktype',
+        name: 'tasks',
         component: () => import('@/modules/task-manager/pages/task-manager-page.vue'),
+        meta: {
+          title: 'task',
+          auth: true
+        }
+      },
+      {
+        path: 'task/:taskid',
+        name: 'task',
+        component: () => import('@/modules/task-manager/pages/task-detail-page.vue'),
         meta: {
           title: 'task',
           auth: true

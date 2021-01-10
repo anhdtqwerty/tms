@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>THU HỒI NHIỆM VỤ {{ code }}</v-toolbar-title>
+        <v-toolbar-title>THU HỒI NHIỆM VỤ {{ task && task.code }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -48,7 +48,7 @@ export default class TaskRetrieveDialog extends Vue {
   title = ''
   code = ''
   reasonRetrieve = ''
-  @Watch('task') onTaskChanged(val: TaskModel) {
+  @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
     }

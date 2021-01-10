@@ -25,11 +25,11 @@ export class MainContainerViewModel {
     new MenuViewModel('Quản lý nhiệm vụ', {
       icon: 'list',
       children: [
-        new MenuViewModel('Nhiệm vụ giao', {link: '/task/task-asign'}),
-        new MenuViewModel('Đang theo dõi', {link: '/task/task-following'}),
-        new MenuViewModel('Đã quá hạn', {link: '/task/task-expired'}),
-        new MenuViewModel('Chờ xác nhận', {link: '/task/task-pending'}),
-        new MenuViewModel('Đã hoàn thành', {link: '/task/task-done'})
+        new MenuViewModel('Nhiệm vụ giao', {link: '/tasks/task-asign'}),
+        new MenuViewModel('Đang theo dõi', {link: '/tasks/task-following'}),
+        new MenuViewModel('Đã quá hạn', {link: '/tasks/task-expired'}),
+        new MenuViewModel('Chờ xác nhận', {link: '/tasks/task-pending'}),
+        new MenuViewModel('Đã hoàn thành', {link: '/tasks/task-done'})
       ]
     }),
     new MenuViewModel('Tổng hợp báo cáo', { icon: 'description' }),

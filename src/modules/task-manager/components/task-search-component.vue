@@ -15,7 +15,7 @@
                 <app-text-field hide-details v-model="searchCode" label="Số/ký hiệu" />
               </v-col>
               <v-col cols="12" md="3" class="d-none d-sm-flex pa-2 align-center">
-                <app-text-field hide-details v-model="searchShortDescription" label="Trích yếu" />
+                <app-text-field hide-details v-model="searchTitle" label="Trích yếu" />
               </v-col>
               <v-col cols="12" md="3" class="d-none d-sm-flex pa-2 align-center">
                 <task-priority-select
@@ -127,7 +127,7 @@ export default class TaskSearchComponent extends Vue {
 
   advanceSearch = true
   searchCode = ''
-  searchShortDescription = ''
+  searchTitle = ''
   searchPriority: string = null
   searchApprovementState: string = null
 

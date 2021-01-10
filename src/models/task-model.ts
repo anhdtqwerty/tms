@@ -1,21 +1,38 @@
+import { ComradeModel } from './comrade-model'
 import { DepartmentModel } from './department-model'
 import { UnitModel } from './unit-model'
 
 export interface TaskModel {
-    id?: string
-    title: string
-    code: string
-    description: string
-    executeDepartment: string | DepartmentModel
-    executeUnit: string | UnitModel
-    priority: TaskPriorityType
-    state: TaskApprovementStateType
-    status: TaskStatusType
-    supervisorDepartment: string | DepartmentModel
-    supervisorUnit: string | UnitModel
-    suportDepartment: string | DepartmentModel
-    suportUnit: string | UnitModel
-  }
+  id?: string
+  title?: string
+  code?: string
+  description?: string
+  priority?: string | TaskPriorityType
+  state?: TaskApprovementStateType
+  status?: TaskStatusType
+  type?: string
+
+  executedUnit?: string | UnitModel
+  supportedUnits?: string[] | UnitModel[]
+  supervisorUnit?: string | UnitModel
+
+  executeDepartment?: string | DepartmentModel
+  supportedDepartment?: string | DepartmentModel
+  supervisorDepartment?: string | DepartmentModel
+
+  supervisors?: string[] | ComradeModel[]
+  executedComrade?: string | ComradeModel
+  supportedComrades?: string[] | ComradeModel[]
+
+  subtasks?: string[] | TaskModel[]
+  parent?: string | TaskModel
+
+  expiredDate?: string
+  publishedDate?: string
+
+  files?: string[]
+  // requests?: string[] | Request[]
+}
 
 export type TaskPriorityType = 'level_1' | 'level_2' | 'level_3' | 'urgent'
 export const taskPriorityNames: { type: TaskPriorityType; name: string }[] = [
