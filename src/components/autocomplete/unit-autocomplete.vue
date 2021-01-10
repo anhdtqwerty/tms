@@ -24,6 +24,7 @@ export default class UnitAutoComplete extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
   @Prop({ default: false }) autoselect: boolean
+  @Prop({ default: false }) includeMinistry: boolean
 
   items: UnitModel[] = []
   loading = false
@@ -31,7 +32,7 @@ export default class UnitAutoComplete extends Vue {
   async mounted() {
     this.loading = true
     try {
-      const items = await this.providers.api.unit.find<UnitModel>({ type: 'unit' })
+      const items = await this.providers.api.unit.find<UnitModel>({ type: !this.includeMinistry ? 'unit' : undefined })
       this.items = items.map(u => ({ ...u, display: u.code + ' - ' + u.title }))
       if (this.autoselect && this.items.length > 0 && !this.syncedValue) {
         this.syncedValue = this.items[0].id

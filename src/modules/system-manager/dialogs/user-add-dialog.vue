@@ -35,7 +35,7 @@
             </v-col>
             <v-col cols="12" sm="6">
               <div class="text-subtitle-2 pb-6">Đơn vị công tác</div>
-              <unit-autocomplete :value.sync="unit" label="Đơn vị" />
+              <unit-autocomplete :value.sync="unit" label="Đơn vị" :includeMinistry="true" />
               <department-autocomplete :value.sync="department" :unit="unit" label="Phòng ban" />
               <app-text-field v-model="title" label="Chức vụ" />
               <div class="text-subtitle-2 pb-6">Thông tin đăng nhập</div>
