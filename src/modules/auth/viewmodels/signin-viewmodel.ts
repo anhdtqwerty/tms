@@ -1,7 +1,8 @@
 import { AppProvider } from '@/app-provider'
 import { ApiService } from '@/services/api-service'
 import { authStore } from '@/stores/auth-store'
-import { action, computed, observable } from 'mobx'
+import _ from 'lodash'
+import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
 export class SigninViewModel {

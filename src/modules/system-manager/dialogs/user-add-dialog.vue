@@ -55,7 +55,7 @@
                 label="Chọn Nhóm"
                 :rules="$appRules.comradeGroup"
               />
-              <position-autocomplete :value.sync="position" :types="['unit', 'department']" label="Chọn Vai trò" />
+              <position-autocomplete :value.sync="position" :types="['unit']" label="Chọn Vai trò" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">

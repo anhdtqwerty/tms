@@ -43,7 +43,7 @@ export class ApiHandler<T> {
     return res.data
   }
 
-  async findOne<T>(id: any): Promise<T[]> {
+  async findOne<T>(id: any): Promise<T> {
     const res = await this.axios.get(`${this.route}/${id}`)
     return res.data
   }

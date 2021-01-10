@@ -6,7 +6,7 @@
         <breadcrumbs />
       </v-col>
       <v-col cols="4" align="right" class="pa-2">
-        <v-btn medium color="success" @click="showAddTask = true">
+        <v-btn v-permission="'task.main.add'" medium color="success" @click="showAddTask = true">
           <v-icon left>add</v-icon>
           <span>Thêm nhiệm vụ</span>
         </v-btn>

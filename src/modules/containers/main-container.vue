@@ -24,9 +24,9 @@ import { MainContainerViewModel } from './viewmodels/main-container.viewmodel'
   }
 })
 export default class MainContainer extends Vue {
-  @Inject() providers: AppProvider
+  @Inject() providers!: AppProvider
 
-  @Provide() mainViewModel = new MainContainerViewModel()
+  @Provide() mainViewModel = new MainContainerViewModel(this.providers)
 }
 </script>
 

@@ -55,23 +55,11 @@ export class DashboardViewModel {
     this.updatedTasks = [
       { title: 'Nhiệm vụ 1', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
       { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' }
+      { title: 'Nhiệm vụ 3', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 4', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
+      { title: 'Nhiệm vụ 5', updatedDate: '21/10/2020', updatedComrade: 'Huyền' }
     ]
-    this.unupdatedTasks = [
-      'Nhiệm vụ a',
-      'Nhiệm vụ b',
-      'Nhiệm vụ c',
-      'Nhiệm vụ c',
-      'Nhiệm vụ c',
-      'Nhiệm vụ c',
-      'Nhiệm vụ c',
-      'Nhiệm vụ c'
-    ]
+    this.unupdatedTasks = ['Nhiệm vụ a', 'Nhiệm vụ b', 'Nhiệm vụ c']
   }
 
   @action changeUpdatedTaskFilter(val: any) {

@@ -6,7 +6,7 @@
         <breadcrumbs />
       </v-col>
       <v-col cols="4" align="right" class="pa-2">
-        <v-btn medium color="success" @click="showAddUser = true">
+        <v-btn v-permission="'system.user.add'" medium color="success" @click="showAddUser = true">
           <v-icon left>add</v-icon>
           <span>Thêm mới user</span>
         </v-btn>

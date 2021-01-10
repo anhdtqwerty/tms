@@ -60,7 +60,7 @@
                 />
                 <position-autocomplete
                   :value.sync="position"
-                  :types="['unit', 'department']"
+                  :types="['unit']"
                   label="Vai trò khi truy cập"
                   :outlined="false"
                 />
@@ -79,10 +79,16 @@
             </v-row>
           </v-form>
           <div class="d-flex justify-end pb-5 pr-5">
-            <v-btn depressed @click="viewmodel.deleteComrade()" color="error" class="px-5">
+            <v-btn
+              v-permission="'system.user.delete'"
+              depressed
+              @click="viewmodel.deleteComrade()"
+              color="error"
+              class="px-5"
+            >
               <span>Xóa</span>
             </v-btn>
-            <v-btn depressed color="primary" @click="save" class="ml-4 px-5">
+            <v-btn v-permission="'system.user.edit'" depressed color="primary" @click="save" class="ml-4 px-5">
               <span>Lưu</span>
             </v-btn>
           </div>
