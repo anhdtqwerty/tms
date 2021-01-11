@@ -35,8 +35,17 @@
               <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
               <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị thực hiện" />
               <unit-autocomplete :value.sync="supportedUnitIds" multiple label="Đơn vị phối hợp" />
-              <comrade-autocomplete :value.sync="executedComradeId" label="Chuyên viên thực hiện" />
-              <comrade-autocomplete :value.sync="supportedComradeIds" multiple label="Chuyên viên phối hợp" />
+              <comrade-autocomplete
+                :value.sync="executedComradeId"
+                :unit="executedUnitId"
+                label="Chuyên viên thực hiện"
+              />
+              <comrade-autocomplete
+                :value.sync="supportedComradeIds"
+                :unit="supportedUnitIds"
+                multiple
+                label="Chuyên viên phối hợp"
+              />
             </v-col>
             <v-col>
               <task-processing-expire-select
@@ -47,7 +56,12 @@
               />
               <date-picker-input :value.sync="expiredDate" label="Hạn xử lý" />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
-              <comrade-autocomplete :value.sync="supervisorIds" multiple label="Chuyên viên theo dõi" />
+              <comrade-autocomplete
+                :value.sync="supervisorIds"
+                :unit="supervisorUnitId"
+                multiple
+                label="Chuyên viên theo dõi"
+              />
               <task-status-select :value.sync="status" label="Trạng thái" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
@@ -71,6 +85,7 @@ import { AppProvider } from '@/app-provider'
 import { ComradeModel } from '@/models/comrade-model'
 import { TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
+import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -97,12 +112,12 @@ export default class TaskEditDialog extends Vue {
   documentInfo = ''
   description = ''
   executedUnitId = ''
-  supportedUnitIds: []
+  supportedUnitIds: string[] = []
   executedComradeId = ''
-  supportedComradeIds: []
+  supportedComradeIds: string[] = []
   processingExpire = ''
   status = ''
-  supervisorIds: []
+  supervisorIds: string[] = []
   supervisorUnitId = ''
   expiredDate = ''
 
@@ -110,12 +125,13 @@ export default class TaskEditDialog extends Vue {
     if (val) {
       this.code = val.code
       this.description = val.description
-      this.executedUnitId = (val.executedUnit as UnitModel)?.id
+      _.get(val.executedUnit, 'id')
+      // this.executedUnitId = (val.executedUnit as UnitModel)?.id
       this.supervisorUnitId = (val.supervisorUnit as UnitModel)?.id
-      this.supportedUnitIds = (val.supportedUnits as UnitModel[])?.map(x => x.id) as []
+      this.supportedUnitIds = (val.supportedUnits as []).map(x => _.get(x, 'id')) as []
       this.executedComradeId = (val.executedComrade as ComradeModel)?.id
-      this.supportedComradeIds = (val.supportedComrades as ComradeModel[])?.map(x => x.id) as []
-      this.supervisorIds = (val.supervisors as ComradeModel[])?.map(x => x.id) as []
+      this.supportedComradeIds = ((val.supportedComrades as ComradeModel[])?.map(x => x.id) as []) ?? []
+      this.supervisorIds = ((val.supervisors as ComradeModel[])?.map(x => x.id) as []) ?? []
       this.expiredDate = val.expiredDate
       this.status = val.status
     }

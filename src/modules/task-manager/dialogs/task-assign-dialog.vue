@@ -15,7 +15,7 @@
             <div>Chuyển thực hiện</div>
             <v-col cols="12">
               <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị xử lý" />
-              <comrade-autocomplete :value.sync="executedComradeId" label="Người xử lý" />
+              <comrade-autocomplete :unit="executedUnitId" :value.sync="executedComradeId" label="Người xử lý" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">

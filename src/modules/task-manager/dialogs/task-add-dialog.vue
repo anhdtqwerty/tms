@@ -33,10 +33,19 @@
             </v-col>
             <v-col cols="12" sm="6">
               <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
-              <unit-autocomplete :value.sync="excutedUnit" label="Đơn vị thực hiện" />
+              <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị thực hiện" />
               <unit-autocomplete :value.sync="supportedUnitIds" multiple label="Đơn vị phối hợp" />
-              <comrade-autocomplete :value.sync="executedComradeId" label="Chuyên viên thực hiện" />
-              <comrade-autocomplete :value.sync="supportedComradeIds" multiple label="Chuyên viên phối hợp" />
+              <comrade-autocomplete
+                :value.sync="executedComradeId"
+                :unit="executedUnitId"
+                label="Chuyên viên thực hiện"
+              />
+              <comrade-autocomplete
+                :value.sync="supportedComradeIds"
+                :unit="supportedUnitIds"
+                multiple
+                label="Chuyên viên phối hợp"
+              />
             </v-col>
             <v-col>
               <task-processing-expire-select
@@ -45,9 +54,14 @@
                 :value.sync="processingExpire"
                 label="Loại hạn xử lý"
               />
-              <date-picker-input class="mb-6" hide-details :value.sync="expiredDate" label="Hạn xử lý" />
+              <date-picker-input class="mb-6" :value.sync="expiredDate" label="Hạn xử lý" />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
-              <comrade-autocomplete :value.sync="supervisorIds" multiple label="Chuyên viên theo dõi" />
+              <comrade-autocomplete
+                :value.sync="supervisorIds"
+                :unit="supervisorUnitId"
+                multiple
+                label="Chuyên viên theo dõi"
+              />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -95,12 +109,12 @@ export default class TaskAddDialog extends Vue {
   expiredDate = ''
 
   executedUnitId = ''
-  supportedUnitIds: []
+  supportedUnitIds: string[] = []
   supervisorUnitId = ''
 
   executedComradeId = ''
-  supportedComradeIds: []
-  supervisorIds: []
+  supportedComradeIds: string[] = []
+  supervisorIds: string[] = []
 
   status = ''
 
@@ -111,7 +125,7 @@ export default class TaskAddDialog extends Vue {
         title: this.title,
         description: this.description,
         parent: this.taskParent?.id ?? null,
-        executedUnit: this.executedComradeId,
+        executedUnit: this.executedUnitId,
         supportedUnits: this.supportedUnitIds,
         supervisorUnit: this.supervisorUnitId,
         executedComrade: this.executedComradeId,

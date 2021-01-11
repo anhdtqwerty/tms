@@ -114,7 +114,7 @@ export default class TaskManagerPage extends Vue {
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
     { text: 'Ngày ban hành', value: 'publishedDate', sortable: false },
-    { text: 'Trích yếu', value: 'shortDescription', sortable: true },
+    { text: 'Trích yếu', value: 'title', sortable: true },
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false },
     { text: 'Trạng thái', value: 'status', sortable: false },
@@ -167,7 +167,7 @@ export default class TaskManagerPage extends Vue {
   }
 
   search() {
-    // this.viewmodel.search(this.searchCode, this.searchShortDescription, this.searchPriority, this.searchState)
+    // this.viewmodel.search(this.searchCode, this.searchtitle, this.searchPriority, this.searchState)
   }
 }
 </script>
