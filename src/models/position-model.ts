@@ -4,6 +4,8 @@ export interface PositionModel {
   description: string
   type: PositionType
   config: PositionConfigModel
+  updated_at: string
+  created_at: string
 }
 
 export interface PositionConfigModel {

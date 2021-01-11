@@ -25,9 +25,9 @@
               <v-icon v-permission="'system.role.edit'" small class="mr-2" @click="edit(item)">
                 mdi-pencil
               </v-icon>
-              <!-- <v-icon small @click="deleteUnit(item)">
+              <v-icon small @click="viewmodel.deleteRole(item)">
                 mdi-delete
-              </v-icon> -->
+              </v-icon>
             </template>
           </v-data-table>
         </v-card>
@@ -67,6 +67,10 @@ export default class RoleManagerPage extends Vue {
   edit(item: PositionModel) {
     this.editingModel = item
     this.showEditDialog = true
+  }
+
+  destroyed() {
+    this.viewmodel.destroyed()
   }
 }
 </script>

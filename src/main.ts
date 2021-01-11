@@ -10,6 +10,7 @@ import VueApexCharts from 'vue-apexcharts'
 import { authStore } from './stores/auth-store'
 import _ from 'lodash'
 import { PositionModel } from './models/position-model'
+import { permissionHelper } from './helpers/permission-helper'
 
 moment.locale('vi')
 
@@ -55,24 +56,14 @@ Vue.directive('permission', (el, binding, vnode) => {
   if (!binding.value) return
 
   const val = binding.value
-  const position = authStore.comrade?.position
-  if (!position || typeof position === 'string') {
+  if (!authStore.comrade?.position) {
     commentNode(el, vnode)
     return
   }
 
   if (typeof val === 'string') {
-    const splitRoles = (val as string).split('.')
-    const role = (position as PositionModel).config
-    const targetRole = _.get(role, val)
-    if (splitRoles.length !== 3 || targetRole === undefined) {
-      console.error(`role-directive doesn't support`, val)
-    } else {
-      const comradeFull = _.get(role, `${splitRoles[0]}.${splitRoles[1]}.full`)
-      if (!comradeFull && !targetRole) {
-        console.log(`${val} comradeFull=${comradeFull} targetRole=${targetRole}`)
-        commentNode(el, vnode)
-      }
+    if (!permissionHelper.check(val)) {
+      commentNode(el, vnode)
     }
   } else if (Array.isArray(val)) {
     console.error(`role-directive doesn't support`, val)

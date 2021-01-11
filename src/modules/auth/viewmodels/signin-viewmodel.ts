@@ -27,6 +27,12 @@ export class SigninViewModel {
       const res = yield this._api.login(this.username, this.password)
       const { jwt, user } = res
       authStore.onLogin(jwt, user)
+      try {
+        const comrade = yield this._api.comarde.findOne(_.get(user, 'comrade.id'))
+        authStore.changeComrade(comrade)
+      } catch (error) {
+        console.error('handleLogin get comrade', error)
+      }
       this.providers.router.replace('dashboard')
     } catch (error) {
       this.providers.snackbar.commonError(error)

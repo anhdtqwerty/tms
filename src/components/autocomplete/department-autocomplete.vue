@@ -18,6 +18,8 @@ import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-deco
 import _ from 'lodash'
 import { AppProvider } from '@/app-provider'
 import { DepartmentModel } from '@/models/department-model'
+import { authStore } from '@/stores/auth-store'
+import { UnitModel } from '@/models/unit-model'
 
 @Component
 export default class UnitAutoComplete extends Vue {
@@ -38,6 +40,18 @@ export default class UnitAutoComplete extends Vue {
       if (val) {
         params['unit'] = val
       }
+
+      // Follow user belong to ministry/unit/department
+      const userDep = authStore.comrade.department as DepartmentModel
+      if (userDep) {
+        params['id'] = userDep.id
+      } else {
+        const userUnit = authStore.comrade.unit as UnitModel
+        if (userUnit && userUnit.type !== 'ministry') {
+          params['unit'] = userUnit.id
+        }
+      }
+
       const items = await this.providers.api.department.find<DepartmentModel>(params)
       this.items = items.map(u => ({ ...u, display: u.code + ' - ' + u.title }))
       if (this.autoselect && this.items.length > 0) {

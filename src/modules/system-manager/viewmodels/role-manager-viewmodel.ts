@@ -1,14 +1,35 @@
 import { AppProvider } from '@/app-provider'
 import { PositionModel, PositionType } from '@/models/position-model'
-import { action, observable } from 'mobx'
+import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
+import { action, IReactionDisposer, observable, reaction } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
 export class RoleManagerViewModel {
   @observable roles: PositionModel[] = []
   @observable type: PositionType = null
-
+  private _disposers: IReactionDisposer[] = []
   constructor(private provider: AppProvider) {
     this.loadData()
+    this._disposers = [
+      // reaction(
+      //   () => this.roles,
+      //   roles => {
+      //     const userRole = authStore.comrade?.position as PositionModel
+      //     if (userRole) {
+      //       const role = roles.find(r => r.id === userRole.id)
+      //       if (role && role.updated_at !== userRole.updated_at) {
+      //         authStore.changeComrade({ ...authStore.comrade, position: role })
+      //       }
+      //     }
+      //   }
+      // )
+    ]
+  }
+
+  destroyed() {
+    this._disposers.forEach(d => d())
+    this._disposers = []
   }
 
   @asyncAction *loadData() {
@@ -22,5 +43,12 @@ export class RoleManagerViewModel {
 
   @action.bound roleUpdated(item: PositionModel) {
     this.roles = this.roles.map(r => (r.id === item.id ? item : r))
+  }
+
+  @asyncAction *deleteRole(item: PositionModel) {
+    if (yield this.provider.alert.confirmDelete('Vai trò')) {
+      yield this.provider.api.position.delete(item.id)
+      this.roles = this.roles.filter(r => r.id !== item.id)
+    }
   }
 }

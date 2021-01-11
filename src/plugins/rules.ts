@@ -50,6 +50,7 @@ export const appRules = {
   comradeTitle: [rules.maxLength(100)],
   comradeEmail: [rules.required, rules.email, rules.maxLength(100)],
   comradePhone: [rules.phone],
+  comradeUnit: [rules.required],
   comradeUsername: [rules.required, rules.maxLength(20)],
   comradePassword: [rules.required, rules.maxLength(20), rules.password]
 }
