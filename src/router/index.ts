@@ -1,3 +1,4 @@
+import { permissionHelper } from '@/helpers/permission-helper'
 import { authStore } from '@/stores/auth-store'
 import Vue from 'vue'
 import VueRouter, { Route, RouteConfig } from 'vue-router'
@@ -78,7 +79,8 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/system-manager/pages/user-manager-page.vue'),
         meta: {
           title: 'users',
-          auth: true
+          auth: true,
+          permission: 'system.user.read'
         }
       },
       {
@@ -87,7 +89,8 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/system-manager/pages/user-detail-page.vue'),
         meta: {
           title: 'user',
-          auth: true
+          auth: true,
+          permission: 'system.user.edit'
         }
       },
       // {
@@ -105,7 +108,8 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/system-manager/pages/role-manager-page.vue'),
         meta: {
           title: 'Cài đặt vai trò',
-          auth: true
+          auth: true,
+          permission: 'system.role.read'
         }
       },
       {
@@ -114,7 +118,8 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/unit-manager/pages/department-manager-page.vue'),
         meta: {
           title: 'departments',
-          auth: true
+          auth: true,
+          permission: 'system.unit.read'
         }
       },
       {
@@ -123,7 +128,8 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/unit-manager/pages/department-detail-page.vue'),
         meta: {
           title: 'department',
-          auth: true
+          auth: true,
+          permission: 'system.unit.read'
         }
       },
       {
@@ -132,7 +138,8 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/unit-manager/pages/ministry-manager-page.vue'),
         meta: {
           title: 'ministries',
-          auth: true
+          auth: true,
+          permission: 'system.unit.read'
         }
       },
       {
@@ -141,7 +148,8 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/unit-manager/pages/unit-manager-page.vue'),
         meta: {
           title: 'units',
-          auth: true
+          auth: true,
+          permission: 'system.unit.read'
         }
       },
       {
@@ -150,7 +158,8 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/unit-manager/pages/unit-detail-page.vue'),
         meta: {
           title: 'unit',
-          auth: true
+          auth: true,
+          permission: 'system.unit.read'
         }
       },
       {
@@ -180,7 +189,11 @@ router.beforeEach((to, from, next) => {
     const isAuthenticated = authStore.authenticated
 
     if ((requriedAuth && isAuthenticated) || (!requriedAuth && !isAuthenticated)) {
-      next()
+      if (permissionHelper.check(to.meta?.permission)) {
+        next()
+      } else {
+        next('dashboard')
+      }
     } else if (!requriedAuth && isAuthenticated) {
       next('dashboard')
     } else if (requriedAuth && !isAuthenticated) {

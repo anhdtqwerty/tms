@@ -4,6 +4,8 @@ import _ from 'lodash'
 
 export const permissionHelper = {
   check: (required: string) => {
+    if (!required) return true
+
     const position = authStore.comrade?.position as PositionModel
     if (!position) {
       console.warn('permissionHelper.check can not read role')
