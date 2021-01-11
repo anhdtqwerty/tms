@@ -113,6 +113,15 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'logs',
+        name: 'logs',
+        component: () => import('@/modules/system-manager/pages/log-manager-page.vue'),
+        meta: {
+          title: 'logs',
+          auth: true
+        }
+      },
+      {
         path: 'departments',
         name: 'departments',
         component: () => import('@/modules/unit-manager/pages/department-manager-page.vue'),

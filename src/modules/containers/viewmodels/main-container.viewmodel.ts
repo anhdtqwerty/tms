@@ -33,11 +33,11 @@ export class MainContainerViewModel {
     new MenuViewModel('Quản lý nhiệm vụ', {
       icon: 'list',
       children: [
-        new MenuViewModel('Nhiệm vụ giao', {link: '/tasks/task-asign'}),
-        new MenuViewModel('Đang theo dõi', {link: '/tasks/task-following'}),
-        new MenuViewModel('Đã quá hạn', {link: '/tasks/task-expired'}),
-        new MenuViewModel('Chờ xác nhận', {link: '/tasks/task-pending'}),
-        new MenuViewModel('Đã hoàn thành', {link: '/tasks/task-done'})
+        new MenuViewModel('Nhiệm vụ giao', { link: '/tasks/task-asign' }),
+        new MenuViewModel('Đang theo dõi', { link: '/tasks/task-following' }),
+        new MenuViewModel('Đã quá hạn', { link: '/tasks/task-expired' }),
+        new MenuViewModel('Chờ xác nhận', { link: '/tasks/task-pending' }),
+        new MenuViewModel('Đã hoàn thành', { link: '/tasks/task-done' })
       ]
     }),
     new MenuViewModel('Tổng hợp báo cáo', { icon: 'description' }),
@@ -55,7 +55,7 @@ export class MainContainerViewModel {
       children: [
         new MenuViewModel('Người dùng', { link: '/users', permission: 'system.user.read' }),
         new MenuViewModel('Vai trò', { link: '/roles', permission: 'system.role.read' }),
-        new MenuViewModel('Tra cứu log', { permission: 'system.log.read' })
+        new MenuViewModel('Tra cứu log', { link: '/logs', permission: 'system.log.read' })
       ]
     })
   ]
