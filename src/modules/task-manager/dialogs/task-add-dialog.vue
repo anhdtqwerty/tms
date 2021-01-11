@@ -17,8 +17,8 @@
             </v-col>
             <v-col cols="12" sm="6">
               <app-text-field v-model="code" label="Số/ký hiệu" />
-              <date-picker-input v-model="pushlishedDate" label="Ngày ban hành" />
-              <app-text-field v-model="shortDescription" label="Trích yếu" />
+              <date-picker-input v-model="publishedDate" label="Ngày ban hành" />
+              <app-text-field v-model="title" label="Trích yếu" />
             </v-col>
             <v-col cols="12" sm="6">
               <task-priority-select label="Mức độ quan trọng" />
@@ -32,11 +32,20 @@
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
             <v-col cols="12" sm="6">
-              <app-text-field v-model="shortDescription" label="Nội dung nhiệm vụ" />
-              <unit-autocomplete label="Đơn vị thực hiện" />
-              <unit-autocomplete label="Đơn vị phối hợp" />
-              <unit-autocomplete label="Chuyên viên thực hiện" />
-              <unit-autocomplete label="Chuyên viên phối hợp" />
+              <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
+              <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị thực hiện" />
+              <unit-autocomplete :value.sync="supportedUnitIds" multiple label="Đơn vị phối hợp" />
+              <comrade-autocomplete
+                :value.sync="executedComradeId"
+                :unit="executedUnitId"
+                label="Chuyên viên thực hiện"
+              />
+              <comrade-autocomplete
+                :value.sync="supportedComradeIds"
+                :unit="supportedUnitIds"
+                multiple
+                label="Chuyên viên phối hợp"
+              />
             </v-col>
             <v-col>
               <task-processing-expire-select
@@ -45,9 +54,14 @@
                 :value.sync="processingExpire"
                 label="Loại hạn xử lý"
               />
-              <date-picker-input class="mb-6" hide-details :value.sync="expireDate" label="Hạn xử lý" />
-              <unit-autocomplete label="Đơn vị theo dõi" />
-              <unit-autocomplete label="Chuyên viên theo dõi" />
+              <date-picker-input class="mb-6" :value.sync="expiredDate" label="Hạn xử lý" />
+              <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
+              <comrade-autocomplete
+                :value.sync="supervisorIds"
+                :unit="supervisorUnitId"
+                multiple
+                label="Chuyên viên theo dõi"
+              />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -67,34 +81,62 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { Component, Inject, PropSync, Ref, Vue } from 'vue-property-decorator'
+import { TaskModel } from '@/models/task-model'
+import { Component, Inject, PropSync, Prop, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
   components: {
     UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
+    ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
     TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
-    TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
+    TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue')
   }
 })
-export default class UserAddDialog extends Vue {
+export default class TaskAddDialog extends Vue {
   @Inject() providers: AppProvider
-
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
-
   @Ref('form') form: any
+  @Prop() taskParent: TaskModel
 
   code = ''
-  pushlishedDate = ''
-  shortDescription = ''
-
+  publishedDate = ''
+  title = ''
+  description = ''
   processingExpire = ''
-  expireDate = ''
+  expiredDate = ''
 
-  save() {
-    //
+  executedUnitId = ''
+  supportedUnitIds: string[] = []
+  supervisorUnitId = ''
+
+  executedComradeId = ''
+  supportedComradeIds: string[] = []
+  supervisorIds: string[] = []
+
+  status = ''
+
+  async save() {
+    if (this.form.validate()) {
+      const task = await this.providers.api.task.create({
+        code: this.code,
+        title: this.title,
+        description: this.description,
+        parent: this.taskParent?.id ?? null,
+        executedUnit: this.executedUnitId,
+        supportedUnits: this.supportedUnitIds,
+        supervisorUnit: this.supervisorUnitId,
+        executedComrade: this.executedComradeId,
+        supportedComrades: this.supportedComradeIds,
+        supervisors: this.supervisorIds
+      })
+
+      this.$emit('success', task)
+      this.syncedValue = false
+      this.form.reset()
+    }
   }
 }
 </script>

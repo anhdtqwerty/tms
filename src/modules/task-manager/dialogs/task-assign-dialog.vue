@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>GIAO NHIỆM VỤ {{ code }}</v-toolbar-title>
+        <v-toolbar-title>GIAO NHIỆM VỤ {{ task && task.code }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -14,11 +14,11 @@
           <v-row>
             <div>Chuyển thực hiện</div>
             <v-col cols="12">
-              <unit-autocomplete :value.sync="executeUnit" label="Đơn vị xử lý" />
-              <app-text-field label="Người xử lý" />
+              <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị xử lý" />
+              <comrade-autocomplete :unit="executedUnitId" :value.sync="executedComradeId" label="Người xử lý" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
-              <v-btn depressed medium @click="syncedValue = false">
+              <v-btn depressed outlined medium @click="syncedValue = false">
                 <span>Hủy</span>
               </v-btn>
               <v-btn depressed color="primary" class="ml-8" medium @click="save">
@@ -34,13 +34,15 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { ComradeModel } from '@/models/comrade-model'
 import { TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
-    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue')
+    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
+    ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue')
   }
 })
 export default class TaskAssignDialog extends Vue {
@@ -50,12 +52,14 @@ export default class TaskAssignDialog extends Vue {
   @Prop() task: TaskModel
 
   code = ''
-  executeUnit = ''
+  executedUnitId = ''
+  executedComradeId = ''
 
-  @Watch('task') onTaskChanged(val: TaskModel) {
+  @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
-      this.executeUnit = (val.executeUnit as UnitModel).title
+      this.executedUnitId = (val.executedUnit as UnitModel)?.id
+      this.executedComradeId = (val.executedComrade as ComradeModel)?.id
     }
   }
 
@@ -63,7 +67,8 @@ export default class TaskAssignDialog extends Vue {
     if (this.form.validate()) {
       let task: TaskModel = {
         ...this.task,
-        executeUnit: this.executeUnit
+        executedUnit: this.executedUnitId,
+        executedComrade: this.executedComradeId
       }
       task = await this.providers.api.task.update(task.id, task)
       this.$emit('success', task)

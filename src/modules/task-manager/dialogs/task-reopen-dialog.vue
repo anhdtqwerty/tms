@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>CẬP NHẬT TIẾN ĐỘ XỬ LÝ NHIỆM VỤ {{ task && task.code }}</v-toolbar-title>
+        <v-toolbar-title>MỞ LẠI NHIỆM VỤ {{ task && task.code }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -13,17 +13,14 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12">
-              <task-status-select :value.sync="status" label="Trạng thái" />
-              <date-picker-input label="Ngày thực hiện" />
-              <app-text-field v-model="explain" label="Diễn giải trạng thái" />
-              <app-file-input label="File đính kèm" />
+              <app-textarea v-model="reasonReopen" label="Lý do mở lại" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
                 <span>Đóng</span>
               </v-btn>
               <v-btn depressed color="primary" class="ml-8" medium @click="save">
-                <span>Lưu</span>
+                <span>Trả lại</span>
               </v-btn>
             </v-col>
           </v-row>
@@ -39,21 +36,16 @@ import { TaskModel } from '@/models/task-model'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
-  components: {
-    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
-    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
-  }
+  components: {}
 })
-export default class TaskUpdateProcessingDialog extends Vue {
+export default class TaskReopenDialog extends Vue {
   @Inject() providers: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Ref('form') form: any
   @Prop() task: TaskModel
 
   code = ''
-  status = ''
-  explain = ''
-
+  reasonReopen = ''
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
