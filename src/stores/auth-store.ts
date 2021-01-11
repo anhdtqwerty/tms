@@ -1,14 +1,20 @@
 import { UserModel } from '@/models/auth-model'
+import { ComradeModel } from '@/models/comrade-model'
 import { action, computed, observable, reaction } from 'mobx'
 
 class AuthStore {
   @observable jwt = localStorage.getItem('jwt')
   @observable user: UserModel = null
+  @observable comrade: ComradeModel = null
 
   constructor() {
     const userRaw = localStorage.getItem('user')
     if (userRaw) {
       this.user = JSON.parse(userRaw)
+    }
+    const comradeRaw = localStorage.getItem('comrade')
+    if (comradeRaw) {
+      this.comrade = JSON.parse(comradeRaw)
     }
     reaction(
       () => this.jwt,
@@ -24,16 +30,30 @@ class AuthStore {
         else localStorage.removeItem('user')
       }
     )
+    reaction(
+      () => this.comrade,
+      comrade => {
+        console.log('comrade', comrade)
+        if (comrade) localStorage.setItem('comrade', JSON.stringify(comrade))
+        else localStorage.removeItem('comrade')
+      }
+    )
   }
 
   @action onLogout() {
     this.jwt = null
     this.user = null
+    this.comrade = null
   }
 
   @action onLogin(jwt: string, user: UserModel) {
     this.jwt = jwt
     this.user = user
+    this.comrade = user?.comrade as ComradeModel
+  }
+
+  @action changeComrade(val: ComradeModel) {
+    this.comrade = val
   }
 
   @computed get authenticated() {

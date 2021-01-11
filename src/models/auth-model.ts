@@ -1,3 +1,5 @@
+import { ComradeModel } from './comrade-model'
+
 export interface UserModel {
   id?: string
   username?: string
@@ -7,4 +9,5 @@ export interface UserModel {
   blocked?: boolean
   createdAt?: Date
   updatedAt?: Date
+  comrade?: string | ComradeModel
 }

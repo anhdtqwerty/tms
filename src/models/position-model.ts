@@ -4,6 +4,8 @@ export interface PositionModel {
   description: string
   type: PositionType
   config: PositionConfigModel
+  updated_at?: string
+  created_at?: string
 }
 
 export interface PositionConfigModel {
@@ -80,7 +82,7 @@ export const generatePermissionConfigs = (config: PositionConfigModel = {}): Per
         name: 'Quản lý nhiệm vụ chính',
         config: { ...defaultTaskConfig, ...(config?.task?.main ?? {}) }
       },
-      { type: 'sub', name: 'Quản lý nhiệm vụ chính', config: { ...defaultTaskConfig, ...(config?.task?.sub ?? {}) } }
+      { type: 'sub', name: 'Quản lý nhiệm vụ phụ', config: { ...defaultTaskConfig, ...(config?.task?.sub ?? {}) } }
     ],
     system: [
       { type: 'unit', name: 'Quản lý đơn vị', config: { ...defaultSystemConfig, ...(config?.system?.unit ?? {}) } },

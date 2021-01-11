@@ -18,6 +18,6 @@ export class AppProvider {
 
   onLogout() {
     this.authStore.onLogout()
-    this.router.replace('signin')
+    this.router.replace('/signin')
   }
 }

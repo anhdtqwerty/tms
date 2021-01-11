@@ -1,16 +1,23 @@
-import { action, computed, observable, reaction } from 'mobx'
-import ToastedPlugin from 'vue-toasted'
+import { AppProvider } from '@/app-provider'
+import { ComradeModel } from '@/models/comrade-model'
+import { action, observable, reaction } from 'mobx'
+import { asyncAction } from 'mobx-utils'
 
 export class MenuViewModel {
   @observable selected = false
   icon: string
   children: MenuViewModel[]
   link: string
+  permission: string
 
-  constructor(public title: string, options?: { icon?: string; children?: MenuViewModel[]; link?: string }) {
+  constructor(
+    public title: string,
+    options?: { icon?: string; children?: MenuViewModel[]; link?: string; permission?: string }
+  ) {
     this.icon = options?.icon
     this.children = options?.children
     this.link = options?.link
+    this.permission = options?.permission
   }
 
   @action.bound changeSelected(value: boolean) {
@@ -19,6 +26,7 @@ export class MenuViewModel {
 }
 
 export class MainContainerViewModel {
+  @observable loading = false
   @observable drawer = true
   @observable menuConfigs: MenuViewModel[] = [
     new MenuViewModel('Dashboard', { icon: 'dashboard', link: '/dashboard' }),
@@ -34,6 +42,7 @@ export class MainContainerViewModel {
     }),
     new MenuViewModel('Tổng hợp báo cáo', { icon: 'description' }),
     new MenuViewModel('Quản lý đơn vị', {
+      permission: 'system.unit.read',
       icon: 'view_comfy',
       children: [
         new MenuViewModel('Bộ', { link: '/ministries' }),
@@ -44,9 +53,9 @@ export class MainContainerViewModel {
     new MenuViewModel('Quản trị hệ thống', {
       icon: 'usb',
       children: [
-        new MenuViewModel('Người dùng', { link: '/users' }),
-        new MenuViewModel('Vai trò', { link: '/roles' }),
-        new MenuViewModel('Tra cứu log')
+        new MenuViewModel('Người dùng', { link: '/users', permission: 'system.user.read' }),
+        new MenuViewModel('Vai trò', { link: '/roles', permission: 'system.role.read' }),
+        new MenuViewModel('Tra cứu log', { permission: 'system.log.read' })
       ]
     })
   ]
@@ -55,7 +64,7 @@ export class MainContainerViewModel {
 
   private _cachedViewModel: { [name: string]: any } = {}
 
-  constructor() {
+  constructor(private providers: AppProvider) {
     let lastSelectedMenu: MenuViewModel
     reaction(
       () => this.selectedMenu,
@@ -68,6 +77,19 @@ export class MainContainerViewModel {
       }
     )
     this.onSelectedMenu(this.menuConfigs[0])
+    this.loadData()
+  }
+
+  @asyncAction *loadData() {
+    this.loading = true
+    try {
+      const { api, authStore } = this.providers
+      const comrade = yield api.comarde.findOne((authStore.user.comrade as ComradeModel)?.id)
+      authStore.changeComrade(comrade)
+    } catch (error) {
+      console.error(error)
+    }
+    this.loading = false
   }
 
   @action.bound onSelectedMenu(menu: MenuViewModel) {

@@ -13,7 +13,7 @@
             <v-row>
               <v-col cols="12" class="d-flex justify-space-between pa-2">
                 <div class="text-h5 font-weight-medium primary--text">{{ viewmodel.department.title }}</div>
-                <v-btn icon small @click="showEditDialog = true">
+                <v-btn v-permission="'system.unit.edit'" icon small @click="showEditDialog = true">
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
               </v-col>
@@ -44,7 +44,9 @@
                 <v-row>
                   <v-col cols="12" class="pa-2 d-flex justify-space-between">
                     <div class="text-subtitle-1 font-weight-medium">Danh sách cán bộ công nhân viên</div>
-                    <v-btn color="primary" small @click="showAddUserDialog = true"><v-icon left>add</v-icon>Thêm</v-btn>
+                    <v-btn v-permission="'system.unit.edit'" color="primary" small @click="showAddUserDialog = true"
+                      ><v-icon left>add</v-icon>Thêm</v-btn
+                    >
                   </v-col>
                 </v-row>
               </v-container>
@@ -60,7 +62,7 @@
               </v-chip>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon small @click="viewmodel.deleteComrade(item)">
+              <v-icon v-permission="'system.unit.edit'" small @click="viewmodel.deleteComrade(item)">
                 mdi-delete
               </v-icon>
             </template>

@@ -11,7 +11,7 @@ import { set } from 'vue/types/umd'
 import { TaskModel } from '@/models/task-model'
 
 export class ApiHandler<T> {
-  constructor(private route: string, private axios: AxiosInstance) {}
+  constructor(private route: string, private axios: AxiosInstance, private allowLog = true) {}
 
   async count(params?: any): Promise<number> {
     const res = await this.axios.get(`${this.route}/count`, { params })
@@ -20,11 +20,17 @@ export class ApiHandler<T> {
 
   async create(model: T): Promise<T> {
     const res = await this.axios.post(this.route, model)
+    if (this.allowLog) {
+      // this.axios.post('logs', { type: 'add', feature: this.route })
+    }
     return res.data
   }
 
   async delete(id: any): Promise<T> {
     const res = await this.axios.delete(`${this.route}/${id}`)
+    if (this.allowLog) {
+      // this.axios.post('logs', { type: 'delete', feature: this.route })
+    }
     return res.data
   }
 
@@ -50,6 +56,9 @@ export class ApiHandler<T> {
 
   async update(id: any, model: T): Promise<T> {
     const res = await this.axios.put(`${this.route}/${id}`, model)
+    if (this.allowLog) {
+      // this.axios.post('logs', { type: 'update', feature: this.route })
+    }
     return res.data
   }
 }
@@ -57,7 +66,7 @@ export class ApiHandler<T> {
 export class ApiService {
   axios = Axios.create({ baseURL: process.env.VUE_APP_API_ENDPOINT })
 
-  user = new ApiHandler<UserModel>('users', this.axios)
+  user = new ApiHandler<UserModel>('users', this.axios, false)
   unit = new ApiHandler<UnitModel>('units', this.axios)
   department = new ApiHandler<DepartmentModel>('departments', this.axios)
   position = new ApiHandler<PositionModel>('positions', this.axios)

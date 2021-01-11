@@ -60,7 +60,7 @@
                 />
                 <position-autocomplete
                   :value.sync="position"
-                  :types="['unit', 'department']"
+                  :types="['unit']"
                   label="Vai trò khi truy cập"
                   :outlined="false"
                 />
@@ -73,16 +73,22 @@
                 />
                 <div class="text-subtitle-2 pb-4">Phòng ban Đơn vị</div>
                 <department-autocomplete :value.sync="department" :unit="unit" label="Phòng ban" :outlined="false" />
-                <unit-autocomplete :value.sync="unit" label="Đơn vị" :outlined="false" />
+                <unit-autocomplete :value.sync="unit" label="Đơn vị" :outlined="false" :rules="$appRules.comradeUnit" />
                 <app-text-field outlined v-model="title" label="Chức vụ" />
               </v-col>
             </v-row>
           </v-form>
           <div class="d-flex justify-end pb-5 pr-5">
-            <v-btn depressed @click="viewmodel.deleteComrade()" color="error" class="px-5">
+            <v-btn
+              v-permission="'system.user.delete'"
+              depressed
+              @click="viewmodel.deleteComrade()"
+              color="error"
+              class="px-5"
+            >
               <span>Xóa</span>
             </v-btn>
-            <v-btn depressed color="primary" @click="save" class="ml-4 px-5">
+            <v-btn v-permission="'system.user.edit'" depressed color="primary" @click="save" class="ml-4 px-5">
               <span>Lưu</span>
             </v-btn>
           </div>
@@ -101,7 +107,7 @@ import { PositionModel } from '@/models/position-model'
 import { UnitModel } from '@/models/unit-model'
 import { reaction } from 'mobx'
 import { Observer } from 'mobx-vue'
-import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
+import { Component, Inject, Provide, Vue, Watch } from 'vue-property-decorator'
 import { UserDetailViewModel } from '../viewmodels/user-detail-viewmodel'
 
 @Observer
@@ -181,6 +187,12 @@ export default class UserDetailPage extends Vue {
       user: (this.viewmodel.comrade.user as UserModel).id
     }
     this.viewmodel.updateComrade(comrade)
+  }
+
+  @Watch('unit') onUnitChanged(_: string, old: string) {
+    if (old) {
+      this.department = null
+    }
   }
 }
 </script>

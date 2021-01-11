@@ -28,6 +28,10 @@ export class AlertController {
     })
   }
 
+  confirmDelete(type: string): Promise<boolean> {
+    return this.confirm('Xác nhận xóa', `Bạn có CHẮC CHẮN muốn xóa ${type} này? Bạn sẽ không thể hoàn tác thao tác.`)
+  }
+
   @action.bound ok() {
     this.show = false
     this.config.callback(true)

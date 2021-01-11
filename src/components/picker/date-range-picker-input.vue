@@ -1,38 +1,36 @@
 <template>
-  <div>
-    <v-menu
-      v-model="show"
-      attach
-      :close-on-content-click="false"
-      :nudge-top="14"
-      transition="scale-transition"
-      offset-y
-      min-width="290px"
-      style="width:100%"
-      @input="menuChanged"
-    >
-      <template v-slot:activator="{ on, $attrs }">
-        <app-text-field
-          :v-bind="$attrs"
-          :value="syncedValue.join(' - ')"
-          :label="label"
-          readonly
-          v-on="on"
-          append-icon="expand_more"
-          @click:append="show = true"
-          :rules="rules"
-          validate-on-blur
-          :outlined="outlined"
-        />
-      </template>
-      <v-date-picker locale="vi" v-model="selectedRange" range>
-        <div class="d-flex justify-end" style="width: 100%">
-          <v-btn small class="mr-4" @click="cancel">Cancel</v-btn>
-          <v-btn small color="primary" @click="ok" :disabled="selectedRange.length !== 2">OK</v-btn>
-        </div>
-      </v-date-picker>
-    </v-menu>
-  </div>
+  <v-menu
+    v-model="show"
+    attach
+    :close-on-content-click="false"
+    :nudge-top="14"
+    left
+    transition="scale-transition"
+    offset-y
+    @input="menuChanged"
+    min-width="290px"
+  >
+    <template v-slot:activator="{ on, $attrs }">
+      <app-text-field
+        :v-bind="$attrs"
+        :value="syncedValue.join(' - ')"
+        :label="label"
+        readonly
+        v-on="on"
+        append-icon="expand_more"
+        @click:append="show = true"
+        :rules="rules"
+        validate-on-blur
+        :outlined="outlined"
+      />
+    </template>
+    <v-date-picker locale="vi" v-model="selectedRange" range>
+      <div class="d-flex justify-end" style="width: 100%">
+        <v-btn small class="mr-4" @click="cancel">Cancel</v-btn>
+        <v-btn small color="primary" @click="ok" :disabled="selectedRange.length !== 2">OK</v-btn>
+      </div>
+    </v-date-picker>
+  </v-menu>
 </template>
 
 <script lang="ts">

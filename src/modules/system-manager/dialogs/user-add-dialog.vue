@@ -35,7 +35,12 @@
             </v-col>
             <v-col cols="12" sm="6">
               <div class="text-subtitle-2 pb-6">Đơn vị công tác</div>
-              <unit-autocomplete :value.sync="unit" label="Đơn vị" />
+              <unit-autocomplete
+                :value.sync="unit"
+                label="Đơn vị"
+                :includeMinistry="true"
+                :rules="$appRules.comradeUnit"
+              />
               <department-autocomplete :value.sync="department" :unit="unit" label="Phòng ban" />
               <app-text-field v-model="title" label="Chức vụ" />
               <div class="text-subtitle-2 pb-6">Thông tin đăng nhập</div>
@@ -55,7 +60,7 @@
                 label="Chọn Nhóm"
                 :rules="$appRules.comradeGroup"
               />
-              <position-autocomplete :value.sync="position" :types="['unit', 'department']" label="Chọn Vai trò" />
+              <position-autocomplete :value.sync="position" :types="['unit']" label="Chọn Vai trò" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -75,7 +80,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { Component, Inject, PropSync, Ref, Vue } from 'vue-property-decorator'
+import { Component, Inject, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 import { ComradeSex } from '@/models/comrade-model'
 
 @Component({
@@ -165,6 +170,12 @@ export default class UserAddDialog extends Vue {
     }
 
     this.submitErrors = submitErrors
+  }
+
+  @Watch('unit') onUnitChanged(_: string, old: string) {
+    if (old) {
+      this.department = null
+    }
   }
 }
 </script>
