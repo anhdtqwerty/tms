@@ -10,12 +10,21 @@
           <v-data-table
             :items="viewmodel.displayLogs"
             item-key="id"
-            :headers="headers"
+            :headers="selectedHeaders"
             mobile-breakpoint="0"
             :server-items-length="viewmodel.totalCount"
             :footer-props="{ itemsPerPageOptions: [25] }"
             @update:page="viewmodel.loadData($event)"
           >
+            <template v-slot:top>
+              <v-container fluid class="px-5 py-0">
+                <v-row>
+                  <v-col cols="12" align="end" class="pa-2">
+                    <table-header-setting :headers="headers" @change="selectedHeaders = $event" />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
@@ -33,14 +42,16 @@ export default class LogManagerPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() viewmodel = new LogManagerViewModel(this.providers)
 
+  selectedHeaders: any[] = []
+
   headers = [
     { text: 'Tài khoản', value: 'comrade.code', sortable: false },
     { text: 'Hành động', value: 'displayAction', sortable: false },
     { text: 'Chức năng đã thao tác', value: 'displayFeature', sortable: false },
     { text: 'Nội dung thay đổi', value: 'displayDescription', sortable: false },
     { text: 'Thời gian thay đổi', value: 'displayDatetime', sortable: false },
-    { text: 'Địa chỉ IP', value: 'data.ip', sortable: false },
-    { text: 'Trình duyệt', value: 'data.browser', sortable: false }
+    { text: 'Địa chỉ IP', value: 'data.ip', sortable: false, defaultHide: true },
+    { text: 'Trình duyệt', value: 'data.browser', sortable: false, defaultHide: true }
   ]
 }
 </script>
