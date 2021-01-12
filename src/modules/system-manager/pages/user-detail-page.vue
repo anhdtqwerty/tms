@@ -7,13 +7,27 @@
       </v-col>
       <v-col cols="12" class="pa-2">
         <v-card class="mt-4">
-          <v-form>
+          <v-form ref="form">
             <v-row>
               <v-col class="px-8">
                 <div class="d-flex align-center">
-                  <v-avatar height="120" width="120">
-                    <v-img src="https://avatars0.githubusercontent.com/u/9064066?v=4&s=460" />
-                  </v-avatar>
+                  <app-avatar
+                    ref="image"
+                    :avatar="selectedAvatarFile || (viewmodel.comrade && viewmodel.comrade.avatar)"
+                    height="120"
+                    width="120"
+                    @click.stop="selectAvatar"
+                  >
+                  </app-avatar>
+                  <v-file-input
+                    ref="fileInput"
+                    accept="image/png, image/jpeg, image/bmp"
+                    prepend-icon="mdi-camera"
+                    class="align-self-end"
+                    style="max-width: 24px;"
+                    hide-input
+                    v-model="selectedAvatarFile"
+                  ></v-file-input>
                   <div class="ml-4 mt-4">
                     <div class="text-h6">{{ name }}</div>
                     <div class="text-body-2 mb-4">{{ viewmodel.comrade ? viewmodel.comrade.position.title : '' }}</div>
@@ -107,7 +121,7 @@ import { PositionModel } from '@/models/position-model'
 import { UnitModel } from '@/models/unit-model'
 import { reaction } from 'mobx'
 import { Observer } from 'mobx-vue'
-import { Component, Inject, Provide, Vue, Watch } from 'vue-property-decorator'
+import { Component, Inject, Provide, Ref, Vue, Watch } from 'vue-property-decorator'
 import { UserDetailViewModel } from '../viewmodels/user-detail-viewmodel'
 
 @Observer
@@ -116,12 +130,16 @@ import { UserDetailViewModel } from '../viewmodels/user-detail-viewmodel'
     UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
     DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue'),
     PositionAutocomplete: () => import('@/components/autocomplete/position-autocomplete.vue'),
-    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
+    AppAvatar: () => import('@/components/images/app-avatar.vue')
   }
 })
 export default class UserDetailPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() viewmodel = new UserDetailViewModel(this.providers)
+
+  @Ref('form') form: any
+  @Ref('fileInput') fileInput: any
 
   name = ''
   code = ''
@@ -138,6 +156,8 @@ export default class UserDetailPage extends Vue {
   password = 'password'
   group: string = null
   position: string = null
+
+  selectedAvatarFile: File = null
 
   submitErrors: string[] = []
 
@@ -170,6 +190,7 @@ export default class UserDetailPage extends Vue {
   }
 
   save() {
+    if (!this.form.validate()) return
     const comrade = {
       ...this.viewmodel.comrade,
       name: this.name,
@@ -193,6 +214,11 @@ export default class UserDetailPage extends Vue {
     if (old) {
       this.department = null
     }
+  }
+
+  selectAvatar() {
+    console.log('selectAvatar')
+    this.fileInput.$refs.input.click()
   }
 }
 </script>

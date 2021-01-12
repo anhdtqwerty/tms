@@ -160,4 +160,28 @@ export class ApiService {
       passwordConfirmation
     })
   }
+
+  async uploadFiles(files: any, model: ApiRouteType, modelId: string, modelField: string) {
+    const formData = new FormData()
+    formData.append('files', files)
+    formData.append('refId', modelId)
+    formData.append('ref', model)
+    formData.append('field', modelField)
+    const res = await this.axios.post('upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    return res.data
+  }
+
+  async deleteFile(id: any) {
+    const res = await this.axios.delete(`upload/files/${id}`)
+    return res.data
+  }
+
+  async getFile(id: any) {
+    const res = await this.axios.get(`upload/files/${id}`)
+    return res.data
+  }
 }
