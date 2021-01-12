@@ -18,6 +18,7 @@ export const apiLogNames: { [name in ApiLogType]: string } = {
   delete: 'Xóa',
   update: 'Cập nhật'
 }
+export type ApiTableType = 'user' | 'unit' | 'department' | 'position' | 'comrade' | 'task' | 'log'
 export type ApiRouteType = 'users' | 'units' | 'departments' | 'positions' | 'comrades' | 'tasks' | 'logs'
 export const ApiRouteNames: { [name in ApiRouteType]: string } = {
   users: 'người dùng',
@@ -159,5 +160,43 @@ export class ApiService {
       password,
       passwordConfirmation
     })
+  }
+
+  async uploadFiles(files: any, relation?: { model: ApiTableType; modelId: string; modelField: string }) {
+    const formData = new FormData()
+    formData.append('files', files)
+
+    if (relation) {
+      formData.append('refId', relation.modelId)
+      formData.append('ref', relation.model)
+      formData.append('field', relation.modelField)
+    }
+
+    const res = await this.axios.post('upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    return res.data
+  }
+
+  async deleteFile(id: any) {
+    const res = await this.axios.delete(`upload/files/${id}`)
+    return res.data
+  }
+
+  async getFile(id: any) {
+    const res = await this.axios.get(`upload/files/${id}`)
+    return res.data
+  }
+
+  getFileUrl(model: any): string {
+    if (typeof model === 'string') {
+      return process.env.VUE_APP_API_ENDPOINT + model
+    } else if (_.get(model, 'url')) {
+      return process.env.VUE_APP_API_ENDPOINT + _.get(model, 'url')
+    } else {
+      return null
+    }
   }
 }

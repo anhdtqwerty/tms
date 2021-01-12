@@ -1,8 +1,8 @@
 import { AppProvider } from '@/app-provider'
 import { UserModel } from '@/models/auth-model'
 import { ComradeModel } from '@/models/comrade-model'
-import { PositionModel, PositionType } from '@/models/position-model'
-import { action, observable } from 'mobx'
+import _ from 'lodash'
+import { observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
 export class UserDetailViewModel {
@@ -17,12 +17,32 @@ export class UserDetailViewModel {
     this.comrade = yield this.provider.api.comarde.findOne(comradeId)
   }
 
-  @asyncAction *updateComrade(comrade: ComradeModel) {
-    this.comrade = yield this.provider.api.comarde.update(this.comrade.id, {
-      ...this.comrade,
-      ...comrade
-    })
-    this.provider.snackbar.updateSuccess()
+  @asyncAction *updateComrade(avatarFile: File, comrade: ComradeModel) {
+    const api = this.provider.api
+    try {
+      const oldAvatarId = _.get(this.comrade.avatar, 'id')
+      let newAvatarId
+      if (avatarFile) {
+        const res = yield api.uploadFiles(avatarFile)
+        newAvatarId = _.get(res[0], 'id')
+      }
+      this.comrade = yield api.comarde.update(this.comrade.id, {
+        ...this.comrade,
+        ...comrade,
+        avatar: newAvatarId
+      })
+
+      if (newAvatarId && oldAvatarId) {
+        // no need wait
+        api.deleteFile(oldAvatarId)
+      }
+
+      this.provider.snackbar.updateSuccess()
+      return true
+    } catch (error) {
+      this.provider.snackbar.commonError(error)
+      return false
+    }
   }
 
   @asyncAction *deleteComrade() {

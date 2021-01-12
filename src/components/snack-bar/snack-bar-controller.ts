@@ -18,7 +18,7 @@ export class SnackBarController {
     let message = 'Đã có lỗi xảy ra, vui lòng thử lại!'
     // strapi error
     const apiError = _.get(err, 'response.data.message')
-    console.log(apiError)
+    console.error(apiError, err)
     if (apiError) {
       if (apiError instanceof Array) {
         let errMsg = _.first(apiError)
