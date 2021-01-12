@@ -6,6 +6,7 @@ import { UnitModel } from './unit-model'
 export class ComradeModel {
   id?: string
   name: string
+  avatar?: any
   code: string
   phone: string
   data: {

@@ -18,16 +18,15 @@ export default class AppAvatar extends Vue {
 
   url: string = null
 
-  @Watch('avatar') async onAvatarChanged(val: any) {
+  @Watch('avatar', { immediate: true }) async onAvatarChanged(val: any) {
     try {
-      console.log('onAvatarChanged', val)
       if (val instanceof File) {
-        this.url = val
+        this.url = URL.createObjectURL(val)
       } else if (typeof val === 'string') {
         const model = await this.providers.api.getFile(val)
-        this.url = _.get(model, 'url')
-      } else if (typeof val === 'object') {
-        this.url = _.get(val, 'url')
+        this.url = this.providers.api.getFileUrl(model)
+      } else if (val) {
+        this.url = this.providers.api.getFileUrl(val)
       }
       if (!this.url) {
         this.url = '/default-avatar.png'

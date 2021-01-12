@@ -51,7 +51,6 @@ export default class DatePickerInput extends Vue {
   }
 
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
-    console.log(val, this.type, this.dateFormat)
     if (this.type === 'date') {
       if (this.dateFormat) {
         this.displayDate = moment(val, 'yyyy-MM-dd').format(this.dateFormat)

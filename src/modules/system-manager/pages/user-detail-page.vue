@@ -9,29 +9,31 @@
         <v-card class="mt-4">
           <v-form ref="form">
             <v-row>
-              <v-col class="px-8">
-                <div class="d-flex align-center">
-                  <app-avatar
-                    ref="image"
-                    :avatar="selectedAvatarFile || (viewmodel.comrade && viewmodel.comrade.avatar)"
-                    height="120"
-                    width="120"
-                    @click.stop="selectAvatar"
-                  >
-                  </app-avatar>
-                  <v-file-input
-                    ref="fileInput"
-                    accept="image/png, image/jpeg, image/bmp"
-                    prepend-icon="mdi-camera"
-                    class="align-self-end"
-                    style="max-width: 24px;"
-                    hide-input
-                    v-model="selectedAvatarFile"
-                  ></v-file-input>
+              <v-col cols="12" lg="6" class="px-8">
+                <div class="d-flex align-center flex-column flex-sm-row">
+                  <div class="d-flex">
+                    <app-avatar
+                      ref="image"
+                      :avatar="selectedAvatarFile || (viewmodel.comrade && viewmodel.comrade.avatar)"
+                      height="200"
+                      width="200"
+                      @click.stop="selectAvatar"
+                    >
+                    </app-avatar>
+                    <v-file-input
+                      ref="fileInput"
+                      accept="image/png, image/jpeg, image/bmp"
+                      prepend-icon="mdi-camera"
+                      class="align-self-end"
+                      style="max-width: 24px;"
+                      hide-input
+                      v-model="selectedAvatarFile"
+                    />
+                  </div>
                   <div class="ml-4 mt-4">
                     <div class="text-h6">{{ name }}</div>
                     <div class="text-body-2 mb-4">{{ viewmodel.comrade ? viewmodel.comrade.position.title : '' }}</div>
-                    <app-text-field outlined v-model="code" label="Mã cán bộ" :rules="$appRules.comradeCode" />
+                    <app-text-field outlined v-model="code" label="Mã cán bộ" disabled />
                   </div>
                 </div>
                 <div class="text-subtitle-2 py-4">Thông tin người dùng</div>
@@ -47,28 +49,21 @@
                   :outlined="false"
                   class="mb-4"
                 />
-                <app-text-field
-                  outlined
-                  v-model="email"
-                  label="Email"
-                  autocomplete="new-password"
-                  :rules="$appRules.comradeEmail"
-                />
+                <app-text-field outlined disabled v-model="email" label="Email" autocomplete="new-password" />
                 <app-text-field outlined v-model="phone" label="Số điện thoại" :rules="$appRules.comradePhone" />
                 <div class="d-flex">
                   <div class="text-body-2">Người dùng hoạt động</div>
                   <v-switch class="ma-0 pa-0 ml-4" v-model="active" />
                 </div>
               </v-col>
-              <v-col class="px-8">
+              <v-col cols="12" lg="6" class="px-8">
                 <div class="text-subtitle-2 pb-4">Thông tin đăng nhập</div>
-                <app-text-field outlined v-model="username" label="Tên truy cập" :rules="$appRules.comradeUsername" />
+                <app-text-field outlined v-model="username" label="Tên truy cập" disabled />
                 <app-text-field
                   outlined
                   label="Mật khẩu"
                   v-model="password"
                   disabled
-                  :rules="$appRules.comradePassword"
                   autocomplete="new-password"
                   :type="'password'"
                 />
@@ -77,6 +72,7 @@
                   :types="['unit']"
                   label="Vai trò khi truy cập"
                   :outlined="false"
+                  disabled
                 />
                 <position-autocomplete
                   :value.sync="group"
@@ -123,6 +119,7 @@ import { reaction } from 'mobx'
 import { Observer } from 'mobx-vue'
 import { Component, Inject, Provide, Ref, Vue, Watch } from 'vue-property-decorator'
 import { UserDetailViewModel } from '../viewmodels/user-detail-viewmodel'
+import _ from 'lodash'
 
 @Observer
 @Component({
@@ -189,7 +186,7 @@ export default class UserDetailPage extends Vue {
     this.position = (comrade.position as PositionModel)?.id
   }
 
-  save() {
+  async save() {
     if (!this.form.validate()) return
     const comrade = {
       ...this.viewmodel.comrade,
@@ -205,9 +202,12 @@ export default class UserDetailPage extends Vue {
       unit: this.unit,
       position: this.position,
       group: this.group,
-      user: (this.viewmodel.comrade.user as UserModel).id
+      user: _.get(this.viewmodel.comrade.user, 'id')
     }
-    this.viewmodel.updateComrade(comrade)
+
+    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade)) {
+      this.selectedAvatarFile = null
+    }
   }
 
   @Watch('unit') onUnitChanged(_: string, old: string) {

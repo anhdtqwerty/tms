@@ -36,7 +36,6 @@ class AuthStore {
     reaction(
       () => this.comrade,
       comrade => {
-        console.log('comrade', comrade)
         if (comrade) localStorage.setItem('comrade', JSON.stringify(comrade))
         else localStorage.removeItem('comrade')
       }
