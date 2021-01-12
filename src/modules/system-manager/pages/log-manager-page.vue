@@ -25,6 +25,9 @@
                 </v-row>
               </v-container>
             </template>
+            <template v-slot:[`item.action`]="{ item }">
+              {{ item.action | logAction }}
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
@@ -46,7 +49,7 @@ export default class LogManagerPage extends Vue {
 
   headers = [
     { text: 'Tài khoản', value: 'comrade.code', sortable: false },
-    { text: 'Hành động', value: 'displayAction', sortable: false },
+    { text: 'Hành động', value: 'action', sortable: false },
     { text: 'Chức năng đã thao tác', value: 'displayFeature', sortable: false },
     { text: 'Nội dung thay đổi', value: 'displayDescription', sortable: false },
     { text: 'Thời gian thay đổi', value: 'displayDatetime', sortable: false },
