@@ -122,6 +122,24 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'report-general',
+        name: 'report-general',
+        component: () => import('@/modules/report/pages/report-general-page.vue'),
+        meta: {
+          title: 'Báo cáo tổng hợp',
+          auth: true
+        }
+      },
+      {
+        path: 'report-detail',
+        name: 'report-detail',
+        component: () => import('@/modules/report/pages/report-detail-page.vue'),
+        meta: {
+          title: 'Báo cáo chi tiết',
+          auth: true
+        }
+      },
+      {
         path: 'departments',
         name: 'departments',
         component: () => import('@/modules/unit-manager/pages/department-manager-page.vue'),
