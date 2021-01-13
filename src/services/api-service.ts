@@ -11,6 +11,7 @@ import { TaskModel } from '@/models/task-model'
 import { LogModel } from '@/models/log-model'
 import _ from 'lodash'
 import Bowser from 'bowser'
+import { RequestModel } from '@/models/request-model'
 
 export type ApiLogType = 'create' | 'delete' | 'update'
 export const apiLogNames: { [name in ApiLogType]: string } = {
@@ -19,7 +20,7 @@ export const apiLogNames: { [name in ApiLogType]: string } = {
   update: 'Cập nhật'
 }
 export type ApiTableType = 'user' | 'unit' | 'department' | 'position' | 'comrade' | 'task' | 'log'
-export type ApiRouteType = 'users' | 'units' | 'departments' | 'positions' | 'comrades' | 'tasks' | 'logs'
+export type ApiRouteType = 'users' | 'units' | 'departments' | 'positions' | 'comrades' | 'tasks' | 'logs' | 'requests'
 export const ApiRouteNames: { [name in ApiRouteType]: string } = {
   users: 'người dùng',
   units: 'đơn vị',
@@ -27,7 +28,8 @@ export const ApiRouteNames: { [name in ApiRouteType]: string } = {
   positions: 'vai trò',
   comrades: 'người dùng',
   tasks: 'nhiệm vụ',
-  logs: 'log'
+  logs: 'log',
+  requests: 'yêu cầu'
 }
 
 const browser = Bowser.getParser(window.navigator.userAgent)
@@ -121,6 +123,7 @@ export class ApiService {
   position = new ApiHandler<PositionModel>('positions', this.axios)
   comarde = new ApiHandler<ComradeModel>('comrades', this.axios)
   task = new ApiHandler<TaskModel>('tasks', this.axios)
+  request = new ApiHandler<RequestModel>('requests', this.axios)
 
   constructor() {
     this.setupAuthInjector()

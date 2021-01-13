@@ -56,9 +56,7 @@
                 <div>Trạng thái</div>
               </v-col>
               <v-col cols="12" sm="6">
-                <!-- <v-btn color="primary"> -->
-                <div>{{ vm.task.status }}</div>
-                <!-- </v-btn> -->
+                <task-state-component :state="vm.task.state" />
               </v-col>
             </v-row>
           </div>
@@ -105,20 +103,42 @@
       <v-col cols="12" sm="3" class="pa-2">
         <v-card height="100%" class="pa-4">
           <div>
-            <div>Theo dõi</div>
-            <div class="font-weight-bold">{{ vm.task.supervisorUnit.title }}</div>
-            <div>Chuyên viên</div>
-            <div>Lâm Chấn Khang</div>
+            <v-col cols="12">
+              <div>Theo dõi</div>
+            </v-col>
+            <v-col cols="12">
+              <div class="font-weight-bold">{{ vm.task.supervisorUnit.title }}</div>
+            </v-col>
+            <v-col cols="12">
+              <div>Chuyên viên</div>
+            </v-col>
+            <v-col cols="12">
+              <app-avatar
+                :avatar="vm.task.supervisors && vm.task.supervisors.length && vm.task.supervisors[0]"
+                width="80"
+                height="80"
+              />
+              <span class="ml-4 font-weight-bold">{{ vm.task.supervisors[0].name }}</span>
+            </v-col>
           </div>
         </v-card>
       </v-col>
       <v-col cols="12" sm="3" class="pa-2">
         <v-card height="100%" class="pa-4">
           <div>
-            <div>Thực hiện</div>
-            <div class="font-weight-bold">{{ vm.task.executedUnit.title }}</div>
-            <div>Chuyên viên</div>
-            <div>Lâm Chấn Khang</div>
+            <v-col cols="12">
+              <div>Thực hiện</div>
+            </v-col>
+            <v-col cols="12">
+              <div class="font-weight-bold">{{ vm.task.executedUnit.title }}</div>
+            </v-col>
+            <v-col cols="12">
+              <div>Chuyên viên</div>
+            </v-col>
+            <v-col cols="12">
+              <app-avatar :avatar="vm.task.executedComrade && vm.task.executedComrade.avatar" width="80" height="80" />
+              <span class="ml-4 font-weight-bold">{{ vm.task.executedComrade.name }}</span>
+            </v-col>
           </div>
         </v-card>
       </v-col>
@@ -152,8 +172,8 @@
               </task-search-component>
             </template>
 
-            <template v-slot:[`item.actions`]="">
-              <task-sub-action-menu />
+            <template v-slot:[`item.actions`]="{ item }">
+              <task-sub-action-menu :task="item.task" />
             </template>
           </v-data-table>
         </v-card>
@@ -239,7 +259,7 @@
     <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-approve-dialog :value.sync="showApproveDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-update-processing-dialog :value.sync="showEditStatusDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-update-processing-dialog :value.sync="showEditStateDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
   </v-container>
 </template>
@@ -264,7 +284,9 @@ import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
     TaskApproveDialog: () => import('../dialogs/task-approve-dialog.vue'),
     TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
     TaskUpdateProcessingDialog: () => import('../dialogs/task-update-processing-dialog.vue'),
-    TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue')
+    TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
+    AppAvatar: () => import('@/components/images/app-avatar.vue'),
+    TaskStateComponent: () => import('../components/task-state-component.vue')
   }
 })
 export default class TaskDetailPage extends Vue {
@@ -280,7 +302,7 @@ export default class TaskDetailPage extends Vue {
   showAssignDialog = false
   showReturnDialog = false
   showApproveDialog = false
-  showEditStatusDialog = false
+  showEditStateDialog = false
   showReopenDialog = false
 
   taskActionCommon(typeAction: string) {
@@ -303,8 +325,8 @@ export default class TaskDetailPage extends Vue {
       case 'approve':
         this.showApproveDialog = true
         break
-      case 'editStatus':
-        this.showEditStatusDialog = true
+      case 'editState':
+        this.showEditStateDialog = true
         break
       case 'reOpen':
         this.showReopenDialog = true
@@ -320,8 +342,8 @@ export default class TaskDetailPage extends Vue {
     { text: 'Hạn xử lý', value: 'expireDate', sortable: false },
     { text: 'ĐV thực hiện', value: 'supervisorUnit.title', sortable: true },
     { text: 'CV thực hiện', value: 'executeStaff', sortable: false },
-    { text: 'Trạng thái', value: 'status', sortable: false },
-    { text: 'Tình hình thực hiện', value: 'status', sortable: false },
+    { text: 'Trạng thái', value: 'state', sortable: false },
+    { text: 'Tình hình thực hiện', value: 'data.updateProcessing', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]
 

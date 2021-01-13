@@ -48,12 +48,7 @@
               />
             </v-col>
             <v-col>
-              <task-processing-expire-select
-                class="mb-6"
-                hide-details
-                :value.sync="processingExpire"
-                label="Loại hạn xử lý"
-              />
+              <task-deadline-type-select class="mb-6" hide-details :value.sync="deadlineType" label="Loại hạn xử lý" />
               <date-picker-input class="mb-6" :value.sync="expiredDate" label="Hạn xử lý" />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
               <comrade-autocomplete
@@ -82,6 +77,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { TaskModel } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
 import { Component, Inject, PropSync, Prop, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
@@ -90,9 +86,7 @@ import { Component, Inject, PropSync, Prop, Ref, Vue } from 'vue-property-decora
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
-    TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
-    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
-    TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue')
+    TaskDeadlineTypeSelect: () => import('@/components/autocomplete/task-deadline-type-select.vue')
   }
 })
 export default class TaskAddDialog extends Vue {
@@ -105,7 +99,7 @@ export default class TaskAddDialog extends Vue {
   publishedDate = ''
   title = ''
   description = ''
-  processingExpire = ''
+  deadlineType = ''
   expiredDate = ''
 
   executedUnitId = ''
@@ -115,8 +109,6 @@ export default class TaskAddDialog extends Vue {
   executedComradeId = ''
   supportedComradeIds: string[] = []
   supervisorIds: string[] = []
-
-  status = ''
 
   async save() {
     if (this.form.validate()) {
@@ -130,7 +122,9 @@ export default class TaskAddDialog extends Vue {
         supervisorUnit: this.supervisorUnitId,
         executedComrade: this.executedComradeId,
         supportedComrades: this.supportedComradeIds,
-        supervisors: this.supervisorIds
+        supervisors: this.supervisorIds,
+        state: 'open',
+        createdBy: authStore.comrade.id
       })
 
       this.$emit('success', task)

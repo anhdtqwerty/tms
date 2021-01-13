@@ -2,6 +2,7 @@ import { AppProvider } from '@/app-provider'
 import { ComradeModel } from '@/models/comrade-model'
 import { action, observable, reaction } from 'mobx'
 import { asyncAction } from 'mobx-utils'
+import { taskRouteNameMap } from '@/models/task-model'
 
 export class MenuViewModel {
   @observable selected = false
@@ -33,11 +34,14 @@ export class MainContainerViewModel {
     new MenuViewModel('Quản lý nhiệm vụ', {
       icon: 'list',
       children: [
-        new MenuViewModel('Nhiệm vụ giao', { link: '/tasks/task-asign' }),
-        new MenuViewModel('Đang theo dõi', { link: '/tasks/task-following' }),
-        new MenuViewModel('Đã quá hạn', { link: '/tasks/task-expired' }),
-        new MenuViewModel('Chờ xác nhận', { link: '/tasks/task-pending' }),
-        new MenuViewModel('Đã hoàn thành', { link: '/tasks/task-done' })
+        new MenuViewModel(taskRouteNameMap['task-created'], { link: '/tasks/task-created' }),
+        new MenuViewModel(taskRouteNameMap['task-assigned'], { link: '/tasks/task-assigned' }),
+        new MenuViewModel(taskRouteNameMap['task-expired'], { link: '/tasks/task-expired' }),
+        new MenuViewModel(taskRouteNameMap['task-unfinished'], { link: '/tasks/task-unfinished' }),
+        new MenuViewModel(taskRouteNameMap['task-requesting'], { link: '/tasks/task-requesting' }),
+        new MenuViewModel(taskRouteNameMap['task-following'], { link: '/tasks/task-following' }),
+        new MenuViewModel(taskRouteNameMap['task-support'], { link: '/tasks/task-support' }),
+        new MenuViewModel(taskRouteNameMap['task-done'], { link: '/tasks/task-done' })
       ]
     }),
     new MenuViewModel('Tổng hợp báo cáo', {

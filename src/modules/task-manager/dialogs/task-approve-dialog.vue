@@ -21,7 +21,7 @@
               <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
             </v-col>
             <v-col cols="12" sm="6">
-              <task-state-select :value.sync="approvementState" label="Trạng thái" />
+              <task-approvement-status-select :value.sync="approvementStatus" label="Trạng thái" />
               <app-file-input label="File đính kèm" />
               <app-text-field v-model="explain" label="Diễn giải trạng thái" />
             </v-col>
@@ -30,9 +30,9 @@
           <v-row>
             <v-col cols="12">
               <div class="text-subtitle-2 mb-4">Chuyên viên phê duyệt kết quả</div>
-              <v-radio-group row class="ma-0 pa-0" v-model="approveStatus">
-                <v-radio label="Phê duyệt" value="approve" />
-                <v-radio label="Trả lại" value="return" />
+              <v-radio-group row class="ma-0 pa-0" v-model="approveStatusResult">
+                <v-radio label="Phê duyệt" value="approved" />
+                <v-radio label="Trả lại" value="reject" />
               </v-radio-group>
             </v-col>
             <v-col cols="12" sm="6">
@@ -65,7 +65,7 @@ import { TaskApprovementStatusType, TaskModel } from '@/models/task-model'
 @Component({
   components: {
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
-    TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue')
+    TaskApprovementStatusSelect: () => import('@/components/autocomplete/task-approvement-status-select.vue')
   }
 })
 export default class TaskApproveDialog extends Vue {
@@ -78,9 +78,9 @@ export default class TaskApproveDialog extends Vue {
   executedDate = ''
   description = ''
   reason = ''
-  approvementState = ''
+  approvementStatus = 'requesting'
   explain = ''
-  approveStatus: TaskApprovementStatusType = 'return'
+  approveStatusResult: TaskApprovementStatusType = 'approved'
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -93,7 +93,8 @@ export default class TaskApproveDialog extends Vue {
     if (this.form.validate()) {
       let task: TaskModel = {
         ...this.task,
-        description: this.description
+        description: this.description,
+        status: this.approveStatusResult
       }
       task = await this.providers.api.task.update(task.id, task)
       this.$emit('success', task)

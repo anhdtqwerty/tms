@@ -48,12 +48,7 @@
               />
             </v-col>
             <v-col>
-              <task-processing-expire-select
-                class="mb-6"
-                hide-details
-                :value.sync="processingExpire"
-                label="Loại hạn xử lý"
-              />
+              <task-deadline-type-select class="mb-6" hide-details :value.sync="deadlineType" label="Loại hạn xử lý" />
               <date-picker-input :value.sync="expiredDate" label="Hạn xử lý" />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
               <comrade-autocomplete
@@ -62,7 +57,7 @@
                 multiple
                 label="Chuyên viên theo dõi"
               />
-              <task-status-select :value.sync="status" label="Trạng thái" />
+              <task-state-select :value.sync="state" label="Trạng thái" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -94,8 +89,8 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
-    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
-    TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue')
+    TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
+    TaskDeadlineTypeSelect: () => import('@/components/autocomplete/task-deadline-type-select.vue')
   }
 })
 export default class TaskEditDialog extends Vue {
@@ -115,8 +110,8 @@ export default class TaskEditDialog extends Vue {
   supportedUnitIds: string[] = []
   executedComradeId = ''
   supportedComradeIds: string[] = []
-  processingExpire = ''
-  status = ''
+  deadlineType = ''
+  state = ''
   supervisorIds: string[] = []
   supervisorUnitId = ''
   expiredDate = ''
@@ -133,7 +128,7 @@ export default class TaskEditDialog extends Vue {
       this.supportedComradeIds = ((val.supportedComrades as ComradeModel[])?.map(x => x.id) as []) ?? []
       this.supervisorIds = ((val.supervisors as ComradeModel[])?.map(x => x.id) as []) ?? []
       this.expiredDate = val.expiredDate
-      this.status = val.status
+      this.state = val.state
     }
   }
 
