@@ -12,14 +12,14 @@
 
 <script lang="ts">
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
-import { taskStatusNames } from '@/models/task-model'
+import { taskApprovementStatusNames } from '@/models/task-model'
 
 @Component
-export default class TaskStatusSelect extends Vue {
+export default class TaskApprovementStatusSelect extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
 
-  items = taskStatusNames
+  items = taskApprovementStatusNames
 }
 </script>
 

@@ -26,9 +26,9 @@
                 />
               </v-col>
               <v-col cols="12" md="3" class="d-none d-sm-flex pa-2 align-center">
-                <task-state-select
+                <task-approvement-status-select
                   hide-details
-                  :value.sync="searchApprovementState"
+                  :value.sync="searchApprovementStatus"
                   label="Trạng thái phê duyệt"
                   :unitRequired="false"
                 />
@@ -41,9 +41,9 @@
                 <app-text-field hide-details v-model="searchExecuteStaff" label="Cá nhân được giao" />
               </v-col>
               <v-col cols="12" md="3" class="pa-2">
-                <task-status-select
+                <task-state-select
                   hide-details
-                  :value.sync="searchStatus"
+                  :value.sync="searchState"
                   label="Tình hình thực hiện"
                   :unitRequired="false"
                 />
@@ -115,8 +115,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 @Component({
   components: {
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
+    TaskApprovementStatusSelect: () => import('@/components/autocomplete/task-approvement-status-select.vue'),
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
-    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
     TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     DateRangePickerInput: () => import('@/components/picker/date-range-picker-input.vue')
@@ -129,11 +129,11 @@ export default class TaskSearchComponent extends Vue {
   searchCode = ''
   searchTitle = ''
   searchPriority: string = null
-  searchApprovementState: string = null
+  searchApprovementStatus: string = null
 
   searchExecuteUnit = ''
   searchExecuteStaff = ''
-  searchStatus: string = null
+  searchState: string = null
   searchProcessingExpire: string = null
 
   searchSupervisorUnit = ''

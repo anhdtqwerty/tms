@@ -11,11 +11,11 @@
       <v-container fluid px-5 py-2>
         <v-row>
           <v-col cols="12" class="pa-2">
-            <div class="mb-4" @click="showEdit()">
-              <div class="mb-4">
-                <v-icon color="blue" left>visibility</v-icon>
-                <span class="blue--text">Xem nhiệm vụ</span>
-              </div>
+            <div class="mb-4" @click="showDetail(task)">
+              <v-icon color="blue" left>visibility</v-icon>
+              <span class="blue--text">Xem nhiệm vụ </span>
+            </div>
+            <div class="mb-4">
               <v-icon color="blue" left>edit</v-icon>
               <span class="blue--text">Sửa nhiệm vụ</span>
             </div>
@@ -32,7 +32,8 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { Component, Inject, PropSync, Vue } from 'vue-property-decorator'
+import { TaskModel } from '@/models/task-model'
+import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {}
@@ -40,9 +41,18 @@ import { Component, Inject, PropSync, Vue } from 'vue-property-decorator'
 export default class TaskSubActionMenu extends Vue {
   @Inject() providers!: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
+  @Prop() task: TaskModel
+
+  @Watch('task') onTaskChange(val: TaskModel) {
+    console.log('task', val)
+  }
 
   showEdit() {
     this.$emit('showEdit')
+  }
+
+  showDetail(item: TaskModel) {
+    this.$router.push({ path: '/task/' + item.id })
   }
 }
 </script>

@@ -13,9 +13,9 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12">
-              <task-status-select :value.sync="status" label="Trạng thái" />
+              <task-state-select :value.sync="state" label="Trạng thái" />
               <date-picker-input label="Ngày thực hiện" />
-              <app-text-field v-model="explain" label="Diễn giải trạng thái" />
+              <app-text-field v-model="description" label="Diễn giải trạng thái" />
               <app-file-input label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
@@ -40,7 +40,7 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
 
 @Component({
   components: {
-    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
+    TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
   }
 })
@@ -51,23 +51,42 @@ export default class TaskUpdateProcessingDialog extends Vue {
   @Prop() task: TaskModel
 
   code = ''
-  status = ''
-  explain = ''
+  state = ''
+  description = ''
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
+      this.state = val.state
     }
   }
 
   async save() {
     if (this.form.validate()) {
-      let task: TaskModel = {
-        ...this.task
+      try {
+        const api = this.providers.api
+        const resquest = await api.request.create({
+          description: this.description
+          // type:
+        })
+
+        try {
+          let task: TaskModel = {
+            ...this.task,
+            state: this.state,
+            data: { updateProcessing: this.description }
+          }
+
+          task = await api.task.update(task.id, task)
+          this.$emit('success', task)
+          this.syncedValue = false
+        } catch (error) {
+          await api.user.delete(resquest.id)
+          throw error
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      task = await this.providers.api.task.update(task.id, task)
-      this.$emit('success', task)
-      this.syncedValue = false
     }
   }
 }

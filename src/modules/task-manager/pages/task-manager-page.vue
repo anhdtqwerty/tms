@@ -48,6 +48,10 @@
                 <task-action-component @task-action="taskActionCommon($event, item)" />
               </v-menu>
             </template>
+
+            <template v-slot:[`item.state`]="{ item }">
+              <task-state-component :state="item.state" />
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
@@ -60,7 +64,7 @@
     <task-approve-dialog :value.sync="showApproveDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-return-dialog :value.sync="showReturnDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-update-processing-dialog
-      :value.sync="showEditStatusDialog"
+      :value.sync="showEditStateDialog"
       :task="selectedTask"
       @success="viewmodel.taskUpdated"
     />
@@ -70,16 +74,14 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
-import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
+import { TaskModel, TaskRouteType } from '@/models/task-model'
+import { Component, Inject, Provide, Vue, Watch } from 'vue-property-decorator'
 import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
 
 @Component({
   components: {
     TaskAddDialog: () => import('../dialogs/task-add-dialog.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
-    TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
-    TaskStatusSelect: () => import('@/components/autocomplete/task-status-select.vue'),
     TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
     TaskSearchComponent: () => import('../components/task-search-component.vue'),
     TaskDetailPage: () => import('./task-detail-page.vue'),
@@ -91,7 +93,8 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
     TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
     TaskUpdateProcessingDialog: () => import('../dialogs/task-update-processing-dialog.vue'),
     TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
-    TaskActionComponent: () => import('../components/task-action-component.vue')
+    TaskActionComponent: () => import('../components/task-action-component.vue'),
+    TaskStateComponent: () => import('../components/task-state-component.vue')
   }
 })
 export default class TaskManagerPage extends Vue {
@@ -106,10 +109,14 @@ export default class TaskManagerPage extends Vue {
   showAssignDialog = false
   showReturnDialog = false
   showApproveDialog = false
-  showEditStatusDialog = false
+  showEditStateDialog = false
   showReopenDialog = false
 
   selectedTask: TaskModel = null
+
+  @Watch('$route.params.tasktype', { immediate: true }) onTaskParamChange(val: TaskRouteType) {
+    this.viewmodel.loadData(val)
+  }
 
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
@@ -117,7 +124,7 @@ export default class TaskManagerPage extends Vue {
     { text: 'Trích yếu', value: 'title', sortable: true },
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false },
-    { text: 'Trạng thái', value: 'status', sortable: false },
+    { text: 'Trạng thái', value: 'state', sortable: false },
     { text: 'Hạn xử lý', value: 'expireDate', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]
@@ -148,8 +155,8 @@ export default class TaskManagerPage extends Vue {
         this.showApproveDialog = true
         this.selectedTask = item
         break
-      case 'editStatus':
-        this.showEditStatusDialog = true
+      case 'editState':
+        this.showEditStateDialog = true
         this.selectedTask = item
         break
       case 'reOpen':

@@ -1,5 +1,6 @@
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
+import { TaskModel, TaskRouteType } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -12,10 +13,23 @@ export class TaskManagerViewModel {
     this.search()
   }
 
-  @asyncAction *loadData() {
+  @asyncAction *loadData(val: TaskRouteType) {
+    const params: any = {}
+    switch (val) {
+      case 'task-created':
+        params['createdBy'] = authStore.comrade.id
+        break
+      case 'task-assigned':
+        params['executedComrade'] = authStore.comrade.id
+        break
+
+      default:
+        break
+    }
+
     const results = yield Promise.all([
-      this.provider.api.task.count(),
-      this.provider.api.task.find<TaskModel>()
+      this.provider.api.task.count(), 
+      this.provider.api.task.find<TaskModel>(params)
     ])
     this.totalCount = results[0]
     this.tasks = results[1]
