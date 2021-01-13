@@ -13,7 +13,7 @@
     <template v-slot:activator="{ on, $attrs }">
       <app-text-field
         :v-bind="$attrs"
-        :value="syncedValue.join(' - ')"
+        :value="displayDateRange"
         :label="label"
         readonly
         v-on="on"
@@ -34,6 +34,7 @@
 </template>
 
 <script lang="ts">
+import moment from 'moment'
 import { Component, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 
 @Component
@@ -48,7 +49,7 @@ export default class DatePickerInput extends Vue {
   selectedRange: string[] = []
 
   @Watch('value', { immediate: true }) onValueChanged(val: string[]) {
-    this.selectedRange = val
+    this.selectedRange = (val ?? []).map(d => moment(d).format('yyyy-MM-DD'))
   }
 
   cancel() {
@@ -56,14 +57,18 @@ export default class DatePickerInput extends Vue {
   }
 
   ok() {
-    this.syncedValue = this.selectedRange
+    this.syncedValue = this.selectedRange.map(d => moment(d, 'yyyy-MM-DD').toISOString())
     this.show = false
   }
 
   menuChanged(open: boolean) {
     if (!open) {
-      this.selectedRange = this.syncedValue
+      this.selectedRange = (this.syncedValue ?? []).map(d => moment(d).format('yyyy-MM-DD'))
     }
+  }
+
+  get displayDateRange() {
+    return this.syncedValue.map(d => moment(d).format('DD/MM/yyyy')).join(' - ')
   }
 }
 </script>

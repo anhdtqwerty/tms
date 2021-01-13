@@ -40,7 +40,13 @@ export class MainContainerViewModel {
         new MenuViewModel('Đã hoàn thành', { link: '/tasks/task-done' })
       ]
     }),
-    new MenuViewModel('Tổng hợp báo cáo', { icon: 'description' }),
+    new MenuViewModel('Tổng hợp báo cáo', {
+      icon: 'description',
+      children: [
+        new MenuViewModel('Báo cáo tổng hợp', { link: '/report-general', permission: 'report.general.read' }),
+        new MenuViewModel('Báo cáo chi tiết', { link: '/report-detail', permission: 'report.detail.read' })
+      ]
+    }),
     new MenuViewModel('Quản lý đơn vị', {
       permission: 'system.unit.read',
       icon: 'view_comfy',
