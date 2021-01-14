@@ -78,7 +78,7 @@ export default class TaskApproveDialog extends Vue {
   executedDate = ''
   description = ''
   reason = ''
-  approvementStatus = 'requesting'
+  approvementStatus = 'approving'
   explain = ''
   approveStatusResult: TaskApprovementStatusType = 'approved'
 

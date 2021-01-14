@@ -8,8 +8,8 @@ export interface TaskModel {
   code?: string
   description?: string
   priority?: string | TaskPriorityType
-  state?: string | TaskStateType
-  status?: string | TaskApprovementStatusType
+  state?: TaskStateType
+  status?: TaskApprovementStatusType
   type?: string
 
   executedUnit?: string | UnitModel
@@ -58,32 +58,32 @@ export const taskDeadlineTypeNames: { type: TaskDeadlineType; name: string }[] =
   { type: 'noDeadline', name: 'Không có thời hạn xử lý' }
 ]
 
-export type TaskApprovementStatusType = 'requesting' | 'approved' | 'reject'
+export type TaskApprovementStatusType = 'approving' | 'approved' |  'rejected'
 export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name: string }[] = [
-  { type: 'requesting', name: 'Chờ phê duyệt' },
+  { type: 'approving', name: 'Chờ phê duyệt' },
   { type: 'approved', name: 'Đã phê duyệt' },
-  { type: 'reject', name: 'Trả lại' }
+  { type:  'rejected', name: 'Trả lại' }
 ]
 
-export type TaskStateType = 'todo' | 'open' | 'doing' | 'done' | 'revoked'
+export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered'
 export const taskStateNameMap:{[name in TaskStateType]: string} = {
   'todo': 'Chưa thực hiện',
-  'open': 'Chưa cập nhật tiến độ',
+  'waiting': 'Chưa cập nhật tiến độ',
   'doing': 'Đang thực hiện',
   'done': 'Đã hoàn thành',
-  'revoked': 'Bị thu hồi'
+  'recovered': 'Bị thu hồi'
 }
 export const taskStateNames: { type: TaskStateType; name: string }[] = Object.entries(taskStateNameMap).map(([type, value])=>({
   type, value
 }) as any)
 
-export type TaskRouteType = 'task-created' | 'task-assigned' | 'task-following' | 'task-expired' | 'task-unfinished' | 'task-requesting' | 'task-support' | 'task-done'
+export type TaskRouteType = 'task-created' | 'task-assigned' | 'task-following' | 'task-expired' | 'task-unfinished' | 'task-approving' | 'task-support' | 'task-done'
 export const taskRouteNameMap:{[name in TaskRouteType]: string} = {
   'task-created': 'Nhiệm vụ giao',
   'task-assigned': 'Được giao',
   'task-expired': 'Đã quá hạn',
   'task-unfinished': 'Chưa hoàn thành',
-  'task-requesting': 'Chờ xác nhận',
+  'task-approving': 'Chờ xác nhận',
   'task-following': 'Đang theo dõi',
   'task-support': 'Phối hợp',
   'task-done': 'Đã hoàn thành'

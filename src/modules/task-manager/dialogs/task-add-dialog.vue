@@ -123,7 +123,7 @@ export default class TaskAddDialog extends Vue {
         executedComrade: this.executedComradeId,
         supportedComrades: this.supportedComradeIds,
         supervisors: this.supervisorIds,
-        state: 'open',
+        state: 'waiting',
         createdBy: authStore.comrade.id
       })
 
