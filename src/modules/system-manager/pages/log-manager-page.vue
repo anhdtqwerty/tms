@@ -13,7 +13,7 @@
             :headers="selectedHeaders"
             mobile-breakpoint="0"
             :server-items-length="viewmodel.totalCount"
-            :footer-props="{ itemsPerPageOptions: [25] }"
+            :footer-props="{ itemsPerPageOptions: [25], showFirstLastPage: true }"
             @update:page="viewmodel.loadData($event)"
           >
             <template v-slot:top>

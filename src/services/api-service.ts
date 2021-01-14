@@ -12,6 +12,7 @@ import { LogModel } from '@/models/log-model'
 import _ from 'lodash'
 import Bowser from 'bowser'
 import { RequestModel } from '@/models/request-model'
+import { GeneralReportModel } from '@/models/report-model'
 
 export type ApiLogType = 'create' | 'delete' | 'update'
 export const apiLogNames: { [name in ApiLogType]: string } = {
@@ -29,7 +30,7 @@ export const ApiRouteNames: { [name in ApiRouteType]: string } = {
   comrades: 'người dùng',
   tasks: 'nhiệm vụ',
   logs: 'log',
-  requests: 'yêu cầu'
+  requests: 'lịch sử'
 }
 
 const browser = Bowser.getParser(window.navigator.userAgent)
@@ -123,7 +124,7 @@ export class ApiService {
   position = new ApiHandler<PositionModel>('positions', this.axios)
   comarde = new ApiHandler<ComradeModel>('comrades', this.axios)
   task = new ApiHandler<TaskModel>('tasks', this.axios)
-  request = new ApiHandler<RequestModel>('requests', this.axios)
+  request = new ApiHandler<RequestModel>('requests', this.axios, false)
 
   constructor() {
     this.setupAuthInjector()
@@ -201,5 +202,10 @@ export class ApiService {
     } else {
       return null
     }
+  }
+
+  async getGeneralReport(from: string, to: string): Promise<GeneralReportModel[]> {
+    const res = await this.axios.get(`tasks/statistic`, { params: { from, to } })
+    return res.data
   }
 }
