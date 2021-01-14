@@ -13,7 +13,7 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12">
-              <app-textarea v-model="reasonRetrieve" label="Lý do thu hồi" />
+              <app-textarea v-model="reasonRecover" label="Lý do thu hồi" />
               <app-file-input label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
@@ -34,12 +34,13 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { TaskModel } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {}
 })
-export default class TaskRetrieveDialog extends Vue {
+export default class TaskRecoverDialog extends Vue {
   @Inject() providers: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Ref('form') form: any
@@ -47,21 +48,46 @@ export default class TaskRetrieveDialog extends Vue {
 
   title = ''
   code = ''
-  reasonRetrieve = ''
+  reasonRecover = ''
+  data: any = {}
+
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
+      this.data = val.data
     }
   }
 
   async save() {
     if (this.form.validate()) {
-      let task: TaskModel = {
-        ...this.task
+      try {
+        const api = this.providers.api
+        const resquest = await api.request.create({
+          // title, files, approver
+          description: this.reasonRecover,
+          type: 'recovered',
+          requestor: authStore.comrade.id,
+          task: this.task
+        })
+        try {
+          let task: TaskModel = {
+            ...this.task,
+            state: 'recovered',
+            data: { ...this.data, explain: this.reasonRecover }
+          }
+
+          task = await api.task.update(task.id, task)
+          this.$emit('success', task)
+          this.syncedValue = false
+          this.form.reset()
+          this.providers.snackbar.addSuccess()
+        } catch (error) {
+          await api.request.delete(resquest.id)
+          throw error
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      task = await this.providers.api.task.update(task.id, task)
-      this.$emit('success', task)
-      this.syncedValue = false
     }
   }
 }

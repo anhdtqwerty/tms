@@ -7,7 +7,7 @@ export interface TaskModel {
   title?: string
   code?: string
   description?: string
-  priority?: string | TaskPriorityType
+  priority?: TaskPriorityType
   state?: TaskStateType
   status?: TaskApprovementStatusType
   type?: string
@@ -32,43 +32,57 @@ export interface TaskModel {
 
   files?: string[]
   createdBy: string | ComradeModel
-  // requests?: string[] | Request[]
+  requests?: string[] | Request[]
 
   data?: {}
 }
 
 export type TaskPriorityType = 'level_1' | 'level_2' | 'level_3' | 'urgent'
-export const taskPriorityNames: { type: TaskPriorityType; name: string }[] = [
-  { type: 'level_1', name: 'Mức 1' },
-  { type: 'level_2', name: 'Mức 2' },
-  { type: 'level_3', name: 'Mức 3' },
-  { type: 'urgent', name: 'Cấp thiết' }
-]
+export const taskPriorityNameMap:{[name in TaskPriorityType]: string} = {
+  'level_1': 'Mức 1',
+  'level_2': 'Mức 2',
+  'level_3': 'Mức 3',
+  'urgent': 'Cấp thiết'
+}
+export const taskPriorityNames: { type: TaskPriorityType; name: string }[] = Object.entries(taskPriorityNameMap).map(([type, value])=>({
+  type, value
+}) as any)
 
 export type TaskProcessingExpireType = 'inProcessing' | 'expired' | 'almostExpired'
-export const taskProcessingExpireNames: { type: TaskProcessingExpireType; name: string }[] = [
-  { type: 'inProcessing', name: 'Trong hạn' },
-  { type: 'expired', name: 'Quá hạn' },
-  { type: 'almostExpired', name: 'Sắp hết hạn' }
-]
+export const taskProcessingExpireNameMap:{[name in TaskProcessingExpireType]: string} = {
+  'inProcessing': 'Trong hạn',
+  'expired': 'Quá hạn',
+  'almostExpired': 'Sắp hết hạn'
+}
+export const taskProcessingExpireNames: { type: TaskProcessingExpireType; name: string }[] = Object.entries(taskProcessingExpireNameMap).map(([type, value])=>({
+  type, value
+}) as any)
 
 export type TaskDeadlineType = 'hasDeadline' | 'noDeadline'
-export const taskDeadlineTypeNames: { type: TaskDeadlineType; name: string }[] = [
-  { type: 'hasDeadline', name: 'Có thời hạn xử lý' },
-  { type: 'noDeadline', name: 'Không có thời hạn xử lý' }
-]
+export const taskDeadlineNameMap:{[name in TaskDeadlineType]: string} = {
+  'hasDeadline': 'Có thời hạn xử lý',
+  'noDeadline': 'Không có thời hạn xử lý'
+}
+export const taskDeadlineNames: { type: TaskDeadlineType; name: string }[] = Object.entries(taskDeadlineNameMap).map(([type, value])=>({
+  type, value
+}) as any)
+
+
 
 export type TaskApprovementStatusType = 'approving' | 'approved' |  'rejected'
-export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name: string }[] = [
-  { type: 'approving', name: 'Chờ phê duyệt' },
-  { type: 'approved', name: 'Đã phê duyệt' },
-  { type:  'rejected', name: 'Trả lại' }
-]
+export const taskApprovementStatusNameMap:{[name in TaskApprovementStatusType]: string} = {
+  'approving': 'Chờ phê duyệt',
+  'approved': 'Đã phê duyệt',
+  'rejected': 'Trả lại'
+}
+export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name: string }[] = Object.entries(taskApprovementStatusNameMap).map(([type, value])=>({
+  type, value
+}) as any)
 
 export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered'
 export const taskStateNameMap:{[name in TaskStateType]: string} = {
-  'todo': 'Chưa thực hiện',
   'waiting': 'Chưa cập nhật tiến độ',
+  'todo': 'Chưa thực hiện',
   'doing': 'Đang thực hiện',
   'done': 'Đã hoàn thành',
   'recovered': 'Bị thu hồi'

@@ -112,13 +112,11 @@
             <v-col cols="12">
               <div>Chuyên viên</div>
             </v-col>
-            <v-col cols="12">
-              <app-avatar
-                :avatar="vm.task.supervisors && vm.task.supervisors.length && vm.task.supervisors[0]"
-                width="80"
-                height="80"
-              />
-              <span class="ml-4 font-weight-bold">{{ vm.task.supervisors[0].name }}</span>
+            <v-col cols="12" v-if="vm.task.supervisors && vm.task.supervisors.length">
+              <app-avatar :avatar="vm.task.supervisors[0]" width="80" height="80" />
+              <span class="ml-4 font-weight-bold">
+                {{ vm.task.supervisors[0].name }}
+              </span>
             </v-col>
           </div>
         </v-card>
@@ -135,8 +133,8 @@
             <v-col cols="12">
               <div>Chuyên viên</div>
             </v-col>
-            <v-col cols="12">
-              <app-avatar :avatar="vm.task.executedComrade && vm.task.executedComrade.avatar" width="80" height="80" />
+            <v-col cols="12" v-if="vm.task.executedComrade">
+              <app-avatar :avatar="vm.task.executedComrade.avatar" width="80" height="80" />
               <span class="ml-4 font-weight-bold">{{ vm.task.executedComrade.name }}</span>
             </v-col>
           </div>
@@ -174,6 +172,10 @@
 
             <template v-slot:[`item.actions`]="{ item }">
               <task-sub-action-menu :task="item.task" />
+            </template>
+
+            <template v-slot:[`item.state`]="{ item }">
+              <task-state-component :state="item.state" />
             </template>
           </v-data-table>
         </v-card>
@@ -254,12 +256,12 @@
 
     <task-add-dialog :value.sync="showAddSubtask" :taskParent="vm.task" @success="vm.taskAdded" />
     <task-edit-dialog :value.sync="showEditDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-retrieve-dialog :value.sync="showRetriveDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-recover-dialog :value.sync="showRetriveDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-extend-dialog :value.sync="showExtendDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-approve-dialog :value.sync="showApproveDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-update-processing-dialog :value.sync="showEditStateDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-reject-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-update-state-dialog :value.sync="showEditStateDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
   </v-container>
 </template>
@@ -267,8 +269,9 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { Observer } from 'mobx-vue'
-import { Component, PropSync, Vue, Provide, Inject } from 'vue-property-decorator'
+import { Component, PropSync, Vue, Provide, Inject, Watch } from 'vue-property-decorator'
 import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
+import { taskPriorityNameMap } from '@/models/task-model'
 
 @Observer
 @Component({
@@ -278,12 +281,12 @@ import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
     TaskActionComponent: () => import('../components/task-action-component.vue'),
     TaskSubActionMenu: () => import('../dialogs/task-sub-action-menu.vue'),
     TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue'),
-    TaskRetrieveDialog: () => import('../dialogs/task-retrieve-dialog.vue'),
+    TaskRecoverDialog: () => import('../dialogs/task-recover-dialog.vue'),
     TaskExtendDialog: () => import('../dialogs/task-extend-dialog.vue'),
     TaskAssignDialog: () => import('../dialogs/task-assign-dialog.vue'),
     TaskApproveDialog: () => import('../dialogs/task-approve-dialog.vue'),
-    TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
-    TaskUpdateProcessingDialog: () => import('../dialogs/task-update-processing-dialog.vue'),
+    TaskRejectDialog: () => import('../dialogs/task-reject-dialog.vue'),
+    TaskUpdateStateDialog: () => import('../dialogs/task-update-state-dialog.vue'),
     TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
     AppAvatar: () => import('@/components/images/app-avatar.vue'),
     TaskStateComponent: () => import('../components/task-state-component.vue')
@@ -343,7 +346,7 @@ export default class TaskDetailPage extends Vue {
     { text: 'ĐV thực hiện', value: 'supervisorUnit.title', sortable: true },
     { text: 'CV thực hiện', value: 'executeStaff', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
-    { text: 'Tình hình thực hiện', value: 'data.updateProcessing', sortable: false },
+    { text: 'Tình hình thực hiện', value: 'data.explain', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]
 

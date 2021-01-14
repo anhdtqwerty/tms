@@ -4,7 +4,7 @@
     v-model="syncedValue"
     dense
     :outlined="outlined"
-    item-text="name"
+    item-text="value"
     item-value="type"
     :items="items"
   />
@@ -12,14 +12,14 @@
 
 <script lang="ts">
 import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
-import { taskDeadlineTypeNames } from '@/models/task-model'
+import { taskDeadlineNames } from '@/models/task-model'
 
 @Component
 export default class TaskDeadlineTypeSelect extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
 
-  items = taskDeadlineTypeNames
+  items = taskDeadlineNames
 }
 </script>
 

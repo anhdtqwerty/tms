@@ -35,7 +35,8 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
+import { TaskModel, TaskStateType } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -44,20 +45,22 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
   }
 })
-export default class TaskUpdateProcessingDialog extends Vue {
+export default class TaskUpdateStateDialog extends Vue {
   @Inject() providers: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Ref('form') form: any
   @Prop() task: TaskModel
 
   code = ''
-  state = ''
+  state: TaskStateType = null
   description = ''
+  data: any = {}
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.state = val.state
+      this.data = val.data
     }
   }
 
@@ -66,22 +69,26 @@ export default class TaskUpdateProcessingDialog extends Vue {
       try {
         const api = this.providers.api
         const resquest = await api.request.create({
-          description: this.description
-          // type:
+          // title, files, approver
+          description: this.description,
+          type: 'updateState',
+          requestor: authStore.comrade.id,
+          task: this.task
         })
-
         try {
           let task: TaskModel = {
             ...this.task,
             state: this.state,
-            data: { updateProcessing: this.description }
+            data: { ...this.data, explain: this.description }
           }
 
           task = await api.task.update(task.id, task)
           this.$emit('success', task)
           this.syncedValue = false
+          this.form.reset()
+          this.providers.snackbar.addSuccess()
         } catch (error) {
-          await api.user.delete(resquest.id)
+          await api.request.delete(resquest.id)
           throw error
         }
       } catch (error) {

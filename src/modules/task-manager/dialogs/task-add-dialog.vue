@@ -17,13 +17,13 @@
             </v-col>
             <v-col cols="12" sm="6">
               <app-text-field v-model="code" label="Số/ký hiệu" />
-              <date-picker-input v-model="publishedDate" label="Ngày ban hành" />
+              <date-picker-input :value.sync="publishedDate" label="Ngày ban hành" />
               <app-text-field v-model="title" label="Trích yếu" />
             </v-col>
             <v-col cols="12" sm="6">
-              <task-priority-select label="Mức độ quan trọng" />
+              <task-priority-select :value.sync="priority" label="Mức độ quan trọng" />
               <app-file-input label="File đính kèm" />
-              <app-text-field label="Thông tin văn bản đến" />
+              <app-text-field v-model="docsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
 
@@ -49,7 +49,12 @@
             </v-col>
             <v-col>
               <task-deadline-type-select class="mb-6" hide-details :value.sync="deadlineType" label="Loại hạn xử lý" />
-              <date-picker-input class="mb-6" :value.sync="expiredDate" label="Hạn xử lý" />
+              <date-picker-input
+                class="mb-6"
+                :value.sync="expiredDate"
+                :disabled="deadlineType === 'noDeadline'"
+                label="Hạn xử lý"
+              />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
               <comrade-autocomplete
                 :value.sync="supervisorIds"
@@ -76,7 +81,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
+import { TaskDeadlineType, TaskModel, TaskPriorityType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import { Component, Inject, PropSync, Prop, Ref, Vue } from 'vue-property-decorator'
 
@@ -95,12 +100,14 @@ export default class TaskAddDialog extends Vue {
   @Ref('form') form: any
   @Prop() taskParent: TaskModel
 
+  docsInfo = ''
   code = ''
   publishedDate = ''
   title = ''
   description = ''
-  deadlineType = ''
+  deadlineType: TaskDeadlineType = null
   expiredDate = ''
+  priority: TaskPriorityType = null
 
   executedUnitId = ''
   supportedUnitIds: string[] = []
@@ -116,15 +123,22 @@ export default class TaskAddDialog extends Vue {
         code: this.code,
         title: this.title,
         description: this.description,
-        parent: this.taskParent?.id ?? null,
-        executedUnit: this.executedUnitId,
-        supportedUnits: this.supportedUnitIds,
-        supervisorUnit: this.supervisorUnitId,
-        executedComrade: this.executedComradeId,
-        supportedComrades: this.supportedComradeIds,
-        supervisors: this.supervisorIds,
+        priority: this.priority,
         state: 'waiting',
-        createdBy: authStore.comrade.id
+        expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : null,
+        parent: this.taskParent?.id ?? null,
+
+        executedUnit: this.executedUnitId,
+        executedComrade: this.executedComradeId,
+
+        supportedUnits: this.supportedUnitIds,
+        supervisors: this.supervisorIds,
+
+        supervisorUnit: this.supervisorUnitId,
+        supportedComrades: this.supportedComradeIds,
+
+        createdBy: authStore.comrade.id,
+        data: { docsInfo: this.docsInfo }
       })
 
       this.$emit('success', task)

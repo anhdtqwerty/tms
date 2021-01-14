@@ -21,6 +21,7 @@
         validate-on-blur
         :outlined="outlined"
         :hide-details="hideDetails"
+        :disabled="disabled"
       />
     </template>
     <v-date-picker locale="vi" :value="syncedValue" @input="selectDate" :type="type"></v-date-picker>
@@ -41,6 +42,7 @@ export default class DatePickerInput extends Vue {
   @Prop({ default: 'date' }) type: 'date' | 'month'
   @Prop() dateFormat: string
   @Prop({ default: false }) hideDetails: boolean
+  @Prop({ default: false }) disabled: boolean
 
   displayDate = ''
   show = false

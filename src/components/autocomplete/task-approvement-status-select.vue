@@ -4,7 +4,7 @@
     v-model="syncedValue"
     dense
     :outlined="outlined"
-    item-text="name"
+    item-text="value"
     item-value="type"
     :items="items"
   />
