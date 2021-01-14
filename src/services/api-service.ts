@@ -13,6 +13,7 @@ import _ from 'lodash'
 import Bowser from 'bowser'
 import { RequestModel } from '@/models/request-model'
 import { GeneralReportModel } from '@/models/report-model'
+import { appProvider } from '@/app-provider'
 
 export type ApiLogType = 'create' | 'delete' | 'update'
 export const apiLogNames: { [name in ApiLogType]: string } = {
@@ -138,6 +139,7 @@ export class ApiService {
       { fireImmediately: true }
     )
     this.axios.interceptors.request.use(config => {
+      appProvider.loading.increaseRequest()
       if (jwtToken) {
         config.headers = {
           ...(config.headers || {}),
@@ -147,6 +149,16 @@ export class ApiService {
       config.paramsSerializer = params => qs.stringify(params, { arrayFormat: 'repeat' })
       return config
     })
+    this.axios.interceptors.response.use(
+      res => {
+        appProvider.loading.decreaseRequest()
+        return res
+      },
+      err => {
+        appProvider.loading.decreaseRequest()
+        return err
+      }
+    )
   }
 
   async login(username: string, password: string): Promise<{ jwt: string; user: UserModel }> {

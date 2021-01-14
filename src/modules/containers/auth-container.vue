@@ -16,6 +16,7 @@
     </v-card>
     <snack-bar :controller="providers.snackbar" />
     <alert :controller="providers.alert" />
+    <global-loading :controller="providers.loading" />
   </v-main>
 </template>
 
@@ -26,7 +27,8 @@ import { Component, Inject, Vue } from 'vue-property-decorator'
 @Component({
   components: {
     SnackBar: () => import('@/components/snack-bar/snack-bar.vue'),
-    Alert: () => import('@/components/alert/alert.vue')
+    Alert: () => import('@/components/alert/alert.vue'),
+    GlobalLoading: () => import('@/components/global-loading/global-loading.vue')
   }
 })
 export default class AuthContainer extends Vue {
