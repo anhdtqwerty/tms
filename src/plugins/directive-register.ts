@@ -45,4 +45,14 @@ export const directiveRegister = () => {
       console.error(`role-directive doesn't support`, val)
     }
   })
+  Vue.directive('leader', (el, binding, vnode) => {
+    if (!authStore.isLeader) {
+      commentNode(el, vnode)
+    }
+  })
+  Vue.directive('member', (el, binding, vnode) => {
+    if (authStore.isLeader) {
+      commentNode(el, vnode)
+    }
+  })
 }
