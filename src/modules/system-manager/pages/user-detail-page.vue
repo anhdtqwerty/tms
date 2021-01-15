@@ -32,7 +32,7 @@
                   </div>
                   <div class="ml-4 mt-4">
                     <div class="text-h6">{{ name }}</div>
-                    <div class="text-body-2 mb-4">{{ viewmodel.comrade ? viewmodel.comrade.position.title : '' }}</div>
+                    <div class="text-body-2 mb-4">{{ viewmodel | _get('comrade.position.title') }}</div>
                     <app-text-field outlined v-model="code" label="Mã cán bộ" disabled />
                   </div>
                 </div>

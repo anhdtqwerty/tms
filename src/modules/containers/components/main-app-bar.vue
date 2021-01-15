@@ -31,7 +31,7 @@
       </template>
       <v-card>
         <v-list>
-          <v-list-item>
+          <v-list-item to="/change-password">
             <v-btn text>Đổi mật khẩu</v-btn>
           </v-list-item>
           <v-list-item>
@@ -57,6 +57,7 @@ export default class MainAppBar extends Vue {
   @Inject() mainViewModel: MainContainerViewModel
   @Inject() providers: AppProvider
   drawer = true
+  menu = false
 }
 </script>
 

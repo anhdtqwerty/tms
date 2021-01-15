@@ -74,6 +74,15 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'change-password',
+        name: 'change-password',
+        component: () => import('@/modules/profile/pages/change-password-page.vue'),
+        meta: {
+          title: 'Đổi mật khẩu',
+          auth: true
+        }
+      },
+      {
         path: 'users',
         name: 'users',
         component: () => import('@/modules/system-manager/pages/user-manager-page.vue'),
