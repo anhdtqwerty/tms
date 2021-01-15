@@ -110,6 +110,12 @@
 </template>
 
 <script lang="ts">
+import {
+  TaskApprovementStatusType,
+  TaskPriorityType,
+  TaskProcessingExpireType,
+  TaskStateType
+} from '@/models/task-model'
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component({
@@ -128,13 +134,13 @@ export default class TaskSearchComponent extends Vue {
   advanceSearch = true
   searchCode = ''
   searchTitle = ''
-  searchPriority: string = null
-  searchApprovementStatus: string = null
+  searchPriority: TaskPriorityType = null
+  searchApprovementStatus: TaskApprovementStatusType = null
 
   searchExecuteUnit = ''
   searchExecuteStaff = ''
-  searchState: string = null
-  searchProcessingExpire: string = null
+  searchState: TaskStateType = null
+  searchProcessingExpire: TaskProcessingExpireType = null
 
   searchSupervisorUnit = ''
   searchSupervisor = ''

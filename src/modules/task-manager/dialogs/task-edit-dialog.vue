@@ -23,7 +23,7 @@
             <v-col cols="12" sm="6">
               <task-priority-select :value.sync="priority" label="Mức độ quan trọng" />
               <app-file-input label="File đính kèm" />
-              <app-text-field v-model="documentInfo" label="Thông tin văn bản đến" />
+              <app-text-field v-model="docsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
 
@@ -49,7 +49,11 @@
             </v-col>
             <v-col>
               <task-deadline-type-select class="mb-6" hide-details :value.sync="deadlineType" label="Loại hạn xử lý" />
-              <date-picker-input :value.sync="expiredDate" label="Hạn xử lý" />
+              <date-picker-input
+                :value.sync="expiredDate"
+                :disabled="deadlineType === 'noDeadline'"
+                label="Hạn xử lý"
+              />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
               <comrade-autocomplete
                 :value.sync="supervisorIds"
@@ -78,8 +82,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { ComradeModel } from '@/models/comrade-model'
-import { TaskModel } from '@/models/task-model'
-import { UnitModel } from '@/models/unit-model'
+import { TaskDeadlineType, TaskModel, TaskPriorityType, TaskStateType } from '@/models/task-model'
 import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
@@ -102,33 +105,40 @@ export default class TaskEditDialog extends Vue {
   code = ''
   publishedDate = ''
   title = ''
-  priority = ''
+  priority: TaskPriorityType = null
   attachFile = ''
-  documentInfo = ''
+  docsInfo = ''
   description = ''
   executedUnitId = ''
   supportedUnitIds: string[] = []
   executedComradeId = ''
   supportedComradeIds: string[] = []
-  deadlineType = ''
-  state = ''
+  deadlineType: TaskDeadlineType = null
+  state: TaskStateType = null
   supervisorIds: string[] = []
   supervisorUnitId = ''
   expiredDate = ''
+  data: any = {}
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.description = val.description
-      _.get(val.executedUnit, 'id')
-      // this.executedUnitId = (val.executedUnit as UnitModel)?.id
-      this.supervisorUnitId = (val.supervisorUnit as UnitModel)?.id
-      this.supportedUnitIds = (val.supportedUnits as []).map(x => _.get(x, 'id')) as []
-      this.executedComradeId = (val.executedComrade as ComradeModel)?.id
-      this.supportedComradeIds = ((val.supportedComrades as ComradeModel[])?.map(x => x.id) as []) ?? []
-      this.supervisorIds = ((val.supervisors as ComradeModel[])?.map(x => x.id) as []) ?? []
       this.expiredDate = val.expiredDate
+      this.title = val.title
       this.state = val.state
+      this.priority = val.priority
+
+      this.executedUnitId = _.get(val.executedUnit, 'id')
+      this.executedComradeId = _.get(val.executedComrade, 'id')
+
+      this.supervisorUnitId = _.get(val.supervisorUnit, 'id')
+      this.supervisorIds = ((val.supervisors as ComradeModel[])?.map(x => _.get(x, 'id')) as []) ?? []
+
+      this.supportedUnitIds = (val.supportedUnits as []).map(x => _.get(x, 'id')) as []
+      this.supportedComradeIds = ((val.supportedComrades as ComradeModel[])?.map(x => _.get(x, 'id')) as []) ?? []
+
+      this.data = val.data
     }
   }
 
@@ -138,12 +148,21 @@ export default class TaskEditDialog extends Vue {
         ...this.task,
         code: this.code,
         description: this.description,
+        expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : null,
+        title: this.title,
+        state: this.state,
+        priority: this.priority,
+
         executedUnit: this.executedUnitId,
-        supervisorUnit: this.supervisorUnitId,
-        supportedUnits: this.supportedUnitIds,
         executedComrade: this.executedComradeId,
+
+        supervisorUnit: this.supervisorUnitId,
+        supervisors: this.supervisorIds,
+
+        supportedUnits: this.supportedUnitIds,
         supportedComrades: this.supportedComradeIds,
-        supervisors: this.supervisorIds
+
+        data: { ...this.data, docsInfo: this.docsInfo }
       }
       task = await this.providers.api.task.update(task.id, task)
       this.$emit('success', task)

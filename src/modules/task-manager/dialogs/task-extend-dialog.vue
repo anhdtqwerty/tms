@@ -38,6 +38,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { TaskModel } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -56,22 +57,47 @@ export default class TaskExtendDialog extends Vue {
   reasonExtend = ''
   expireDateOld: string = null
   expireDateNew: string = null
+  data: any = {}
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
+      this.expireDateOld = val.expiredDate
       this.description = val.description
+      this.data = val.data
     }
   }
 
   async save() {
     if (this.form.validate()) {
-      let task: TaskModel = {
-        ...this.task
+      try {
+        const api = this.providers.api
+        const resquest = await api.request.create({
+          // title, files, approver
+          description: this.reasonExtend,
+          type: 'extend',
+          requestor: authStore.comrade.id,
+          task: this.task
+        })
+        try {
+          let task: TaskModel = {
+            ...this.task,
+            expiredDate: this.expireDateNew,
+            data: { ...this.data, explain: this.reasonExtend }
+          }
+
+          task = await api.task.update(task.id, task)
+          this.$emit('success', task)
+          this.syncedValue = false
+          this.form.reset()
+          this.providers.snackbar.addSuccess()
+        } catch (error) {
+          await api.request.delete(resquest.id)
+          throw error
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      task = await this.providers.api.task.update(task.id, task)
-      this.$emit('success', task)
-      this.syncedValue = false
     }
   }
 }
