@@ -11,7 +11,7 @@
   >
     <template v-slot:activator="{ on }">
       <app-text-field
-        :value="displayDate"
+        :value="syncedValue | date(displayFormatDate)"
         :label="label"
         readonly
         v-on="on"
@@ -24,7 +24,7 @@
         :disabled="disabled"
       />
     </template>
-    <v-date-picker locale="vi" :value="syncedValue" @input="selectDate" :type="type"></v-date-picker>
+    <v-date-picker locale="vi" :value="selectedDate" @input="selectDate" :type="type"></v-date-picker>
   </v-menu>
 </template>
 
@@ -34,7 +34,7 @@ import { Component, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 
 @Component
 export default class DatePickerInput extends Vue {
-  @PropSync('value', { type: String, default: new Date().toISOString().substr(0, 10) }) syncedValue!: string
+  @PropSync('value', { type: String, default: moment().toISOString() }) syncedValue!: string
   @Prop() width: number
   @Prop({ default: 'Chọn ngày' }) label: string
   @Prop() rules: any[]
@@ -44,27 +44,32 @@ export default class DatePickerInput extends Vue {
   @Prop({ default: false }) hideDetails: boolean
   @Prop({ default: false }) disabled: boolean
 
-  displayDate = ''
+  selectedDate: string = null
   show = false
 
   selectDate(date: string) {
-    this.syncedValue = date
+    if (this.type === 'date') {
+      this.syncedValue = moment(date, 'yyyy-MM-DD').toISOString()
+    } else {
+      this.syncedValue = moment(date, 'yyyy-MM').toISOString()
+    }
     this.show = false
   }
 
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
+    if (!val) return
     if (this.type === 'date') {
-      if (this.dateFormat) {
-        this.displayDate = moment(val, 'yyyy-MM-dd').format(this.dateFormat)
-      } else {
-        this.displayDate = val
-      }
+      this.selectedDate = moment(val).format('yyyy-MM-DD')
     } else {
-      if (this.dateFormat) {
-        this.displayDate = moment(val, 'yyyy-MM').format(this.dateFormat)
-      } else {
-        this.displayDate = val
-      }
+      this.selectedDate = moment(val).format('yyyy-MM')
+    }
+  }
+
+  get displayFormatDate() {
+    if (this.dateFormat) {
+      return this.dateFormat
+    } else {
+      return this.type === 'date' ? 'DD/MM/yyyy' : 'MM/yyyy'
     }
   }
 }

@@ -17,7 +17,7 @@
         <v-card>
           <v-data-table :items="viewmodel.roles" item-key="id" :headers="headers" mobile-breakpoint="0">
             <template v-slot:[`item.title`]="{ item }">
-              <text-link>
+              <text-link @click="edit(item)">
                 {{ item.title }}
               </text-link>
             </template>

@@ -7,6 +7,7 @@
     </v-main>
     <snack-bar :controller="providers.snackbar" />
     <alert :controller="providers.alert" />
+    <global-loading :controller="providers.loading" />
   </v-app>
 </template>
 
@@ -20,7 +21,8 @@ import { MainContainerViewModel } from './viewmodels/main-container.viewmodel'
     MainAppBar: () => import('./components/main-app-bar.vue'),
     MainDrawer: () => import('./components/main-drawer.vue'),
     SnackBar: () => import('@/components/snack-bar/snack-bar.vue'),
-    Alert: () => import('@/components/alert/alert.vue')
+    Alert: () => import('@/components/alert/alert.vue'),
+    GlobalLoading: () => import('@/components/global-loading/global-loading.vue')
   }
 })
 export default class MainContainer extends Vue {

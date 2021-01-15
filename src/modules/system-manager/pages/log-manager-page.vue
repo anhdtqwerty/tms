@@ -13,7 +13,7 @@
             :headers="selectedHeaders"
             mobile-breakpoint="0"
             :server-items-length="viewmodel.totalCount"
-            :footer-props="{ itemsPerPageOptions: [25] }"
+            :footer-props="{ itemsPerPageOptions: [25], showFirstLastPage: true }"
             @update:page="viewmodel.loadData($event)"
           >
             <template v-slot:top>
@@ -24,6 +24,9 @@
                   </v-col>
                 </v-row>
               </v-container>
+            </template>
+            <template v-slot:[`item.action`]="{ item }">
+              {{ item.action | logAction }}
             </template>
           </v-data-table>
         </v-card>
@@ -46,7 +49,7 @@ export default class LogManagerPage extends Vue {
 
   headers = [
     { text: 'Tài khoản', value: 'comrade.code', sortable: false },
-    { text: 'Hành động', value: 'displayAction', sortable: false },
+    { text: 'Hành động', value: 'action', sortable: false },
     { text: 'Chức năng đã thao tác', value: 'displayFeature', sortable: false },
     { text: 'Nội dung thay đổi', value: 'displayDescription', sortable: false },
     { text: 'Thời gian thay đổi', value: 'displayDatetime', sortable: false },

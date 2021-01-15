@@ -74,6 +74,15 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'change-password',
+        name: 'change-password',
+        component: () => import('@/modules/profile/pages/change-password-page.vue'),
+        meta: {
+          title: 'Đổi mật khẩu',
+          auth: true
+        }
+      },
+      {
         path: 'users',
         name: 'users',
         component: () => import('@/modules/system-manager/pages/user-manager-page.vue'),
@@ -118,6 +127,24 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/modules/system-manager/pages/log-manager-page.vue'),
         meta: {
           title: 'logs',
+          auth: true
+        }
+      },
+      {
+        path: 'report-general',
+        name: 'report-general',
+        component: () => import('@/modules/report/pages/report-general-page.vue'),
+        meta: {
+          title: 'Báo cáo tổng hợp',
+          auth: true
+        }
+      },
+      {
+        path: 'report-detail',
+        name: 'report-detail',
+        component: () => import('@/modules/report/pages/report-detail-page.vue'),
+        meta: {
+          title: 'Báo cáo chi tiết',
           auth: true
         }
       },
