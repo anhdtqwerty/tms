@@ -171,7 +171,7 @@
             </template>
 
             <template v-slot:[`item.actions`]="{ item }">
-              <task-sub-action-menu :task="item.task" />
+              <task-sub-action-menu :task="item" />
             </template>
 
             <template v-slot:[`item.state`]="{ item }">
@@ -255,7 +255,7 @@
     </v-row>
 
     <task-add-dialog :value.sync="showAddSubtask" :taskParent="vm.task" @success="vm.taskAdded" />
-    <task-edit-dialog :value.sync="showEditDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-edit-dialog :value.sync="showEditDialog" :task="editingTask" @success="vm.taskUpdated" />
     <task-recover-dialog :value.sync="showRetriveDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-extend-dialog :value.sync="showExtendDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
@@ -269,9 +269,9 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { Observer } from 'mobx-vue'
-import { Component, PropSync, Vue, Provide, Inject } from 'vue-property-decorator'
+import { Component, PropSync, Vue, Provide, Inject, Watch } from 'vue-property-decorator'
 import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
-import { taskPriorityNameMap } from '@/models/task-model'
+import { TaskModel, taskPriorityNameMap } from '@/models/task-model'
 
 @Observer
 @Component({
@@ -308,6 +308,31 @@ export default class TaskDetailPage extends Vue {
   showEditStateDialog = false
   showReopenDialog = false
   taskPriorityMap = taskPriorityNameMap
+
+  deletingTask: TaskModel = null
+  editingTask: TaskModel = null
+
+  @Watch('$route.params.taskid', { immediate: true }) onTaskParamChange(val: any) {
+    this.vm.loadData(val)
+  }
+
+  subTaskAction(typeAction: string, task: TaskModel) {
+    switch (typeAction) {
+      case 'edit':
+        this.editingTask = task
+        this.showEditStateDialog = true
+        break
+      case 'delete':
+        this.deletingTask = task
+        // this. = true
+        break
+      case 'show':
+        this.$router.push({ path: '/task/' + task.id })
+        break
+      default:
+        break
+    }
+  }
 
   taskActionCommon(typeAction: string) {
     switch (typeAction) {

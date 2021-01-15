@@ -77,6 +77,7 @@ export default class TaskUpdateStateDialog extends Vue {
         try {
           const modifyTask = await api.task.update(this.task.id, {
             state: this.state,
+            status: this.state === 'done' ? 'approving' : null,
             data: { ...(this.task.data ?? {}), explain: this.description }
           })
           this.$emit('success', modifyTask)

@@ -82,14 +82,14 @@ export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name
   type, value
 }) as any)
 
-export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered' | 'return'
+export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered' | 'returned'
 export const taskStateNameMap:{[name in TaskStateType]: string} = {
   'waiting': 'Chưa cập nhật tiến độ',
   'todo': 'Chưa thực hiện',
   'doing': 'Đang thực hiện',
   'done': 'Đã hoàn thành',
   'recovered': 'Bị thu hồi',
-  'return': 'Trả lại'
+  'returned': 'Trả lại'
 }
 export const taskStateNames: { type: TaskStateType; name: string }[] = Object.entries(taskStateNameMap).map(([type, value])=>({
   type, value

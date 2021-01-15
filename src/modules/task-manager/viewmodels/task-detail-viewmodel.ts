@@ -10,11 +10,10 @@ export class TaskDetailViewModel {
   @observable task: TaskModel = null
 
   constructor(private provider: AppProvider) {
-    this.loadData()
+    // this.loadData(this.provider.router.currentRoute.params['taskid'])
   }
 
-  @asyncAction *loadData() {
-    const id = this.provider.router.currentRoute.params['taskid']
+  @asyncAction *loadData(id: string) {
     const api = this.provider.api
     const results = yield Promise.all([api.task.findOne(id)])
     this.task = results[0]

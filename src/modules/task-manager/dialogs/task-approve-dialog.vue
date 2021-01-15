@@ -94,7 +94,8 @@ export default class TaskApproveDialog extends Vue {
       let task: TaskModel = {
         ...this.task,
         description: this.description,
-        status: this.approveStatusResult
+        status: this.approveStatusResult,
+        state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
       }
       task = await this.providers.api.task.update(task.id, task)
       this.$emit('success', task)
