@@ -49,12 +49,10 @@ export default class TaskRecoverDialog extends Vue {
   title = ''
   code = ''
   reasonRecover = ''
-  data: any = {}
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
-      this.data = val.data
     }
   }
 
@@ -62,27 +60,24 @@ export default class TaskRecoverDialog extends Vue {
     if (this.form.validate()) {
       try {
         const api = this.providers.api
-        const resquest = await api.request.create({
+        const request = await api.request.create({
           // title, files, approver
           description: this.reasonRecover,
           type: 'recovered',
           requestor: authStore.comrade.id,
-          task: this.task
+          task: this.task.id
         })
         try {
-          let task: TaskModel = {
-            ...this.task,
+          const modifyTask = await api.task.update(this.task.id, {
             state: 'recovered',
-            data: { ...this.data, explain: this.reasonRecover }
-          }
-
-          task = await api.task.update(task.id, task)
-          this.$emit('success', task)
+            data: { ...(this.task.data ?? {}), explain: this.reasonRecover }
+          })
+          this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()
-          this.providers.snackbar.addSuccess()
+          this.providers.snackbar.updateSuccess()
         } catch (error) {
-          await api.request.delete(resquest.id)
+          await api.request.delete(request.id)
           throw error
         }
       } catch (error) {

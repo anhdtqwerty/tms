@@ -13,7 +13,7 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12">
-              <app-textarea v-model="reasonReject" label="Lý do trả lại" />
+              <app-textarea v-model="reasonReturn" label="Lý do trả lại" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -39,20 +39,18 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
 @Component({
   components: {}
 })
-export default class TaskRejectDialog extends Vue {
+export default class TaskReturnDialog extends Vue {
   @Inject() providers: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Ref('form') form: any
   @Prop() task: TaskModel
 
   code = ''
-  reasonReject = ''
-  data: any = {}
+  reasonReturn = ''
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
-      this.data = val.data
     }
   }
 
@@ -60,28 +58,25 @@ export default class TaskRejectDialog extends Vue {
     if (this.form.validate()) {
       try {
         const api = this.providers.api
-        const resquest = await api.request.create({
+        const request = await api.request.create({
           // title, files, approver
-          description: this.reasonReject,
-          type: 'rejected',
+          description: this.reasonReturn,
+          type: 'return',
           requestor: authStore.comrade.id,
-          task: this.task
+          task: this.task.id
         })
         try {
-          let task: TaskModel = {
-            ...this.task,
+          const modifyTask = await api.task.update(this.task.id, {
             state: 'waiting',
-            status: 'rejected',
-            data: { ...this.data, explain: this.reasonReject }
-          }
-
-          task = await api.task.update(task.id, task)
-          this.$emit('success', task)
+            executedComrade: null,
+            data: { ...(this.task.data ?? {}), explain: this.reasonReturn }
+          })
+          this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()
-          this.providers.snackbar.addSuccess()
+          this.providers.snackbar.updateSuccess()
         } catch (error) {
-          await api.request.delete(resquest.id)
+          await api.request.delete(request.id)
           throw error
         }
       } catch (error) {

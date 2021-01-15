@@ -13,28 +13,31 @@ export interface TaskModel {
   type?: string
 
   executedUnit?: string | UnitModel
-  supportedUnits?: string[] | UnitModel[]
+  supportedUnits?: (string | UnitModel)[]
   supervisorUnit?: string | UnitModel
 
-  executeDepartment?: string | DepartmentModel
+  executedDepartment?: string | DepartmentModel
   supportedDepartment?: string | DepartmentModel
   supervisorDepartment?: string | DepartmentModel
 
-  supervisors?: string[] | ComradeModel[]
+  supervisors?: (string | ComradeModel)[]
   executedComrade?: string | ComradeModel
-  supportedComrades?: string[] | ComradeModel[]
+  supportedComrades?: (string | ComradeModel)[]
 
-  subtasks?: string[] | TaskModel[]
+  subtasks?: (string | TaskModel)[]
   parent?: string | TaskModel
 
   expiredDate?: string
   publishedDate?: string
 
   files?: string[]
-  createdBy: string | ComradeModel
-  requests?: string[] | Request[]
+  createdBy?: string | ComradeModel
+  requests?: (string| Request)[]
 
-  data?: {}
+  data?: {
+    explain?: string,
+    docsInfo?: string // thong tin van ban den
+  }
 }
 
 export type TaskPriorityType = 'level_1' | 'level_2' | 'level_3' | 'urgent'
@@ -79,13 +82,14 @@ export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name
   type, value
 }) as any)
 
-export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered'
+export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered' | 'return'
 export const taskStateNameMap:{[name in TaskStateType]: string} = {
   'waiting': 'Chưa cập nhật tiến độ',
   'todo': 'Chưa thực hiện',
   'doing': 'Đang thực hiện',
   'done': 'Đã hoàn thành',
-  'recovered': 'Bị thu hồi'
+  'recovered': 'Bị thu hồi',
+  'return': 'Trả lại'
 }
 export const taskStateNames: { type: TaskStateType; name: string }[] = Object.entries(taskStateNameMap).map(([type, value])=>({
   type, value

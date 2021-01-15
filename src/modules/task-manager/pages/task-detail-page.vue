@@ -48,7 +48,7 @@
                 <div>Mức độ</div>
               </v-col>
               <v-col cols="12" sm="6">
-                <div class="font-weight-bold">{{ vm.task.priority }}</div>
+                <div class="font-weight-bold">{{ this.taskPriorityMap[vm.task.priority] }}</div>
               </v-col>
             </v-row>
             <v-row>
@@ -133,7 +133,7 @@
             <v-col cols="12">
               <div>Chuyên viên</div>
             </v-col>
-            <v-col cols="12" v-if="vm.task.executedComrade">
+            <v-col cols="12" v-if="vm.task.executedComrade && vm.task.executedComrade.length">
               <app-avatar :avatar="vm.task.executedComrade.avatar" width="80" height="80" />
               <span class="ml-4 font-weight-bold">{{ vm.task.executedComrade.name }}</span>
             </v-col>
@@ -260,7 +260,7 @@
     <task-extend-dialog :value.sync="showExtendDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-approve-dialog :value.sync="showApproveDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-reject-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-update-state-dialog :value.sync="showEditStateDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
   </v-container>
@@ -269,7 +269,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { Observer } from 'mobx-vue'
-import { Component, PropSync, Vue, Provide, Inject, Watch } from 'vue-property-decorator'
+import { Component, PropSync, Vue, Provide, Inject } from 'vue-property-decorator'
 import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
 import { taskPriorityNameMap } from '@/models/task-model'
 
@@ -285,7 +285,7 @@ import { taskPriorityNameMap } from '@/models/task-model'
     TaskExtendDialog: () => import('../dialogs/task-extend-dialog.vue'),
     TaskAssignDialog: () => import('../dialogs/task-assign-dialog.vue'),
     TaskApproveDialog: () => import('../dialogs/task-approve-dialog.vue'),
-    TaskRejectDialog: () => import('../dialogs/task-reject-dialog.vue'),
+    TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
     TaskUpdateStateDialog: () => import('../dialogs/task-update-state-dialog.vue'),
     TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
     AppAvatar: () => import('@/components/images/app-avatar.vue'),
@@ -307,6 +307,7 @@ export default class TaskDetailPage extends Vue {
   showApproveDialog = false
   showEditStateDialog = false
   showReopenDialog = false
+  taskPriorityMap = taskPriorityNameMap
 
   taskActionCommon(typeAction: string) {
     switch (typeAction) {

@@ -54,13 +54,11 @@ export default class TaskUpdateStateDialog extends Vue {
   code = ''
   state: TaskStateType = null
   description = ''
-  data: any = {}
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.state = val.state
-      this.data = val.data
     }
   }
 
@@ -68,27 +66,25 @@ export default class TaskUpdateStateDialog extends Vue {
     if (this.form.validate()) {
       try {
         const api = this.providers.api
-        const resquest = await api.request.create({
+
+        const request = await api.request.create({
           // title, files, approver
           description: this.description,
-          type: 'updateState',
+          type: this.state,
           requestor: authStore.comrade.id,
-          task: this.task
+          task: this.task.id
         })
         try {
-          let task: TaskModel = {
-            ...this.task,
+          const modifyTask = await api.task.update(this.task.id, {
             state: this.state,
-            data: { ...this.data, explain: this.description }
-          }
-
-          task = await api.task.update(task.id, task)
-          this.$emit('success', task)
+            data: { ...(this.task.data ?? {}), explain: this.description }
+          })
+          this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()
-          this.providers.snackbar.addSuccess()
+          this.providers.snackbar.updateSuccess()
         } catch (error) {
-          await api.request.delete(resquest.id)
+          await api.request.delete(request.id)
           throw error
         }
       } catch (error) {

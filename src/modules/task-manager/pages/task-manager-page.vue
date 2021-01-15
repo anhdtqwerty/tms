@@ -62,7 +62,7 @@
     <task-extend-dialog :value.sync="showExtendDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-assign-dialog :value.sync="showAssignDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-approve-dialog :value.sync="showApproveDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
-    <task-reject-dialog :value.sync="showReturnDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
+    <task-return-dialog :value.sync="showReturnDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-update-state-dialog :value.sync="showEditStateDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
   </v-container>
@@ -86,7 +86,7 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
     TaskExtendDialog: () => import('../dialogs/task-extend-dialog.vue'),
     TaskAssignDialog: () => import('../dialogs/task-assign-dialog.vue'),
     TaskApproveDialog: () => import('../dialogs/task-approve-dialog.vue'),
-    TaskRejectDialog: () => import('../dialogs/task-reject-dialog.vue'),
+    TaskReturnDialog: () => import('../dialogs/task-return-dialog.vue'),
     TaskUpdateStateDialog: () => import('../dialogs/task-update-state-dialog.vue'),
     TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
     TaskActionComponent: () => import('../components/task-action-component.vue'),
