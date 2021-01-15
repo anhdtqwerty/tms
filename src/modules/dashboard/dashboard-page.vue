@@ -13,8 +13,8 @@
         <overview-card
           icon="schedule"
           title="Đang thực hiện"
-          :value="viewmodel.topStatCriterias.doing"
-          :intime="viewmodel.topStatCriterias.doing - viewmodel.topStatCriterias.doingOutDate"
+          :value="viewmodel.topStatCriterias.doing + viewmodel.topStatCriterias.doingOutDate || 0"
+          :intime="viewmodel.topStatCriterias.doing"
           :overtime="viewmodel.topStatCriterias.doingOutDate"
         />
       </v-col>
@@ -22,8 +22,8 @@
         <overview-card
           icon="done"
           title="Hoàn thành"
-          :value="viewmodel.topStatCriterias.done"
-          :intime="viewmodel.topStatCriterias.done - viewmodel.topStatCriterias.doneOutDate"
+          :value="viewmodel.topStatCriterias.done + viewmodel.topStatCriterias.doneOutDate || 0"
+          :intime="viewmodel.topStatCriterias.done"
           :overtime="viewmodel.topStatCriterias.doneOutDate"
         />
       </v-col>
@@ -32,13 +32,13 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-leader cols="12" class="pa-2">
+      <v-col v-if="providers.isLeader" cols="12" class="pa-2">
         <task-column-chart-card />
       </v-col>
-      <v-col v-member cols="12" md="6" class="pa-2">
+      <v-col v-if="!providers.isLeader" cols="12" md="6" class="pa-2">
         <task-circle-chart-card />
       </v-col>
-      <v-col v-member cols="12" md="6" class="pa-2">
+      <v-col v-if="!providers.isLeader" cols="12" md="6" class="pa-2">
         <v-card>
           <div>
             <div class="primary--text text-h6 px-4 pt-4">Nhiệm vụ chưa cập nhật</div>
@@ -74,13 +74,13 @@
                 <div class="primary--text text-h6 px-4 pt-4 pb-2">
                   {{ providers.authStore.isLeader ? 'Các nhiệm vụ mới cập nhật' : 'Các nhiệm vụ cập nhật' }}
                 </div>
-                <div class="px-4" v-member>
+                <div class="px-4" v-if="!providers.isLeader">
                   <v-btn
-                    :text="viewmodel.updatedTaskFilter !== 'new'"
-                    :outlined="viewmodel.updatedTaskFilter === 'new'"
+                    :text="viewmodel.personalHistoryFilter !== 'new'"
+                    :outlined="viewmodel.personalHistoryFilter === 'new'"
                     color="primary"
                     small
-                    @click="viewmodel.changeUpdatedTaskFilter('new')"
+                    @click="viewmodel.changePersonalHistoryFilter('new')"
                     >Nhiệm vụ mới</v-btn
                   >
                   <!-- <v-btn
@@ -92,11 +92,11 @@
                     >Sắp hết hạn</v-btn
                   > -->
                   <v-btn
-                    :text="viewmodel.updatedTaskFilter !== 'expired'"
-                    :outlined="viewmodel.updatedTaskFilter === 'expired'"
+                    :text="viewmodel.personalHistoryFilter !== 'expired'"
+                    :outlined="viewmodel.personalHistoryFilter === 'expired'"
                     color="grey"
                     small
-                    @click="viewmodel.changeUpdatedTaskFilter('expired')"
+                    @click="viewmodel.changePersonalHistoryFilter('expired')"
                     >Quá hạn</v-btn
                   >
                 </div>

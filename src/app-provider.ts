@@ -1,3 +1,4 @@
+import { computed } from 'mobx'
 import VueRouter from 'vue-router'
 import { AlertController } from './components/alert/alert-controller'
 import { GlobalLoadingController } from './components/global-loading/global-loading-controller'
@@ -23,5 +24,9 @@ export class AppProvider {
   onLogout() {
     this.authStore.onLogout()
     this.router.replace('/signin')
+  }
+
+  @computed get isLeader() {
+    return authStore.isLeader
   }
 }

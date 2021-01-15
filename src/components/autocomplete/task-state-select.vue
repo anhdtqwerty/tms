@@ -18,7 +18,7 @@ import { taskStateNames, TaskStateType } from '@/models/task-model'
 export default class TaskStateSelect extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
-  @Prop({ default: [] }) includes: TaskStateType[]
+  @Prop({ default: (): TaskStateType[] => [] }) includes: TaskStateType[]
 
   items = taskStateNames
 

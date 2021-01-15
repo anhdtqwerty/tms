@@ -60,6 +60,7 @@ export default class TaskColumnChartCard extends Vue {
   selectedMonth = moment().toISOString()
 
   @Watch('selectedMonth', { immediate: true }) onSelectedMonthChange(val: string) {
+    console.log('TaskColumnChartCard')
     const time = moment(val)
     const start = time.startOf('month').format('yyyy-MM-DD')
     const end = time.endOf('month').format('yyyy-MM-DD')
