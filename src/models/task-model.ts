@@ -33,7 +33,7 @@ export interface TaskModel {
   expiredDate?: string
   publishedDate?: string
 
-  files?: File[]
+  files?: any[]
   createdBy?: string | ComradeModel
   requests?: (string | Request)[]
 

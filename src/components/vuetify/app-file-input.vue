@@ -1,13 +1,26 @@
+<template>
+  <v-file-input
+    outlined
+    dense
+    multiple
+    prepend-icon=""
+    append-icon="publish"
+    :accept="accept"
+    v-bind="$attrs"
+    v-model="syncedValue"
+  ></v-file-input>
+</template>
+
 <script lang="ts">
-import { VFileInput } from 'vuetify/lib'
+import { Component, PropSync, Vue } from 'vue-property-decorator'
 
-import { Component, Prop } from 'vue-property-decorator'
+@Component
+export default class AppFileInput extends Vue {
+  @PropSync('value', { default: null }) syncedValue: string
 
-@Component({})
-export default class AppFileInput extends VFileInput {
-  @Prop({ default: true }) outlined!: boolean
-  @Prop({ default: true }) dense!: boolean
-  @Prop({ default: '' }) prependIcon!: string
-  @Prop({ default: 'publish' }) appendIcon!: string
+  accept =
+    'application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/pdf, application/x-rar-compressed, text/plain, application/zip'
 }
 </script>
+
+<style scoped></style>

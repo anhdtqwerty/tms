@@ -22,7 +22,7 @@
             </v-col>
             <v-col cols="12" sm="6">
               <task-priority-select :value.sync="priority" label="Mức độ quan trọng" />
-              <app-file-input label="File đính kèm" />
+              <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
               <app-text-field v-model="docsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
@@ -117,6 +117,7 @@ export default class TaskEditDialog extends Vue {
   supervisorIds: string[] = []
   supervisorUnitId = ''
   expiredDate = ''
+  selectedFiles: File[] = []
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -144,7 +145,18 @@ export default class TaskEditDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      console.log('this.expiredDate', this.expiredDate)
+      if (this.task.files) {
+        await Promise.all(this.task.files.map(f => this.providers.api.deleteFile(f.id)))
+      }
+      await Promise.all(
+        this.selectedFiles.map(f =>
+          this.providers.api.uploadFiles(f, {
+            model: 'task',
+            modelId: this.task.id,
+            modelField: 'files'
+          })
+        )
+      )
       let task: TaskModel = {
         code: this.code,
         description: this.description,
@@ -167,6 +179,7 @@ export default class TaskEditDialog extends Vue {
         data: { ...(this.task.data ?? {}), docsInfo: this.docsInfo }
       }
       task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
+
       this.$emit('success', task)
       this.syncedValue = false
     }

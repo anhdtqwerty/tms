@@ -34,6 +34,7 @@
 import { AppProvider } from '@/app-provider'
 import { TaskModel } from '@/models/task-model'
 import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decorator'
+import _ from 'lodash'
 
 @Component({
   components: {}
@@ -51,6 +52,9 @@ export default class TaskDeleteDialog extends Vue {
   async save() {
     try {
       await this.providers.api.task.delete(this.task.id)
+      if (this.task.files) {
+        Promise.all(this.task.files.map(f => this.providers.api.deleteFile(f.id)))
+      }
       this.$emit('success', this.task.id)
       this.syncedValue = false
       this.providers.snackbar.deleteSuccess()
