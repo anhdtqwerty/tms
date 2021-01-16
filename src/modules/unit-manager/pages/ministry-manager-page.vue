@@ -37,7 +37,7 @@
               </div>
             </v-col>
             <v-col class="d-none d-sm-flex justify-end" cols="0" sm="2" lg="4" xl="6">
-              <v-btn v-permission="'system.unit.edit'" icon small @click="showEditUnit = true">
+              <v-btn v-permission="'system.unit.edit'" icon small @click="editUnit(viewmodel.ministry)">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
             </v-col>
