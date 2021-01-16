@@ -12,13 +12,13 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12">
-              <app-text-field v-model="code" label="Số/ký hiệu" />
+            <v-col cols="12" class="pa-2">
+              <app-text-field disabled v-model="code" label="Số/ký hiệu" />
               <date-picker-input disabled v-model="expireDateOld" label="Hạn xử lý" />
-              <date-picker-input :value.sync="expireDateNew" label="Hạn xử lý mới" />
-              <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
-              <app-text-field v-model="reasonExtend" label="Lý do gia hạn" />
-              <app-file-input label="File đính kèm" />
+              <date-picker-input :value.sync="expireDateNew" :rules="$appRules.taskExtendDate" label="Hạn xử lý mới" />
+              <app-textarea v-model="description" rows="2" disabled label="Nội dung nhiệm vụ" />
+              <app-text-field v-model="reasonExtend" :rules="$appRules.taskExplain" label="Lý do gia hạn" />
+              <app-file-input hide-details label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">

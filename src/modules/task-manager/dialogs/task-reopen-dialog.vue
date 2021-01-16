@@ -12,8 +12,8 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12">
-              <app-textarea v-model="reasonReopen" label="Lý do mở lại" />
+            <v-col cols="12" class="pa-2">
+              <app-textarea v-model="reasonReopen" :rules="$appRules.taskExplain" label="Lý do mở lại" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">

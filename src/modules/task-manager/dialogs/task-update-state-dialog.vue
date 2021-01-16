@@ -12,11 +12,15 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="pa-2">
               <task-state-select :value.sync="state" label="Trạng thái" />
-              <date-picker-input label="Ngày thực hiện" />
-              <app-text-field v-model="description" label="Diễn giải trạng thái" />
-              <app-file-input label="File đính kèm" />
+              <date-picker-input
+                :value.sync="executedDate"
+                :rules="$appRules.taskExecutedDate"
+                label="Ngày thực hiện"
+              />
+              <app-text-field v-model="explain" :rules="$appRules.taskExplain" label="Diễn giải trạng thái" />
+              <app-file-input hide-details label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -53,7 +57,8 @@ export default class TaskUpdateStateDialog extends Vue {
 
   code = ''
   state: TaskStateType = null
-  description = ''
+  explain = ''
+  executedDate: string = null
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -69,7 +74,7 @@ export default class TaskUpdateStateDialog extends Vue {
 
         const request = await api.request.create({
           // title, files, approver
-          description: this.description,
+          description: this.explain,
           type: this.state,
           requestor: authStore.comrade.id,
           task: this.task.id
@@ -80,7 +85,7 @@ export default class TaskUpdateStateDialog extends Vue {
             createTaskBody(this.task, {
               state: this.state,
               status: this.state === 'done' ? 'approving' : null,
-              data: { ...(this.task.data ?? {}), explain: this.description }
+              data: { ...(this.task.data ?? {}), explain: this.explain }
             })
           )
           this.$emit('success', modifyTask)

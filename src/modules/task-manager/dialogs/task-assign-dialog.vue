@@ -12,10 +12,17 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <div>Chuyển thực hiện</div>
-            <v-col cols="12">
+            <v-col cols="12" class="pa-2">
+              <div class="font-weight-bold">Chuyển thực hiện</div>
+            </v-col>
+            <v-col cols="12" class="pa-2">
               <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị xử lý" />
-              <comrade-autocomplete :unit="executedUnitId" :value.sync="executedComradeId" label="Người xử lý" />
+              <comrade-autocomplete
+                hide-details
+                :unit="executedUnitId"
+                :value.sync="executedComradeId"
+                label="Người xử lý"
+              />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -65,13 +72,18 @@ export default class TaskAssignDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      let task: TaskModel = {
-        executedUnit: this.executedUnitId,
-        executedComrade: this.executedComradeId
+      try {
+        let task: TaskModel = {
+          executedUnit: this.executedUnitId,
+          executedComrade: this.executedComradeId
+        }
+        task = await this.providers.api.task.update(this.task.id, task)
+        this.$emit('success', task)
+        this.syncedValue = false
+        this.providers.snackbar.updateSuccess()
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      task = await this.providers.api.task.update(this.task.id, task)
-      this.$emit('success', task)
-      this.syncedValue = false
     }
   }
 }

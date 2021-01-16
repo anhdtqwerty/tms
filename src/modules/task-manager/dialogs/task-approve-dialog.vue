@@ -12,34 +12,40 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Kết quả thực hiện</div>
             </v-col>
-            <v-col cols="12" sm="6">
-              <app-text-field v-model="code" label="Số/ký hiệu" />
-              <date-picker-input :value.sync="executedDate" label="Ngày thực hiện" />
-              <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <app-text-field v-model="code" disabled label="Số/ký hiệu" />
+              <date-picker-input :value.sync="executedDate" disabled label="Ngày thực hiện" />
+              <app-textarea v-model="description" rows="2" hide-details disabled label="Nội dung nhiệm vụ" />
             </v-col>
-            <v-col cols="12" sm="6">
-              <task-approvement-status-select :value.sync="approvementStatus" label="Trạng thái" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <task-approvement-status-select disabled :value.sync="approvementStatus" label="Trạng thái" />
               <app-file-input label="File đính kèm" />
-              <app-text-field v-model="explain" label="Diễn giải trạng thái" />
+              <app-text-field disabled v-model="explain" hide-details label="Diễn giải trạng thái" />
             </v-col>
           </v-row>
 
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2 mb-4">Chuyên viên phê duyệt kết quả</div>
-              <v-radio-group row class="ma-0 pa-0" v-model="approveStatusResult">
+              <v-radio-group hide-details row class="ma-0 pa-0" v-model="approveStatusResult">
                 <v-radio label="Phê duyệt" value="approved" />
                 <v-radio label="Trả lại" value="reject" />
               </v-radio-group>
             </v-col>
-            <v-col cols="12" sm="6">
-              <app-text-field v-model="reason" label="Lý do" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <app-text-field
+                hide-details
+                v-model="reason"
+                v-if="approveStatusResult === 'reject'"
+                :rules="$appRules.taskExplain"
+                label="Lý do"
+              />
             </v-col>
-            <v-col>
-              <app-file-input label="File đính kèm" />
+            <v-col class="pa-2">
+              <app-file-input hide-details label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -91,14 +97,19 @@ export default class TaskApproveDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      let task: TaskModel = {
-        description: this.description,
-        status: this.approveStatusResult,
-        state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
+      try {
+        let task: TaskModel = {
+          description: this.description,
+          status: this.approveStatusResult,
+          state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
+        }
+        task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
+        this.$emit('success', task)
+        this.syncedValue = false
+        this.providers.snackbar.updateSuccess()
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
-      this.$emit('success', task)
-      this.syncedValue = false
     }
   }
 }

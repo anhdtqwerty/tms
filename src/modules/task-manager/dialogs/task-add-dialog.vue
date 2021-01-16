@@ -12,27 +12,27 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
-            <v-col cols="12" sm="6">
-              <app-text-field v-model="code" label="Số/ký hiệu" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <app-text-field v-model="code" :rules="$appRules.taskCode" label="Số/ký hiệu" />
               <date-picker-input :value.sync="publishedDate" label="Ngày ban hành" />
               <app-text-field v-model="title" label="Trích yếu" />
             </v-col>
-            <v-col cols="12" sm="6">
-              <task-priority-select :value.sync="priority" label="Mức độ quan trọng" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <task-priority-select :value.sync="priority" :rules="$appRules.taskPriority" label="Mức độ quan trọng" />
               <app-file-input label="File đính kèm" />
               <app-text-field v-model="docsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
 
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
-            <v-col cols="12" sm="6">
-              <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <app-text-field v-model="description" :rules="$appRules.taskDescription" label="Nội dung nhiệm vụ" />
               <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị thực hiện" />
               <unit-autocomplete :value.sync="supportedUnitIds" multiple label="Đơn vị phối hợp" />
               <comrade-autocomplete
@@ -44,11 +44,18 @@
                 :value.sync="supportedComradeIds"
                 :unit="supportedUnitIds"
                 multiple
+                hide-details
                 label="Chuyên viên phối hợp"
               />
             </v-col>
-            <v-col>
-              <task-deadline-type-select class="mb-6" hide-details :value.sync="deadlineType" label="Loại hạn xử lý" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <task-deadline-type-select
+                class="mb-6"
+                hide-details
+                :value.sync="deadlineType"
+                :rules="$appRules.taskDeadlineType"
+                label="Loại hạn xử lý"
+              />
               <date-picker-input
                 class="mb-6"
                 :value.sync="expiredDate"
@@ -56,12 +63,7 @@
                 label="Hạn xử lý"
               />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
-              <comrade-autocomplete
-                :value.sync="supervisorIds"
-                :unit="supervisorUnitId"
-                multiple
-                label="Chuyên viên theo dõi"
-              />
+              <comrade-autocomplete :value.sync="supervisorIds" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -102,11 +104,11 @@ export default class TaskAddDialog extends Vue {
 
   docsInfo = ''
   code = ''
-  publishedDate = ''
+  publishedDate: string = null
   title = ''
   description = ''
   deadlineType: TaskDeadlineType = 'noDeadline'
-  expiredDate = ''
+  expiredDate: string = null
   priority: TaskPriorityType = null
 
   executedUnitId = ''
@@ -119,38 +121,43 @@ export default class TaskAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const task = await this.providers.api.task.create(
-        createTaskBody(
-          {},
-          {
-            code: this.code,
-            title: this.title,
-            description: this.description,
-            priority: this.priority,
-            state: 'waiting',
-            publishedDate: this.publishedDate,
-            type: this.deadlineType,
-            expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
-            parent: this.taskParent?.id ?? undefined,
+      try {
+        const task = await this.providers.api.task.create(
+          createTaskBody(
+            {},
+            {
+              code: this.code,
+              title: this.title,
+              description: this.description,
+              priority: this.priority,
+              state: 'waiting',
+              publishedDate: this.publishedDate,
+              type: this.deadlineType,
+              expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
+              parent: this.taskParent?.id ?? undefined,
 
-            executedUnit: this.executedUnitId,
-            executedComrade: this.executedComradeId,
+              executedUnit: this.executedUnitId,
+              executedComrade: this.executedComradeId,
 
-            supportedUnits: this.supportedUnitIds,
-            supervisors: this.supervisorIds,
+              supportedUnits: this.supportedUnitIds,
+              supervisors: this.supervisorIds,
 
-            supervisorUnit: this.supervisorUnitId,
-            supportedComrades: this.supportedComradeIds,
+              supervisorUnit: this.supervisorUnitId,
+              supportedComrades: this.supportedComradeIds,
 
-            createdBy: authStore.comrade.id,
-            data: { docsInfo: this.docsInfo }
-          }
+              createdBy: authStore.comrade.id,
+              data: { docsInfo: this.docsInfo }
+            }
+          )
         )
-      )
 
-      this.$emit('success', task)
-      this.syncedValue = false
-      this.form.reset()
+        this.$emit('success', task)
+        this.syncedValue = false
+        this.form.reset()
+        this.providers.snackbar.addSuccess()
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
+      }
     }
   }
 }
