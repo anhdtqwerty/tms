@@ -65,6 +65,7 @@
     <task-return-dialog :value.sync="showReturnDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-update-state-dialog :value.sync="showEditStateDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
+    <task-delete-dialog :value.sync="showDeletingDialog" :task="selectedTask" @success="viewmodel.taskDeleted" />
   </v-container>
 </template>
 
@@ -90,7 +91,8 @@ import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
     TaskUpdateStateDialog: () => import('../dialogs/task-update-state-dialog.vue'),
     TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
     TaskActionComponent: () => import('../components/task-action-component.vue'),
-    TaskStateComponent: () => import('../components/task-state-component.vue')
+    TaskStateComponent: () => import('../components/task-state-component.vue'),
+    TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue')
   }
 })
 export default class TaskManagerPage extends Vue {
@@ -107,6 +109,7 @@ export default class TaskManagerPage extends Vue {
   showApproveDialog = false
   showEditStateDialog = false
   showReopenDialog = false
+  showDeletingDialog = false
 
   selectedTask: TaskModel = null
 
@@ -157,6 +160,10 @@ export default class TaskManagerPage extends Vue {
         break
       case 'reOpen':
         this.showReopenDialog = true
+        this.selectedTask = item
+        break
+      case 'delete':
+        this.showDeletingDialog = true
         this.selectedTask = item
         break
 

@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
+import { createTaskBody, TaskModel } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
@@ -65,11 +65,14 @@ export default class TaskReopenDialog extends Vue {
           task: this.task.id
         })
         try {
-          const modifyTask = await api.task.update(this.task.id, {
-            state: 'waiting',
-            status: null,
-            data: { ...(this.task.data ?? {}), explain: this.reasonReopen }
-          })
+          const modifyTask = await api.task.update(
+            this.task.id,
+            createTaskBody(this.task, {
+              state: 'waiting',
+              status: null,
+              data: { ...(this.task.data ?? {}), explain: this.reasonReopen }
+            })
+          )
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()

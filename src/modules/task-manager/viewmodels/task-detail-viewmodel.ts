@@ -14,6 +14,7 @@ export class TaskDetailViewModel {
   }
 
   @asyncAction *loadData(id: string) {
+    console.log('detail load data', id)
     const api = this.provider.api
     const results = yield Promise.all([api.task.findOne(id)])
     this.task = results[0]
@@ -38,13 +39,26 @@ export class TaskDetailViewModel {
     this.subtasks = results[1]
   }
 
-  @action.bound taskUpdated(task: TaskModel) {
-    this.task = task
+  @action.bound taskUpdated(item: TaskModel) {
+    if (item.id === this.task.id) {
+      // task parent
+      this.task = item
+    } else {
+      this.subtasks = this.subtasks.map(t => (t.id === item.id ? item : t))
+    }
   }
 
   @action.bound taskAdded(item: TaskModel) {
-    console.log('taskAdded ' + item)
     this.subtasks = [item, ...this.subtasks]
     this.subtaskTotalCount += 1
+  }
+
+  @action.bound taskDeleted(id: string) {
+    if (id === this.task.id) {
+      // task parent
+      this.provider.router.back()
+    } else {
+      this.subtasks = this.subtasks.filter(t => t.id !== id)
+    }
   }
 }

@@ -32,7 +32,7 @@
                 <div>Ngày ban hành</div>
               </v-col>
               <v-col cols="12" sm="6">
-                <div class="font-weight-bold">{{ vm.task.publishedDate }}</div>
+                <div class="font-weight-bold">{{ vm.task.publishedDate | ddmmyyyy }}</div>
               </v-col>
             </v-row>
             <v-row>
@@ -48,7 +48,7 @@
                 <div>Mức độ</div>
               </v-col>
               <v-col cols="12" sm="6">
-                <div class="font-weight-bold">{{ this.taskPriorityMap[vm.task.priority] }}</div>
+                <div class="font-weight-bold">{{ vm.task.priority | taskPriority }}</div>
               </v-col>
             </v-row>
             <v-row>
@@ -86,7 +86,7 @@
                 <div>Thời hạn xử lý</div>
               </v-col>
               <v-col cols="12" sm="6">
-                <div class="font-weight-bold">{{ vm.task.expiredDate }}</div>
+                <div class="font-weight-bold">{{ vm.task.expiredDate | ddmmyyyy }}</div>
               </v-col>
             </v-row>
             <v-row>
@@ -133,7 +133,7 @@
             <v-col cols="12">
               <div>Chuyên viên</div>
             </v-col>
-            <v-col cols="12" v-if="vm.task.executedComrade && vm.task.executedComrade.length">
+            <v-col cols="12" v-if="vm.task.executedComrade">
               <app-avatar :avatar="vm.task.executedComrade.avatar" width="80" height="80" />
               <span class="ml-4 font-weight-bold">{{ vm.task.executedComrade.name }}</span>
             </v-col>
@@ -171,7 +171,7 @@
             </template>
 
             <template v-slot:[`item.actions`]="{ item }">
-              <task-sub-action-menu :task="item" />
+              <task-sub-action-menu :task="item" @sub-task-action="subTaskAction($event, item)" />
             </template>
 
             <template v-slot:[`item.state`]="{ item }">
@@ -263,6 +263,7 @@
     <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-update-state-dialog :value.sync="showEditStateDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-delete-dialog :value.sync="showDeletingDialog" :task="deletingTask" @success="vm.taskDeleted" />
   </v-container>
 </template>
 
@@ -271,7 +272,7 @@ import { AppProvider } from '@/app-provider'
 import { Observer } from 'mobx-vue'
 import { Component, PropSync, Vue, Provide, Inject, Watch } from 'vue-property-decorator'
 import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
-import { TaskModel, taskPriorityNameMap } from '@/models/task-model'
+import { TaskModel } from '@/models/task-model'
 
 @Observer
 @Component({
@@ -279,7 +280,7 @@ import { TaskModel, taskPriorityNameMap } from '@/models/task-model'
     TaskAddDialog: () => import('../dialogs/task-add-dialog.vue'),
     TaskSearchComponent: () => import('../components/task-search-component.vue'),
     TaskActionComponent: () => import('../components/task-action-component.vue'),
-    TaskSubActionMenu: () => import('../dialogs/task-sub-action-menu.vue'),
+    TaskSubActionMenu: () => import('../components/task-sub-action-menu.vue'),
     TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue'),
     TaskRecoverDialog: () => import('../dialogs/task-recover-dialog.vue'),
     TaskExtendDialog: () => import('../dialogs/task-extend-dialog.vue'),
@@ -289,7 +290,8 @@ import { TaskModel, taskPriorityNameMap } from '@/models/task-model'
     TaskUpdateStateDialog: () => import('../dialogs/task-update-state-dialog.vue'),
     TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
     AppAvatar: () => import('@/components/images/app-avatar.vue'),
-    TaskStateComponent: () => import('../components/task-state-component.vue')
+    TaskStateComponent: () => import('../components/task-state-component.vue'),
+    TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue')
   }
 })
 export default class TaskDetailPage extends Vue {
@@ -299,6 +301,7 @@ export default class TaskDetailPage extends Vue {
 
   showAddSubtask = false
   showEditDialog = false
+  showDeletingDialog = false
   showDetailDialog = false
   showRetriveDialog = false
   showExtendDialog = false
@@ -307,7 +310,6 @@ export default class TaskDetailPage extends Vue {
   showApproveDialog = false
   showEditStateDialog = false
   showReopenDialog = false
-  taskPriorityMap = taskPriorityNameMap
 
   deletingTask: TaskModel = null
   editingTask: TaskModel = null
@@ -320,13 +322,13 @@ export default class TaskDetailPage extends Vue {
     switch (typeAction) {
       case 'edit':
         this.editingTask = task
-        this.showEditStateDialog = true
+        this.showEditDialog = true
         break
       case 'delete':
         this.deletingTask = task
-        // this. = true
+        this.showDeletingDialog = true
         break
-      case 'show':
+      case 'detail':
         this.$router.push({ path: '/task/' + task.id })
         break
       default:
@@ -338,6 +340,7 @@ export default class TaskDetailPage extends Vue {
     switch (typeAction) {
       case 'edit':
         this.showEditDialog = true
+        this.editingTask = this.vm.task
         break
       case 'retrive':
         this.showRetriveDialog = true
@@ -359,6 +362,10 @@ export default class TaskDetailPage extends Vue {
         break
       case 'reOpen':
         this.showReopenDialog = true
+        break
+      case 'delete':
+        this.showDeletingDialog = true
+        this.deletingTask = this.vm.task
         break
 
       default:

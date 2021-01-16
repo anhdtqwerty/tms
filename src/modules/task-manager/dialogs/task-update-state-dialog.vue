@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel, TaskStateType } from '@/models/task-model'
+import { createTaskBody, TaskModel, TaskStateType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
@@ -75,11 +75,14 @@ export default class TaskUpdateStateDialog extends Vue {
           task: this.task.id
         })
         try {
-          const modifyTask = await api.task.update(this.task.id, {
-            state: this.state,
-            status: this.state === 'done' ? 'approving' : null,
-            data: { ...(this.task.data ?? {}), explain: this.description }
-          })
+          const modifyTask = await api.task.update(
+            this.task.id,
+            createTaskBody(this.task, {
+              state: this.state,
+              status: this.state === 'done' ? 'approving' : null,
+              data: { ...(this.task.data ?? {}), explain: this.description }
+            })
+          )
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()

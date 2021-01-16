@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
+import { createTaskBody, TaskModel } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
@@ -68,10 +68,13 @@ export default class TaskRecoverDialog extends Vue {
           task: this.task.id
         })
         try {
-          const modifyTask = await api.task.update(this.task.id, {
-            state: 'recovered',
-            data: { ...(this.task.data ?? {}), explain: this.reasonRecover }
-          })
+          const modifyTask = await api.task.update(
+            this.task.id,
+            createTaskBody(this.task, {
+              state: 'recovered',
+              data: { ...(this.task.data ?? {}), explain: this.reasonRecover }
+            })
+          )
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()

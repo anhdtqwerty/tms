@@ -11,17 +11,17 @@
       <v-container fluid px-5 py-2>
         <v-row>
           <v-col cols="12" class="pa-2">
-            <div class="mb-4" @click="$emit('show', task)">
+            <div class="mb-4" @click="actionSubTask('detail')">
               <v-icon color="blue" left>visibility</v-icon>
-              <span class="blue--text">Xem nhiệm vụ </span>
+              <span class="blue--text" style="cursor: pointer">Xem nhiệm vụ </span>
             </div>
-            <div class="mb-4" @click="$emit('edit', task)">
+            <div class="mb-4" @click="actionSubTask('edit')">
               <v-icon color="blue" left>edit</v-icon>
-              <span class="blue--text">Sửa nhiệm vụ</span>
+              <span class="blue--text" style="cursor: pointer">Sửa nhiệm vụ</span>
             </div>
-            <div class="mb-4" @click="$emit('delete', task)">
+            <div class="mb-4" @click="actionSubTask('delete')">
               <v-icon color="blue" left>delete</v-icon>
-              <span class="blue--text">Xóa nhiệm vụ</span>
+              <span class="blue--text" style="cursor: pointer">Xóa nhiệm vụ</span>
             </div>
           </v-col>
         </v-row>
@@ -43,7 +43,9 @@ export default class TaskSubActionMenu extends Vue {
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Prop() task: TaskModel
 
-  // actionSubTask()
+  actionSubTask(typeAction: string) {
+    this.$emit('sub-task-action', typeAction)
+  }
 }
 </script>
 

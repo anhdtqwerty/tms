@@ -14,7 +14,7 @@
           <v-row>
             <v-col cols="12">
               <app-text-field v-model="code" label="Số/ký hiệu" />
-              <date-picker-input :value.sync="expireDateOld" label="Hạn xử lý" />
+              <date-picker-input disabled v-model="expireDateOld" label="Hạn xử lý" />
               <date-picker-input :value.sync="expireDateNew" label="Hạn xử lý mới" />
               <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
               <app-text-field v-model="reasonExtend" label="Lý do gia hạn" />
@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
+import { createTaskBody, TaskModel } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
@@ -78,10 +78,13 @@ export default class TaskExtendDialog extends Vue {
           task: this.task.id
         })
         try {
-          const modifyTask = await api.task.update(this.task.id, {
-            expiredDate: this.expireDateNew,
-            data: { ...(this.task.data ?? {}), explain: this.reasonExtend }
-          })
+          const modifyTask = await api.task.update(
+            this.task.id,
+            createTaskBody(this.task, {
+              expiredDate: this.expireDateNew,
+              data: { ...(this.task.data ?? {}), explain: this.reasonExtend }
+            })
+          )
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()

@@ -52,7 +52,7 @@
               <date-picker-input
                 class="mb-6"
                 :value.sync="expiredDate"
-                :disabled="deadlineType === 'noDeadline'"
+                :disabled="deadlineType !== 'hasDeadline'"
                 label="Hạn xử lý"
               />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
@@ -81,7 +81,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskDeadlineType, TaskModel, TaskPriorityType } from '@/models/task-model'
+import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import { Component, Inject, PropSync, Prop, Ref, Vue } from 'vue-property-decorator'
 
@@ -105,7 +105,7 @@ export default class TaskAddDialog extends Vue {
   publishedDate = ''
   title = ''
   description = ''
-  deadlineType: TaskDeadlineType = null
+  deadlineType: TaskDeadlineType = 'noDeadline'
   expiredDate = ''
   priority: TaskPriorityType = null
 
@@ -119,27 +119,34 @@ export default class TaskAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const task = await this.providers.api.task.create({
-        code: this.code,
-        title: this.title,
-        description: this.description,
-        priority: this.priority,
-        state: 'waiting',
-        expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : null,
-        parent: this.taskParent?.id ?? null,
+      const task = await this.providers.api.task.create(
+        createTaskBody(
+          {},
+          {
+            code: this.code,
+            title: this.title,
+            description: this.description,
+            priority: this.priority,
+            state: 'waiting',
+            publishedDate: this.publishedDate,
+            type: this.deadlineType,
+            expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
+            parent: this.taskParent?.id ?? undefined,
 
-        executedUnit: this.executedUnitId,
-        executedComrade: this.executedComradeId,
+            executedUnit: this.executedUnitId,
+            executedComrade: this.executedComradeId,
 
-        supportedUnits: this.supportedUnitIds,
-        supervisors: this.supervisorIds,
+            supportedUnits: this.supportedUnitIds,
+            supervisors: this.supervisorIds,
 
-        supervisorUnit: this.supervisorUnitId,
-        supportedComrades: this.supportedComradeIds,
+            supervisorUnit: this.supervisorUnitId,
+            supportedComrades: this.supportedComradeIds,
 
-        createdBy: authStore.comrade.id,
-        data: { docsInfo: this.docsInfo }
-      })
+            createdBy: authStore.comrade.id,
+            data: { docsInfo: this.docsInfo }
+          }
+        )
+      )
 
       this.$emit('success', task)
       this.syncedValue = false
