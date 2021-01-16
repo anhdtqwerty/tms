@@ -9,9 +9,7 @@ export class TaskManagerViewModel {
   @observable tasks: TaskModel[] = []
   private _searchParams = {}
 
-  constructor(private provider: AppProvider) {
-    this.search()
-  }
+  constructor(private provider: AppProvider) {}
 
   @asyncAction *loadData(val: TaskRouteType) {
     const params: any = {}

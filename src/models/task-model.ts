@@ -4,6 +4,8 @@ import moment from 'moment'
 import { ComradeModel } from './comrade-model'
 import { DepartmentModel } from './department-model'
 import { FileModel } from './file-model'
+import { TaskPermissionConfig } from './position-model'
+import { canChangeRequest, RequestModel } from './request-model'
 import { UnitModel } from './unit-model'
 
 export interface TaskModel {
@@ -183,3 +185,114 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
   }
   return params
 }
+
+export const getLastRequest = (task: TaskModel) => {
+  return _.maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
+}
+
+export type TaskActionType =
+  | 'edit'
+  | 'revoke'
+  | 'extend'
+  | 'return'
+  | 'assign'
+  | 'approve'
+  | 'update'
+  | 'modify-update'
+  | 'delete-update'
+  | 'reopen'
+  | 'delete'
+  | 'read' // sub-task only
+
+export interface TaskActionConfig {
+  icon: string
+  type: TaskActionType
+  title: string
+  permission: keyof TaskPermissionConfig
+  checkEnable: (task: TaskModel) => boolean
+}
+
+export const actionConfigs: TaskActionConfig[] = [
+  {
+    permission: 'edit',
+    type: 'edit',
+    icon: 'edit',
+    title: 'Cập nhật thông tin',
+    checkEnable: task => task.state === 'waiting'
+  },
+  {
+    permission: 'revoke',
+    type: 'revoke',
+    icon: 'replay',
+    title: 'Thu hồi nhiệm vụ',
+    checkEnable: task => task.state !== 'recovered'
+  },
+  {
+    permission: 'extend',
+    type: 'extend',
+    icon: 'access_time',
+    title: 'Gia hạn nhiệm vụ',
+    checkEnable: task => task.type === 'hasDeadline' && task.state !== 'done' && task.state !== 'recovered'
+  },
+  {
+    permission: 'return',
+    type: 'return',
+    icon: 'replay',
+    title: 'Trả lại nhiệm vụ',
+    checkEnable: task => task.state === 'waiting'
+  },
+  {
+    permission: 'assign',
+    type: 'assign',
+    icon: 'pan_tool',
+    title: 'Giao thực hiện',
+    checkEnable: task => _.isEmpty(task.executedComrade)
+  },
+  {
+    permission: 'approve',
+    type: 'approve',
+    icon: 'offline_pin',
+    title: 'Phê duyệt nhiệm vụ',
+    checkEnable: t => t.state === 'done' && t.status === 'approving'
+  },
+  {
+    permission: 'update',
+    type: 'update',
+    icon: 'account_box',
+    title: 'Cập nhật tiến độ',
+    checkEnable: task => _.get(task.executedComrade, 'id') === authStore.comrade.id
+  },
+  {
+    permission: 'update',
+    type: 'modify-update',
+    icon: 'edit',
+    title: 'Sửa cập nhật',
+    checkEnable: task =>
+      _.get(task.executedComrade, 'id') === authStore.comrade.id && canChangeRequest(getLastRequest(task))
+  },
+  {
+    permission: 'update',
+    type: 'delete-update',
+    icon: 'edit',
+    title: 'Xóa cập nhật',
+    checkEnable: task =>
+      _.get(task.executedComrade, 'id') === authStore.comrade.id && canChangeRequest(getLastRequest(task))
+  },
+  {
+    permission: 'reopen',
+    type: 'reopen',
+    icon: 'delete',
+    title: 'Mở lại nhiệm vụ',
+    checkEnable: task => task.state === 'done' && task.status === 'approved'
+  },
+  {
+    permission: 'delete',
+    type: 'delete',
+    icon: 'delete',
+    title: 'Xóa nhiệm vụ',
+    checkEnable: task => _.isEmpty(task.executedUnit) && _.isEmpty(task.executedComrade)
+  }
+]
+
+// HACK: mock allow all
+// actionConfigs.forEach(ac => (ac.checkEnable = () => true))

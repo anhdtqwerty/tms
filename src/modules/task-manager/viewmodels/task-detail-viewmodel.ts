@@ -9,9 +9,7 @@ export class TaskDetailViewModel {
   private _searchParams = {}
   @observable task: TaskModel = null
 
-  constructor(private provider: AppProvider) {
-    // this.loadData(this.provider.router.currentRoute.params['taskid'])
-  }
+  constructor(private provider: AppProvider) {}
 
   @asyncAction *loadData(id: string) {
     console.log('detail load data', id)

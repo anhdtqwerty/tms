@@ -9,7 +9,7 @@
               <v-icon right>expand_more</v-icon>
             </v-btn>
           </template>
-          <task-action-component @task-action="taskActionCommon" />
+          <task-action-component @task-action="taskActionCommon" :task="vm.task" />
         </v-menu>
       </v-col>
     </v-row>
@@ -94,7 +94,7 @@
               <div>Theo dõi</div>
             </v-col>
             <v-col cols="12">
-              <div class="font-weight-bold">{{ vm.task.supervisorUnit.title }}</div>
+              <div class="font-weight-bold">{{ vm.task | _get('supervisorUnit.title') }}</div>
             </v-col>
             <v-col cols="12">
               <div>Chuyên viên</div>
@@ -115,7 +115,7 @@
               <div>Thực hiện</div>
             </v-col>
             <v-col cols="12">
-              <div class="font-weight-bold">{{ vm.task.executedUnit.title }}</div>
+              <div class="font-weight-bold">{{ vm.task | _get('executedUnit.title') }}</div>
             </v-col>
             <v-col cols="12">
               <div>Chuyên viên</div>
@@ -158,7 +158,7 @@
             </template>
 
             <template v-slot:[`item.actions`]="{ item }">
-              <task-sub-action-menu :task="item" @sub-task-action="subTaskAction($event, item)" />
+              <task-sub-action-menu :task="item" @task-action="subTaskAction($event, item)" />
             </template>
 
             <template v-slot:[`item.state`]="{ item }">
@@ -259,7 +259,7 @@ import { AppProvider } from '@/app-provider'
 import { Observer } from 'mobx-vue'
 import { Component, PropSync, Vue, Provide, Inject, Watch } from 'vue-property-decorator'
 import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
-import { TaskModel } from '@/models/task-model'
+import { TaskActionType, TaskModel } from '@/models/task-model'
 
 @Observer
 @Component({
@@ -303,10 +303,12 @@ export default class TaskDetailPage extends Vue {
   editingTask: TaskModel = null
 
   @Watch('$route.params.taskid', { immediate: true }) onTaskParamChange(val: any) {
-    this.vm.loadData(val)
+    if (val) {
+      this.vm.loadData(val)
+    }
   }
 
-  subTaskAction(typeAction: string, task: TaskModel) {
+  subTaskAction(typeAction: TaskActionType, task: TaskModel) {
     switch (typeAction) {
       case 'edit':
         this.editingTask = task
@@ -316,21 +318,22 @@ export default class TaskDetailPage extends Vue {
         this.deletingTask = task
         this.showDeletingDialog = true
         break
-      case 'detail':
+      case 'read':
         this.$router.push({ path: '/task/' + task.id })
         break
       default:
+        console.warn('subTaskAction doesnt handle', typeAction)
         break
     }
   }
 
-  taskActionCommon(typeAction: string) {
+  taskActionCommon(typeAction: TaskActionType) {
     switch (typeAction) {
       case 'edit':
         this.showEditDialog = true
         this.editingTask = this.vm.task
         break
-      case 'retrive':
+      case 'revoke':
         this.showRetriveDialog = true
         break
       case 'extend':
@@ -345,18 +348,18 @@ export default class TaskDetailPage extends Vue {
       case 'approve':
         this.showApproveDialog = true
         break
-      case 'editState':
+      case 'update':
         this.showEditStateDialog = true
         break
-      case 'reOpen':
+      case 'reopen':
         this.showReopenDialog = true
         break
       case 'delete':
         this.showDeletingDialog = true
         this.deletingTask = this.vm.task
         break
-
       default:
+        console.warn('taskActionCommon not handle', typeAction)
         break
     }
   }

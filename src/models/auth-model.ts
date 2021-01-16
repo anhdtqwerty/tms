@@ -7,7 +7,7 @@ export interface UserModel {
   provider?: string
   password?: string
   blocked?: boolean
-  createdAt?: Date
-  updatedAt?: Date
+  updated_at?: string
+  created_at?: string
   comrade?: string | ComradeModel
 }
