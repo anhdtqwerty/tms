@@ -81,8 +81,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { ComradeModel } from '@/models/comrade-model'
-import { TaskDeadlineType, TaskModel, TaskPriorityType, TaskStateType } from '@/models/task-model'
+import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType, TaskStateType } from '@/models/task-model'
 import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
@@ -118,12 +117,13 @@ export default class TaskEditDialog extends Vue {
   supervisorIds: string[] = []
   supervisorUnitId = ''
   expiredDate = ''
-  data: any = {}
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.description = val.description
+      this.publishedDate = val.publishedDate
+      this.deadlineType = val.type
       this.expiredDate = val.expiredDate
       this.title = val.title
       this.state = val.state
@@ -133,22 +133,24 @@ export default class TaskEditDialog extends Vue {
       this.executedComradeId = _.get(val.executedComrade, 'id')
 
       this.supervisorUnitId = _.get(val.supervisorUnit, 'id')
-      this.supervisorIds = ((val.supervisors as ComradeModel[])?.map(x => _.get(x, 'id')) as []) ?? []
+      this.supervisorIds = _.map(val.supervisors, 'id')
 
-      this.supportedUnitIds = (val.supportedUnits as []).map(x => _.get(x, 'id')) as []
-      this.supportedComradeIds = ((val.supportedComrades as ComradeModel[])?.map(x => _.get(x, 'id')) as []) ?? []
+      this.supportedUnitIds = _.map(val.supportedUnits, 'id')
+      this.supportedComradeIds = _.map(val.supportedComrades, 'id')
 
-      this.data = val.data
+      this.docsInfo = val.data.docsInfo
     }
   }
 
   async save() {
     if (this.form.validate()) {
+      console.log('this.expiredDate', this.expiredDate)
       let task: TaskModel = {
-        ...this.task,
         code: this.code,
         description: this.description,
-        expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : null,
+        publishedDate: this.publishedDate,
+        type: this.deadlineType,
+        expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
         title: this.title,
         state: this.state,
         priority: this.priority,
@@ -162,9 +164,9 @@ export default class TaskEditDialog extends Vue {
         supportedUnits: this.supportedUnitIds,
         supportedComrades: this.supportedComradeIds,
 
-        data: { ...this.data, docsInfo: this.docsInfo }
+        data: { ...(this.task.data ?? {}), docsInfo: this.docsInfo }
       }
-      task = await this.providers.api.task.update(task.id, task)
+      task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
       this.$emit('success', task)
       this.syncedValue = false
     }

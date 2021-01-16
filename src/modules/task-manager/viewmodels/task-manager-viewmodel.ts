@@ -27,10 +27,7 @@ export class TaskManagerViewModel {
         break
     }
 
-    const results = yield Promise.all([
-      this.provider.api.task.count(), 
-      this.provider.api.task.find<TaskModel>(params)
-    ])
+    const results = yield Promise.all([this.provider.api.task.count(), this.provider.api.task.find<TaskModel>(params)])
     this.totalCount = results[0]
     this.tasks = results[1]
   }
@@ -53,5 +50,9 @@ export class TaskManagerViewModel {
 
   @action.bound taskUpdated(task: TaskModel) {
     this.tasks = this.tasks.map(t => (t.id === task.id ? task : t))
+  }
+
+  @action.bound taskDeleted(id: string) {
+    this.tasks = this.tasks.filter(t => t.id !== id)
   }
 }

@@ -30,7 +30,7 @@
         <v-card>
           <div class="d-flex flex-column pa-4 align-center">
             <p class="text-h6 ma-0">BÁO CÁO TỔNG HỢP CÔNG VIỆC</p>
-            <p>Thời gian xuất báo cáo {{ viewmodel.exportedDate | mmddyyyyhhmmss }}</p>
+            <p>Thời gian xuất báo cáo {{ viewmodel.exportedDate | ddmmyyyyhhmmss }}</p>
             <table class="align-self-stretch">
               <tr class="header-footer-row">
                 <th rowspan="2">Đơn vị</th>

@@ -40,7 +40,7 @@
       <v-icon color="blue" left>lock_open</v-icon>
       <span class="blue--text" style="cursor: pointer">Mở lại nhiệm vụ</span>
     </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4">
+    <v-list-item-title class="mb-4 px-4" @click.stop="taskActionCommon('delete')">
       <v-icon color="blue" left>delete</v-icon>
       <span class="blue--text" style="cursor: pointer">Xóa nhiệm vụ</span>
     </v-list-item-title>

@@ -32,7 +32,8 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
+import { createTaskBody, TaskModel } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -54,12 +55,35 @@ export default class TaskReopenDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      let task: TaskModel = {
-        ...this.task
+      try {
+        const api = this.providers.api
+        const request = await api.request.create({
+          // title, files, approver
+          description: this.reasonReopen,
+          type: 'waiting',
+          requestor: authStore.comrade.id,
+          task: this.task.id
+        })
+        try {
+          const modifyTask = await api.task.update(
+            this.task.id,
+            createTaskBody(this.task, {
+              state: 'waiting',
+              status: null,
+              data: { ...(this.task.data ?? {}), explain: this.reasonReopen }
+            })
+          )
+          this.$emit('success', modifyTask)
+          this.syncedValue = false
+          this.form.reset()
+          this.providers.snackbar.updateSuccess()
+        } catch (error) {
+          await api.request.delete(request.id)
+          throw error
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      task = await this.providers.api.task.update(task.id, task)
-      this.$emit('success', task)
-      this.syncedValue = false
     }
   }
 }

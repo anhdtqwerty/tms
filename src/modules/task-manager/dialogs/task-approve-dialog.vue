@@ -60,7 +60,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
-import { TaskApprovementStatusType, TaskModel } from '@/models/task-model'
+import { createTaskBody, TaskApprovementStatusType, TaskModel } from '@/models/task-model'
 
 @Component({
   components: {
@@ -92,11 +92,11 @@ export default class TaskApproveDialog extends Vue {
   async save() {
     if (this.form.validate()) {
       let task: TaskModel = {
-        ...this.task,
         description: this.description,
-        status: this.approveStatusResult
+        status: this.approveStatusResult,
+        state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
       }
-      task = await this.providers.api.task.update(task.id, task)
+      task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
       this.$emit('success', task)
       this.syncedValue = false
     }

@@ -13,28 +13,31 @@ export interface TaskModel {
   type?: TaskDeadlineType
 
   executedUnit?: string | UnitModel
-  supportedUnits?: string[] | UnitModel[]
+  supportedUnits?: (string | UnitModel)[]
   supervisorUnit?: string | UnitModel
 
-  executeDepartment?: string | DepartmentModel
+  executedDepartment?: string | DepartmentModel
   supportedDepartment?: string | DepartmentModel
   supervisorDepartment?: string | DepartmentModel
 
-  supervisors?: string[] | ComradeModel[]
+  supervisors?: (string | ComradeModel)[]
   executedComrade?: string | ComradeModel
-  supportedComrades?: string[] | ComradeModel[]
+  supportedComrades?: (string | ComradeModel)[]
 
-  subtasks?: string[] | TaskModel[]
+  subtasks?: (string | TaskModel)[]
   parent?: string | TaskModel
 
   expiredDate?: string
   publishedDate?: string
 
-  files?: string[]
+  files?: File[]
   createdBy?: string | ComradeModel
-  requests?: string[] | Request[]
+  requests?: (string | Request)[]
 
-  data?: {}
+  data?: {
+    explain?: string
+    docsInfo?: string // thong tin van ban den
+  }
 }
 
 export type TaskPriorityType = 'level_1' | 'level_2' | 'level_3' | 'urgent'
@@ -97,13 +100,14 @@ export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name
     } as any)
 )
 
-export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered'
+export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered' | 'returned'
 export const taskStateNameMap: { [name in TaskStateType]: string } = {
   waiting: 'Chưa cập nhật tiến độ',
   todo: 'Chưa thực hiện',
   doing: 'Đang thực hiện',
   done: 'Đã hoàn thành',
-  recovered: 'Bị thu hồi'
+  recovered: 'Bị thu hồi',
+  returned: 'Trả lại'
 }
 export const taskStateNames: { type: TaskStateType; name: string }[] = Object.entries(taskStateNameMap).map(
   ([type, value]) =>
@@ -139,3 +143,7 @@ export const taskRouteNames: { type: TaskRouteType; name: string }[] = Object.en
       name
     } as any)
 )
+
+export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
+  return changes
+}

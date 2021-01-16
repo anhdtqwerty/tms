@@ -66,11 +66,10 @@ export default class TaskAssignDialog extends Vue {
   async save() {
     if (this.form.validate()) {
       let task: TaskModel = {
-        ...this.task,
         executedUnit: this.executedUnitId,
         executedComrade: this.executedComradeId
       }
-      task = await this.providers.api.task.update(task.id, task)
+      task = await this.providers.api.task.update(this.task.id, task)
       this.$emit('success', task)
       this.syncedValue = false
     }

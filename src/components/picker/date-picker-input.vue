@@ -51,7 +51,9 @@ export default class DatePickerInput extends Vue {
 
   selectDate(date: string) {
     if (this.type === 'date') {
-      this.syncedValue = moment(date, 'yyyy-MM-DD').toISOString()
+      this.syncedValue = moment(date, 'yyyy-MM-DD')
+        .endOf('day')
+        .toISOString()
     } else {
       this.syncedValue = moment(date, 'yyyy-MM').toISOString()
     }
