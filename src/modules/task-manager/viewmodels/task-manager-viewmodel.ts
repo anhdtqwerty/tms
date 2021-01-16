@@ -8,6 +8,7 @@ export class TaskManagerViewModel {
   @observable totalCount = 0
   @observable tasks: TaskModel[] = []
   private _searchParams = {}
+  private currentRoute: TaskRouteType = null
 
   constructor(private provider: AppProvider) {
     this.search()
@@ -15,6 +16,8 @@ export class TaskManagerViewModel {
 
   @asyncAction *loadData(val: TaskRouteType) {
     const params: any = {}
+    this.currentRoute = val
+
     switch (val) {
       case 'task-created':
         params['createdBy'] = authStore.comrade.id
@@ -54,5 +57,9 @@ export class TaskManagerViewModel {
 
   @action.bound taskDeleted(id: string) {
     this.tasks = this.tasks.filter(t => t.id !== id)
+  }
+
+  @action.bound taskRecovered(item: TaskModel) {
+    this.loadData(this.currentRoute)
   }
 }

@@ -94,7 +94,7 @@
               <div>Theo dõi</div>
             </v-col>
             <v-col cols="12">
-              <div class="font-weight-bold">{{ vm.task.supervisorUnit.title }}</div>
+              <div class="font-weight-bold">{{ vm.task | _get('supervisorUnit.title') }}</div>
             </v-col>
             <v-col cols="12">
               <div>Chuyên viên</div>
@@ -115,7 +115,7 @@
               <div>Thực hiện</div>
             </v-col>
             <v-col cols="12">
-              <div class="font-weight-bold">{{ vm.task.executedUnit.title }}</div>
+              <div class="font-weight-bold">{{ vm.task | _get('executedUnit.title') }}</div>
             </v-col>
             <v-col cols="12">
               <div>Chuyên viên</div>
@@ -243,7 +243,7 @@
 
     <task-add-dialog :value.sync="showAddSubtask" :taskParent="vm.task" @success="vm.taskAdded" />
     <task-edit-dialog :value.sync="showEditDialog" :task="editingTask" @success="vm.taskUpdated" />
-    <task-recover-dialog :value.sync="showRetriveDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-recover-dialog :value.sync="showRetriveDialog" :task="vm.task" @success="vm.taskRecovered" />
     <task-extend-dialog :value.sync="showExtendDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-approve-dialog :value.sync="showApproveDialog" :task="vm.task" @success="vm.taskUpdated" />

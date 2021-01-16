@@ -14,7 +14,6 @@ export class TaskDetailViewModel {
   }
 
   @asyncAction *loadData(id: string) {
-    console.log('detail load data', id)
     const api = this.provider.api
     const results = yield Promise.all([api.task.findOne(id)])
     this.task = results[0]
@@ -51,6 +50,10 @@ export class TaskDetailViewModel {
   @action.bound taskAdded(item: TaskModel) {
     this.subtasks = [item, ...this.subtasks]
     this.subtaskTotalCount += 1
+  }
+
+  @action.bound taskRecovered(item: TaskModel) {
+    this.loadData(this.task.id)
   }
 
   @action.bound taskDeleted(id: string) {

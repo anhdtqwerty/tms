@@ -35,6 +35,7 @@
 import { AppProvider } from '@/app-provider'
 import { createTaskBody, TaskModel } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -68,14 +69,38 @@ export default class TaskRecoverDialog extends Vue {
           task: this.task.id
         })
         try {
-          const modifyTask = await api.task.update(
-            this.task.id,
-            createTaskBody(this.task, {
-              state: 'recovered',
-              data: { ...(this.task.data ?? {}), explain: this.reasonRecover }
-            })
-          )
-          this.$emit('success', modifyTask)
+          const subtaskIds = this.task.subtasks.map(x => _.get(x, 'id'))
+          const subsubTasks = (await api.task.find({
+            parent_in: subtaskIds
+          })) as TaskModel[]
+
+          const allTaskIds = [this.task.id, ...subtaskIds, ...subsubTasks.map(x => x.id)]
+          console.log('allSubtaskIDs', allTaskIds)
+          if (allTaskIds.length) {
+            await Promise.all(
+              allTaskIds.map(id => {
+                return api.task.update(
+                  id,
+                  createTaskBody(
+                    {},
+                    {
+                      state: 'recovered',
+                      status: null,
+                      executedUnit: null,
+                      executedComrade: null,
+                      supportedUnits: null,
+                      supportedComrades: null,
+                      supervisorUnit: null,
+                      supervisors: null,
+                      data: { explain: this.reasonRecover }
+                    }
+                  )
+                )
+              })
+            )
+          }
+
+          this.$emit('success')
           this.syncedValue = false
           this.form.reset()
           this.providers.snackbar.updateSuccess()
