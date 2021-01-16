@@ -131,6 +131,15 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'configs',
+        name: 'configs',
+        component: () => import('@/modules/system-manager/pages/system-config-page.vue'),
+        meta: {
+          title: 'Cấu hình hệ thống',
+          auth: true
+        }
+      },
+      {
         path: 'report-general',
         name: 'report-general',
         component: () => import('@/modules/report/pages/report-general-page.vue'),

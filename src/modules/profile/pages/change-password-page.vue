@@ -49,8 +49,8 @@ export default class ChangePasswordPage extends Vue {
   password = ''
   confirmPassword = ''
 
-  get passwordConfirmMatch() {
-    return this.password !== this.confirmPassword ? 'Mật khẩu không khớp' : null
+  passwordConfirmMatch() {
+    return this.password === this.confirmPassword || 'Mật khẩu không khớp'
   }
 
   async change() {

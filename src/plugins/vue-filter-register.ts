@@ -4,6 +4,7 @@ import {
   taskPriorityNameMap,
   TaskPriorityType
 } from '@/models/task-model'
+import { permissionHelper } from '@/helpers/permission-helper'
 import { apiLogNames, ApiLogType } from '@/services/api-service'
 import _ from 'lodash'
 import moment from 'moment'
@@ -21,4 +22,6 @@ export const vueFilterRegister = () => {
   Vue.filter('_get', (any: any, path: string, defaultValue = '') => {
     return _.get(any, path, defaultValue)
   })
+
+  Vue.filter('permission', (val: string) => permissionHelper.check(val))
 }

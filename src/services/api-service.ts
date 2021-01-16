@@ -22,7 +22,16 @@ export const apiLogNames: { [name in ApiLogType]: string } = {
   update: 'Cập nhật'
 }
 export type ApiTableType = 'user' | 'unit' | 'department' | 'position' | 'comrade' | 'task' | 'log'
-export type ApiRouteType = 'users' | 'units' | 'departments' | 'positions' | 'comrades' | 'tasks' | 'logs' | 'requests'
+export type ApiRouteType =
+  | 'users'
+  | 'units'
+  | 'departments'
+  | 'positions'
+  | 'comrades'
+  | 'tasks'
+  | 'logs'
+  | 'requests'
+  | 'config'
 export const ApiRouteNames: { [name in ApiRouteType]: string } = {
   users: 'người dùng',
   units: 'đơn vị',
@@ -31,7 +40,8 @@ export const ApiRouteNames: { [name in ApiRouteType]: string } = {
   comrades: 'người dùng',
   tasks: 'nhiệm vụ',
   logs: 'log',
-  requests: 'lịch sử'
+  requests: 'lịch sử',
+  config: 'cấu hình hệ thống'
 }
 
 const browser = Bowser.getParser(window.navigator.userAgent)
@@ -75,7 +85,12 @@ export class ApiHandler<T> {
   }
 
   async findOne<T>(id: any): Promise<T> {
-    const res = await this.axios.get(`${this.route}/${id}`)
+    let res: any
+    if (id) {
+      res = await this.axios.get(`${this.route}/${id}`)
+    } else {
+      res = await this.axios.get(`${this.route}`)
+    }
     return res.data
   }
 
@@ -126,6 +141,7 @@ export class ApiService {
   comarde = new ApiHandler<ComradeModel>('comrades', this.axios)
   task = new ApiHandler<TaskModel>('tasks', this.axios)
   request = new ApiHandler<RequestModel>('requests', this.axios, false)
+  configs = new ApiHandler<{ data: any }>('config', this.axios, false)
 
   constructor() {
     this.setupAuthInjector()

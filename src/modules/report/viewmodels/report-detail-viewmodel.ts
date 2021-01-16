@@ -1,6 +1,6 @@
 import { AppProvider } from '@/app-provider'
 import { textHelpers } from '@/helpers/text-helper'
-import { TaskModel, TaskRouteType } from '@/models/task-model'
+import { TaskModel, TaskRouteType, taskTypeToFilterParams } from '@/models/task-model'
 import _ from 'lodash'
 import { observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -19,37 +19,7 @@ export class ReportDetailViewModel {
   }
 
   changeTaskType(taskType: TaskRouteType) {
-    const { authStore } = this.provider
-    const params: TaskModel = {}
-    switch (taskType) {
-      case 'task-created':
-        params.createdBy = authStore.comrade.id
-        break
-      case 'task-assigned':
-        params.executedComrade = authStore.comrade.id
-        break
-      case 'task-following':
-        _.set(params, 'supervisors_contains', authStore.comrade.id)
-        break
-      case 'task-support':
-        _.set(params, 'supportedComrades_contains', authStore.comrade.id)
-        break
-      case 'task-expired':
-        params.type = 'hasDeadline'
-        _.set(params, 'expiredDate_lt', moment().toISOString())
-        break
-      case 'task-approving':
-        params.state = 'done'
-        params.status = 'approving'
-        break
-      case 'task-done':
-        params.state = 'done'
-        break
-      default:
-        console.error(`not support ${taskType}`)
-        break
-    }
-    this._taskTypeParams = params
+    this._taskTypeParams = taskTypeToFilterParams(taskType)
     this.search()
   }
 
