@@ -103,7 +103,7 @@
               </div>
             </template>
             <template v-slot:[`item.created_at`]="{ item }">
-              {{ item.created_at | mmddyyyy }}
+              {{ item.created_at | ddmmyyyy }}
             </template>
           </v-data-table>
         </v-card>
