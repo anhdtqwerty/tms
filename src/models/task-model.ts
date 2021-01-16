@@ -3,6 +3,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import { ComradeModel } from './comrade-model'
 import { DepartmentModel } from './department-model'
+import { FileModel } from './file-model'
 import { UnitModel } from './unit-model'
 
 export interface TaskModel {
@@ -33,7 +34,7 @@ export interface TaskModel {
   expiredDate?: string
   publishedDate?: string
 
-  files?: any[]
+  files?: (string | FileModel)[]
   createdBy?: string | ComradeModel
   requests?: (string | Request)[]
 

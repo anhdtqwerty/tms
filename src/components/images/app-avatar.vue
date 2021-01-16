@@ -8,6 +8,7 @@
 import { Component, Inject, Prop, Vue, Watch } from 'vue-property-decorator'
 import _ from 'lodash'
 import { AppProvider } from '@/app-provider'
+import { fileHelpers } from '@/helpers/file-helper'
 
 @Component
 export default class AppAvatar extends Vue {
@@ -24,9 +25,9 @@ export default class AppAvatar extends Vue {
         this.url = URL.createObjectURL(val)
       } else if (typeof val === 'string') {
         const model = await this.providers.api.getFile(val)
-        this.url = this.providers.api.getFileUrl(model)
+        this.url = fileHelpers.getApiFileUrl(model)
       } else if (val) {
-        this.url = this.providers.api.getFileUrl(val)
+        this.url = fileHelpers.getApiFileUrl(val)
       }
       if (!this.url) {
         this.url = '/default-avatar.png'

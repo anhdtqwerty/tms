@@ -16,91 +16,78 @@
 
     <!-- task parent -->
     <v-row>
-      <v-col cols="12" sm="3" class="pa-2">
+      <v-col cols="12" md="6" lg="3" class="pa-2">
         <v-card height="100%" class="pa-4">
           <div>
             <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Số ký hiệu</div>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div class="font-weight-bold">{{ vm.task.code }}</div>
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Ngày ban hành</div>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div class="font-weight-bold">{{ vm.task.publishedDate | ddmmyyyy }}</div>
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Trích yếu</div>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div class="font-weight-bold">{{ vm.task.title }}</div>
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Mức độ</div>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div class="font-weight-bold">{{ vm.task.priority | taskPriority }}</div>
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Trạng thái</div>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <task-state-component :state="vm.task.state" />
               </v-col>
             </v-row>
           </div>
         </v-card>
       </v-col>
-      <v-col cols="12" sm="3" class="pa-2">
+      <v-col cols="12" md="6" lg="3" class="pa-2">
         <v-card height="100%" class="pa-4">
           <div>
             <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Văn bản đính kèm</div>
               </v-col>
-              <v-col cols="12" sm="6">
-                <div class="blue--text">Xem</div>
+              <v-col cols="6" class="pa-2">
+                <document-files :files="vm.task.files" />
+                <!-- <div class="blue--text">Xem</div> -->
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Văn bản đến</div>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div class="blue--text">Xem</div>
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Thời hạn xử lý</div>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div class="font-weight-bold">{{ vm.task.expiredDate | ddmmyyyy }}</div>
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div>Nội dung nhiệm vụ</div>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="6" class="pa-2">
                 <div class="font-weight-bold">{{ vm.task.description }}</div>
               </v-col>
             </v-row>
           </div>
         </v-card>
       </v-col>
-      <v-col cols="12" sm="3" class="pa-2">
+      <v-col cols="12" md="6" lg="3" class="pa-2">
         <v-card height="100%" class="pa-4">
           <div>
             <v-col cols="12">
@@ -121,7 +108,7 @@
           </div>
         </v-card>
       </v-col>
-      <v-col cols="12" sm="3" class="pa-2">
+      <v-col cols="12" md="6" lg="3" class="pa-2">
         <v-card height="100%" class="pa-4">
           <div>
             <v-col cols="12">
@@ -291,7 +278,8 @@ import { TaskModel } from '@/models/task-model'
     TaskReopenDialog: () => import('../dialogs/task-reopen-dialog.vue'),
     AppAvatar: () => import('@/components/images/app-avatar.vue'),
     TaskStateComponent: () => import('../components/task-state-component.vue'),
-    TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue')
+    TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
+    DocumentFiles: () => import('@/components/files/document-files.vue')
   }
 })
 export default class TaskDetailPage extends Vue {

@@ -9,6 +9,8 @@ import { apiLogNames, ApiLogType } from '@/services/api-service'
 import _ from 'lodash'
 import moment from 'moment'
 import Vue from 'vue'
+import { appProvider } from '@/app-provider'
+import { fileHelpers } from '@/helpers/file-helper'
 
 export const vueFilterRegister = () => {
   Vue.filter('logAction', (a: ApiLogType) => apiLogNames[a])
@@ -24,4 +26,5 @@ export const vueFilterRegister = () => {
   })
 
   Vue.filter('permission', (val: string) => permissionHelper.check(val))
+  Vue.filter('apiFileUrl', (val: any) => fileHelpers.getApiFileUrl(val))
 }

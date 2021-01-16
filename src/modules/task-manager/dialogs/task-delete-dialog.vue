@@ -53,7 +53,7 @@ export default class TaskDeleteDialog extends Vue {
     try {
       await this.providers.api.task.delete(this.task.id)
       if (this.task.files) {
-        Promise.all(this.task.files.map(f => this.providers.api.deleteFile(f.id)))
+        Promise.all(this.task.files.map(f => this.providers.api.deleteFile(_.get(f, 'id'))))
       }
       this.$emit('success', this.task.id)
       this.syncedValue = false

@@ -1,12 +1,13 @@
 import { UserModel } from './auth-model'
 import { DepartmentModel } from './department-model'
+import { FileModel } from './file-model'
 import { PositionModel } from './position-model'
 import { UnitModel } from './unit-model'
 
 export class ComradeModel {
   id?: string
   name: string
-  avatar?: any
+  avatar?: string | FileModel
   code: string
   phone: string
   data: {
