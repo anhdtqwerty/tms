@@ -1,7 +1,7 @@
 <template>
   <v-menu
     v-model="show"
-    attach
+    :attach="attach"
     :close-on-content-click="false"
     :nudge-top="14"
     left
@@ -21,6 +21,7 @@
         @click:append="show = true"
         :rules="rules"
         validate-on-blur
+        :hide-details="hideDetails"
         :outlined="outlined"
       />
     </template>
@@ -44,6 +45,8 @@ export default class DatePickerInput extends Vue {
   @Prop({ default: 'Chọn ngày' }) label: string
   @Prop() rules: any[]
   @Prop({ default: true }) outlined: boolean
+  @Prop({ default: false }) attach: boolean
+  @Prop({ default: false }) hideDetails: boolean
 
   show = false
   selectedRange: string[] = []

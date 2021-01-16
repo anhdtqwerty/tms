@@ -4,7 +4,7 @@
     v-model="syncedValue"
     dense
     :outlined="outlined"
-    item-text="display"
+    item-text="name"
     :items="items"
     item-value="id"
     :multiple="multiple"
@@ -18,8 +18,6 @@ import { ComradeModel } from '@/models/comrade-model'
 import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 import { AppProvider } from '@/app-provider'
 import { authStore } from '@/stores/auth-store'
-import { DepartmentModel } from '@/models/department-model'
-import { UnitModel } from '@/models/unit-model'
 
 @Component
 export default class ComradeAutoComplete extends Vue {
@@ -46,18 +44,14 @@ export default class ComradeAutoComplete extends Vue {
       }
 
       // Follow user belong to ministry/unit/department
-      const userDep = authStore.comrade.department as DepartmentModel
-      if (userDep) {
-        params['department'] = userDep.id
-      } else {
-        const userUnit = authStore.comrade.unit as UnitModel
-        if (!params['unit'] && !params['unit_in'] && userUnit && userUnit.type !== 'ministry') {
-          params['unit'] = userUnit.id
-        }
+      const unitParams = authStore.unitParams
+      if (unitParams.department) {
+        params['department'] = unitParams.department
+      } else if (!params['unit'] && !params['unit_in'] && unitParams.unit) {
+        params['unit'] = unitParams.unit
       }
 
-      const items = await this.providers.api.comarde.find<ComradeModel>(params)
-      this.items = items.map(u => ({ ...u, display: u.name }))
+      this.items = await this.providers.api.comarde.find<ComradeModel>(params)
       if (this.autoselect && this.items.length > 0 && !this.syncedValue) {
         this.syncedValue = this.items[0].id
       }

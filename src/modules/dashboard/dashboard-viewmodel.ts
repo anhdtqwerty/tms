@@ -1,20 +1,23 @@
 import { AppProvider } from '@/app-provider'
 import { flatStats, TaskStatModel } from '@/models/report-model'
 import { RequestModel } from '@/models/request-model'
-import { TaskModel, taskStateNameMap, taskStateNames, TaskStateType } from '@/models/task-model'
+import { TaskDeadlineType, TaskModel, taskStateNameMap, taskStateNames, TaskStateType } from '@/models/task-model'
+import _ from 'lodash'
 import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
+import moment from 'moment'
 
 export class DashboardViewModel {
-  @observable unupdatedTasks: TaskModel[] = []
-  @observable updateTaskHistory: RequestModel[] = []
-
   @observable topStats: TaskStatModel[] = []
 
-  @observable unitStats: TaskStatModel[] = []
-  @observable personalStat: TaskStatModel = null
+  @observable unupdatedTasks: TaskModel[] = []
+  @observable updateTaskHistory: RequestModel[] = []
+  @observable personalHistoryFilter: 'new' | 'expired' = 'new'
 
   @observable taskStateFilter: TaskStateType = 'doing'
+  @observable unitStats: TaskStatModel[] = []
+
+  @observable personalStat: TaskStatModel = null
 
   constructor(private provider: AppProvider) {
     this.loadTop()
@@ -23,7 +26,10 @@ export class DashboardViewModel {
   }
 
   @asyncAction *loadTop() {
+    console.log('loadTop')
     const { api, authStore } = this.provider
+    const tasksss: TaskModel[] = yield api.task.find()
+    console.log(tasksss.filter(t => _.get(t.executedUnit, 'code') === 'GTVT'))
     let results: TaskStatModel[] = []
     if (authStore.isLeader) {
       const params = authStore.unitParams
@@ -42,6 +48,7 @@ export class DashboardViewModel {
   }
 
   @asyncAction *loadUnitStats(from: string, to: string) {
+    console.log('loadUnitStats')
     const { api, authStore } = this.provider
     let results: TaskStatModel[] = []
     const params = authStore.unitParams
@@ -55,19 +62,11 @@ export class DashboardViewModel {
     this.unitStats = results
   }
 
-  @asyncAction *loadPersonalStats(from: string, to: string) {
-    const { api, authStore } = this.provider
-    if (!authStore.isLeader) {
-      const results: TaskStatModel[] = yield api.getComradeTaskReport({ from, to, id: authStore.comrade.id })
-      this.personalStat = results.find(r => r.id === authStore.comrade.id)
-    }
-  }
-
   @asyncAction *loadUnupdatedTasks() {
     const { api, authStore } = this.provider
     if (!authStore.isLeader) {
       const state: TaskStateType = 'waiting'
-      this.unupdatedTasks = yield api.task.find({ executedComrade: authStore.comrade.id, state })
+      this.unupdatedTasks = yield api.task.find({ executedComrade: authStore.comrade.id, state, _limit: 10 })
     }
   }
 
@@ -75,7 +74,7 @@ export class DashboardViewModel {
     const { api, authStore } = this.provider
     if (authStore.isLeader) {
       const unitParams = authStore.unitParams
-      const params: any = {}
+      const params: any = { _limit: 10 }
       if (unitParams.department) {
         params['requestor.department'] = unitParams.department
       } else if (unitParams.unit) {
@@ -83,7 +82,13 @@ export class DashboardViewModel {
       }
       this.updateTaskHistory = yield api.request.find(params)
     } else {
-      this.updateTaskHistory = yield api.request.find({ executedComrade: authStore.comrade.id })
+      const params: any = { requestor: authStore.comrade.id, _limit: 10 }
+      if (this.personalHistoryFilter === 'expired') {
+        const type: TaskDeadlineType = 'hasDeadline'
+        params['task.type'] = type
+        params['task.expiredDate_gt'] = moment().toISOString()
+      }
+      this.updateTaskHistory = yield api.request.find(params)
     }
   }
 
@@ -91,8 +96,17 @@ export class DashboardViewModel {
     this.taskStateFilter = val
   }
 
-  @computed get topStatCriterias() {
-    return flatStats(this.topStats)
+  @action.bound changePersonalHistoryFilter(val: any) {
+    if (this.personalHistoryFilter !== val) {
+      this.personalHistoryFilter = val
+      this.loadUpdateTaskHistory()
+    }
+  }
+
+  @asyncAction *loadPersonalStats(from: string, to: string) {
+    const { api, authStore } = this.provider
+    const results: TaskStatModel[] = yield api.getComradeTaskReport({ from, to, id: authStore.comrade.id })
+    this.personalStat = results.find(r => r.id === authStore.comrade.id)
   }
 
   @computed get unitTaskChart(): { options: ApexCharts.ApexOptions; series: ApexAxisChartSeries } {
@@ -107,9 +121,9 @@ export class DashboardViewModel {
         {
           data: this.unitStats.map(s => {
             if (this.taskStateFilter === 'doing') {
-              return s.doing
+              return s.doing + s.doingOutDate
             } else if (this.taskStateFilter === 'done') {
-              return s.done
+              return s.done + s.doneOutDate
             }
             return s.total
           }),
@@ -134,5 +148,9 @@ export class DashboardViewModel {
       series: [stat.aprroving ?? 0, stat.doing - stat.doingOutDate ?? 0, stat.done ?? 0, stat.doneOutDate ?? 0]
     }
     return result
+  }
+
+  @computed get topStatCriterias() {
+    return flatStats(this.topStats)
   }
 }

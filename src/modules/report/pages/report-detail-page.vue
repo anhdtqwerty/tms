@@ -7,22 +7,36 @@
       </v-col>
       <v-col cols="12" class="pa-2">
         <v-card>
-          <div class="d-flex flex-column pa-4 pb-0">
-            <div class="text-subtitle-1 font-weight-medium">Quản lý báo cáo</div>
+          <div class="d-flex flex-column pa-4">
+            <div class="text-subtitle-1 font-weight-medium mb-4">Quản lý báo cáo</div>
+            <v-select
+              v-model="selectedTaskType"
+              dense
+              outlined
+              hide-details
+              item-text="name"
+              item-value="type"
+              :items="items"
+              label="Chọn nhiệm vụ"
+              style="max-width: 220px"
+            />
           </div>
         </v-card>
       </v-col>
       <v-col cols="12" class="pa-2">
         <v-data-table
-          :items="viewmodel.reports"
+          :items="viewmodel.tasks"
           item-key="id"
-          @click:row="showDetail"
           :headers="selectedHeaders"
           :footer-props="{ itemsPerPageOptions: [25] }"
           mobile-breakpoint="0"
         >
           <template v-slot:top>
-            <task-search-component title="Danh sách các nhiệm vụ giao">
+            <task-search-component
+              title="Danh sách Nhiệm Vụ"
+              @advance-search="viewmodel.advanceSearch($event)"
+              @simple-search="viewmodel.simpleSearch($event)"
+            >
               <div>
                 <table-header-setting :headers="headers" @change="selectedHeaders = $event" />
                 <v-btn icon small>
@@ -30,6 +44,12 @@
                 </v-btn>
               </div>
             </task-search-component>
+          </template>
+          <template v-slot:[`item.state`]="{ item }">
+            <task-state-component :state="item.state" />
+          </template>
+          <template v-slot:[`item.supervisors`]="{ item }">
+            {{ item.supervisors | _get('[0].name') }}
           </template>
         </v-data-table>
       </v-col>
@@ -39,10 +59,16 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
+import { Component, Inject, Provide, Vue, Watch } from 'vue-property-decorator'
 import { ReportDetailViewModel } from '../viewmodels/report-detail-viewmodel'
+import { taskRouteNames, TaskRouteType } from '@/models/task-model'
 
-@Component
+@Component({
+  components: {
+    TaskSearchComponent: () => import('@/modules/task-manager/components/task-search-component.vue'),
+    TaskStateComponent: () => import('@/modules/task-manager/components/task-state-component.vue')
+  }
+})
 export default class ReportDetailPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() viewmodel = new ReportDetailViewModel(this.providers)
@@ -50,13 +76,21 @@ export default class ReportDetailPage extends Vue {
   selectedHeaders: any[] = []
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
-    { text: 'Ngày ban hành', value: 'publishedDate', sortable: false },
     { text: 'Trích yếu', value: 'title', sortable: true },
-    { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
+    { text: 'Tình hình', value: 'status', sortable: true },
+    { text: 'Trạng thái', value: 'state', sortable: true },
     { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false },
-    { text: 'Trạng thái', value: 'status', sortable: false },
-    { text: 'Hạn xử lý', value: 'expireDate', sortable: false }
+    { text: 'Cá nhân theo dõi', value: 'supervisors', sortable: false },
+    { text: 'Ngày ban hành', value: 'publishedDate', sortable: false },
+    { text: 'Hạn xử lý', value: 'expiredDate', sortable: false }
   ]
+
+  selectedTaskType: TaskRouteType = 'task-created'
+  items = taskRouteNames
+
+  @Watch('selectedTaskType', { immediate: true }) onSelectedTaskTypeChanged(val: TaskRouteType) {
+    this.viewmodel.changeTaskType(val)
+  }
 }
 </script>
 

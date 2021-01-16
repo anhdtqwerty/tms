@@ -121,7 +121,7 @@ export default class TaskManagerPage extends Vue {
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
-    { text: 'Hạn xử lý', value: 'expireDate', sortable: false },
+    { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]
 

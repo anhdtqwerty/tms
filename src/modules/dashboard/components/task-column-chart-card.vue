@@ -21,6 +21,7 @@
             label="Chọn tháng"
             dateFormat="[Tháng] M [Năm] YYYY"
             hide-details
+            :attach="true"
           />
         </v-col>
         <v-col cols="12" class="pa-2">

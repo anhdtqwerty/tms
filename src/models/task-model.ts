@@ -31,7 +31,7 @@ export interface TaskModel {
   publishedDate?: string
 
   files?: string[]
-  createdBy: string | ComradeModel
+  createdBy?: string | ComradeModel
   requests?: string[] | Request[]
 
   data?: {}
@@ -133,9 +133,9 @@ export const taskRouteNameMap: { [name in TaskRouteType]: string } = {
   'task-done': 'Đã hoàn thành'
 }
 export const taskRouteNames: { type: TaskRouteType; name: string }[] = Object.entries(taskRouteNameMap).map(
-  ([type, value]) =>
+  ([type, name]) =>
     ({
       type,
-      value
+      name
     } as any)
 )
