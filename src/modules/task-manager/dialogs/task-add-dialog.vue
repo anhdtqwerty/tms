@@ -22,7 +22,7 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <task-priority-select :value.sync="priority" :rules="$appRules.taskPriority" label="Mức độ quan trọng" />
-              <app-file-input label="File đính kèm" />
+              <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
               <app-text-field v-model="docsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
@@ -85,6 +85,7 @@
 import { AppProvider } from '@/app-provider'
 import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
 import { Component, Inject, PropSync, Prop, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
@@ -118,6 +119,7 @@ export default class TaskAddDialog extends Vue {
   executedComradeId = ''
   supportedComradeIds: string[] = []
   supervisorIds: string[] = []
+  selectedFiles: File[] = []
 
   async save() {
     if (this.form.validate()) {
@@ -150,8 +152,17 @@ export default class TaskAddDialog extends Vue {
             }
           )
         )
+        const files = await Promise.all(
+          this.selectedFiles.map(f =>
+            this.providers.api.uploadFiles(f, {
+              model: 'task',
+              modelId: task.id,
+              modelField: 'files'
+            })
+          )
+        )
 
-        this.$emit('success', task)
+        this.$emit('success', { ...task, files: _.flatten(files) })
         this.syncedValue = false
         this.form.reset()
         this.providers.snackbar.addSuccess()

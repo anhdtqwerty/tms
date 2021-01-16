@@ -1,5 +1,9 @@
+import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
+import moment from 'moment'
 import { ComradeModel } from './comrade-model'
 import { DepartmentModel } from './department-model'
+import { FileModel } from './file-model'
 import { UnitModel } from './unit-model'
 
 export interface TaskModel {
@@ -30,7 +34,7 @@ export interface TaskModel {
   expiredDate?: string
   publishedDate?: string
 
-  files?: File[]
+  files?: (string | FileModel)[]
   createdBy?: string | ComradeModel
   requests?: (string | Request)[]
 
@@ -146,4 +150,36 @@ export const taskRouteNames: { type: TaskRouteType; name: string }[] = Object.en
 
 export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
   return changes
+}
+export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
+  const params: TaskModel = {}
+  switch (taskType) {
+    case 'task-created':
+      params.createdBy = authStore.comrade.id
+      break
+    case 'task-assigned':
+      params.executedComrade = authStore.comrade.id
+      break
+    case 'task-following':
+      _.set(params, 'supervisors_contains', authStore.comrade.id)
+      break
+    case 'task-support':
+      _.set(params, 'supportedComrades_contains', authStore.comrade.id)
+      break
+    case 'task-expired':
+      params.type = 'hasDeadline'
+      _.set(params, 'expiredDate_lt', moment().toISOString())
+      break
+    case 'task-approving':
+      params.state = 'done'
+      params.status = 'approving'
+      break
+    case 'task-done':
+      params.state = 'done'
+      break
+    default:
+      console.error(`not support ${taskType}`)
+      break
+  }
+  return params
 }

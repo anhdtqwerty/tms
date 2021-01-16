@@ -65,7 +65,8 @@ export class MainContainerViewModel {
       children: [
         new MenuViewModel('Người dùng', { link: '/users', permission: 'system.user.read' }),
         new MenuViewModel('Vai trò', { link: '/roles', permission: 'system.role.read' }),
-        new MenuViewModel('Tra cứu log', { link: '/logs', permission: 'system.log.read' })
+        new MenuViewModel('Tra cứu log', { link: '/logs', permission: 'system.log.read' }),
+        new MenuViewModel('Cấu hình hệ thống', { link: '/configs', permission: 'system.log.read' })
       ]
     })
   ]
