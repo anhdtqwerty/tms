@@ -83,7 +83,13 @@
                 />
                 <div class="text-subtitle-2 pb-4">Phòng ban Đơn vị</div>
                 <department-autocomplete :value.sync="department" :unit="unit" label="Phòng ban" :outlined="false" />
-                <unit-autocomplete :value.sync="unit" label="Đơn vị" :outlined="false" :rules="$appRules.comradeUnit" />
+                <unit-autocomplete
+                  :value.sync="unit"
+                  label="Đơn vị"
+                  :outlined="false"
+                  :rules="$appRules.comradeUnit"
+                  :includeMinistry="true"
+                />
                 <app-text-field outlined v-model="title" label="Chức vụ" />
               </v-col>
             </v-row>

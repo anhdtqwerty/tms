@@ -6,6 +6,9 @@ export interface PositionModel {
   config: PositionConfigModel
   updated_at?: string
   created_at?: string
+  data?: {
+    group_type?: 'leader' | 'member'
+  }
 }
 
 export interface PositionConfigModel {
@@ -15,6 +18,7 @@ export interface PositionConfigModel {
 }
 
 export type PositionType = 'unit' | 'group' // | 'ministry' | 'department' | 'individual'
+export type GroupType = 'leader' | 'member'
 
 export type TaskPermissionType = 'main' | 'sub'
 export interface TaskPermissionConfig {

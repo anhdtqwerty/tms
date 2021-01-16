@@ -11,15 +11,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
-import { taskStateNames } from '@/models/task-model'
+import { Component, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
+import { taskStateNames, TaskStateType } from '@/models/task-model'
 
 @Component
 export default class TaskStateSelect extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
+  @Prop({ default: (): TaskStateType[] => [] }) includes: TaskStateType[]
 
   items = taskStateNames
+
+  @Watch('includes', { immediate: true }) onIncludesChanged(val: TaskStateType[]) {
+    if (val && val.length > 0) {
+      this.items = taskStateNames.filter(t => val.includes(t.type))
+    } else {
+      this.items = taskStateNames
+    }
+  }
 }
 </script>
 

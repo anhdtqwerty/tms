@@ -12,7 +12,7 @@ import { LogModel } from '@/models/log-model'
 import _ from 'lodash'
 import Bowser from 'bowser'
 import { RequestModel } from '@/models/request-model'
-import { GeneralReportModel } from '@/models/report-model'
+import { TaskStatModel } from '@/models/report-model'
 import { appProvider } from '@/app-provider'
 
 export type ApiLogType = 'create' | 'delete' | 'update'
@@ -156,7 +156,7 @@ export class ApiService {
       },
       err => {
         appProvider.loading.decreaseRequest()
-        return err
+        throw err
       }
     )
   }
@@ -216,8 +216,18 @@ export class ApiService {
     }
   }
 
-  async getGeneralReport(from: string, to: string): Promise<GeneralReportModel[]> {
-    const res = await this.axios.get(`tasks/statistic`, { params: { from, to } })
+  async getDepartmentsTaskReport(params?: { from?: string; to?: string; unit: string }): Promise<TaskStatModel[]> {
+    const res = await this.axios.get(`tasks/department/statistic`, { params })
+    return res.data
+  }
+
+  async getUnitsTaskReport(params?: { from?: string; to?: string }): Promise<TaskStatModel[]> {
+    const res = await this.axios.get(`tasks/unit/statistic`, { params })
+    return res.data
+  }
+
+  async getComradeTaskReport(params: { from?: string; to?: string; id: string }): Promise<TaskStatModel[]> {
+    const res = await this.axios.get(`tasks/comrade/statistic`, { params })
     return res.data
   }
 }

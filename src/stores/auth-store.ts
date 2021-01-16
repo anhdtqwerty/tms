@@ -1,6 +1,9 @@
 import { UserModel } from '@/models/auth-model'
 import { ComradeModel } from '@/models/comrade-model'
+import { DepartmentModel } from '@/models/department-model'
+import { UnitModel } from '@/models/unit-model'
 import Axios from 'axios'
+import _ from 'lodash'
 import { action, computed, observable, reaction } from 'mobx'
 
 class AuthStore {
@@ -70,6 +73,28 @@ class AuthStore {
 
   @computed get authenticated() {
     return !!this.jwt
+  }
+
+  @computed get unitParams() {
+    // const userDep = authStore.comrade.department as DepartmentModel
+    // if (userDep) {
+    //   params['id'] = userDep.id
+    // } else {
+    //   const userUnit = authStore.comrade.unit as UnitModel
+    //   if (userUnit && userUnit.type !== 'ministry') {
+    //     params['unit'] = userUnit.id
+    //   }
+    // }
+    const unit = this.comrade?.unit as UnitModel
+    const department = this.comrade?.department as DepartmentModel
+    return {
+      unit: unit?.type === 'ministry' ? undefined : unit?.id,
+      department: department?.id
+    }
+  }
+
+  @computed get isLeader() {
+    return _.get(this.comrade?.group, 'data.group_type') === 'leader'
   }
 }
 

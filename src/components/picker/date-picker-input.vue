@@ -1,7 +1,7 @@
 <template>
   <v-menu
     v-model="show"
-    attach
+    :attach="attach"
     :close-on-content-click="false"
     :nudge-top="14"
     transition="scale-transition"
@@ -9,8 +9,9 @@
     left
     min-width="290px"
   >
-    <template v-slot:activator="{ on }">
+    <template v-slot:activator="{ on, $attrs }">
       <app-text-field
+        :v-bind="$attrs"
         :value="syncedValue | date(displayFormatDate)"
         :label="label"
         readonly
@@ -39,6 +40,7 @@ export default class DatePickerInput extends Vue {
   @Prop({ default: 'Chọn ngày' }) label: string
   @Prop() rules: any[]
   @Prop({ default: true }) outlined: boolean
+  @Prop({ default: false }) attach: boolean
   @Prop({ default: 'date' }) type: 'date' | 'month'
   @Prop() dateFormat: string
   @Prop({ default: false }) hideDetails: boolean

@@ -43,10 +43,13 @@ import { Observer } from 'mobx-vue'
 export default class TaskCircleChartCard extends Vue {
   @Inject() viewmodel: DashboardViewModel
 
-  selectedMonth = moment().format('YYYY-MM')
+  selectedMonth = moment().toISOString()
 
-  @Watch('selectedMonth') onSelectedMonthChange(val: string) {
-    console.log('onSelectedMonthChange', val)
+  @Watch('selectedMonth', { immediate: true }) onSelectedMonthChange(val: string) {
+    const time = moment(val)
+    const start = time.startOf('month').format('yyyy-MM-DD')
+    const end = time.endOf('month').format('yyyy-MM-DD')
+    this.viewmodel.loadPersonalStats(start, end)
   }
 }
 </script>

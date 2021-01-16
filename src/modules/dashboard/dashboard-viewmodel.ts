@@ -1,68 +1,156 @@
 import { AppProvider } from '@/app-provider'
-import { action, observable } from 'mobx'
+import { flatStats, TaskStatModel } from '@/models/report-model'
+import { RequestModel } from '@/models/request-model'
+import { TaskDeadlineType, TaskModel, taskStateNameMap, taskStateNames, TaskStateType } from '@/models/task-model'
+import _ from 'lodash'
+import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
-import { timer } from 'rxjs'
-import { take } from 'rxjs/operators'
+import moment from 'moment'
 
 export class DashboardViewModel {
-  @observable unitTaskChart: { options: ApexCharts.ApexOptions; series: ApexAxisChartSeries } = null
-  @observable personalTaskChart: { options: ApexCharts.ApexOptions; series: ApexNonAxisChartSeries } = null
+  @observable topStats: TaskStatModel[] = []
 
-  @observable totalTask = 320
-  @observable doingTask = 160
-  @observable intimeDoingTask = 150
-  @observable outtimeDoingTask = 10
-  @observable doneTask = 100
-  @observable intimeDoneTask = 99
-  @observable outtimeDoneTask = 1
-  @observable outtimeTask = 60
+  @observable unupdatedTasks: TaskModel[] = []
+  @observable updateTaskHistory: RequestModel[] = []
+  @observable personalHistoryFilter: 'new' | 'expired' = 'new'
 
-  @observable unupdatedTasks: string[] = []
-  @observable updatedTasks: { title: string; updatedDate: string; updatedComrade: string }[] = []
-  @observable updatedTaskFilter: 'new' | 'soon_expired' | 'exipred' = 'new'
+  @observable taskStateFilter: TaskStateType = 'doing'
+  @observable unitStats: TaskStatModel[] = []
+
+  @observable personalStat: TaskStatModel = null
 
   constructor(private provider: AppProvider) {
-    this.loadData()
+    this.loadTop()
+    this.loadUnupdatedTasks()
+    this.loadUpdateTaskHistory()
   }
 
-  @asyncAction *loadData() {
-    yield timer(1000)
-      .pipe(take(1))
-      .toPromise()
-    this.unitTaskChart = {
+  @asyncAction *loadTop() {
+    console.log('loadTop')
+    const { api, authStore } = this.provider
+    const tasksss: TaskModel[] = yield api.task.find()
+    console.log(tasksss.filter(t => _.get(t.executedUnit, 'code') === 'GTVT'))
+    let results: TaskStatModel[] = []
+    if (authStore.isLeader) {
+      const params = authStore.unitParams
+      if (params.department) {
+        // nothing
+      } else if (params.unit) {
+        results = yield api.getDepartmentsTaskReport({ unit: params.unit })
+      } else {
+        results = yield api.getUnitsTaskReport()
+      }
+    } else {
+      results = yield api.getComradeTaskReport({ id: authStore.comrade.id })
+      results = results.filter(x => x.id === authStore.comrade.id)
+    }
+    this.topStats = results
+  }
+
+  @asyncAction *loadUnitStats(from: string, to: string) {
+    console.log('loadUnitStats')
+    const { api, authStore } = this.provider
+    let results: TaskStatModel[] = []
+    const params = authStore.unitParams
+    if (params.department) {
+      // nothing
+    } else if (params.unit) {
+      results = yield api.getDepartmentsTaskReport({ from, to, unit: params.unit })
+    } else {
+      results = yield api.getUnitsTaskReport({ from, to })
+    }
+    this.unitStats = results
+  }
+
+  @asyncAction *loadUnupdatedTasks() {
+    const { api, authStore } = this.provider
+    if (!authStore.isLeader) {
+      const state: TaskStateType = 'waiting'
+      this.unupdatedTasks = yield api.task.find({ executedComrade: authStore.comrade.id, state, _limit: 10 })
+    }
+  }
+
+  @asyncAction *loadUpdateTaskHistory() {
+    const { api, authStore } = this.provider
+    if (authStore.isLeader) {
+      const unitParams = authStore.unitParams
+      const params: any = { _limit: 10 }
+      if (unitParams.department) {
+        params['requestor.department'] = unitParams.department
+      } else if (unitParams.unit) {
+        params['requestor.unit'] = unitParams.unit
+      }
+      this.updateTaskHistory = yield api.request.find(params)
+    } else {
+      const params: any = { requestor: authStore.comrade.id, _limit: 10 }
+      if (this.personalHistoryFilter === 'expired') {
+        const type: TaskDeadlineType = 'hasDeadline'
+        params['task.type'] = type
+        params['task.expiredDate_gt'] = moment().toISOString()
+      }
+      this.updateTaskHistory = yield api.request.find(params)
+    }
+  }
+
+  @action.bound changeTaskStateFilter(val: TaskStateType) {
+    this.taskStateFilter = val
+  }
+
+  @action.bound changePersonalHistoryFilter(val: any) {
+    if (this.personalHistoryFilter !== val) {
+      this.personalHistoryFilter = val
+      this.loadUpdateTaskHistory()
+    }
+  }
+
+  @asyncAction *loadPersonalStats(from: string, to: string) {
+    const { api, authStore } = this.provider
+    const results: TaskStatModel[] = yield api.getComradeTaskReport({ from, to, id: authStore.comrade.id })
+    this.personalStat = results.find(r => r.id === authStore.comrade.id)
+  }
+
+  @computed get unitTaskChart(): { options: ApexCharts.ApexOptions; series: ApexAxisChartSeries } {
+    if (this.unitStats.length === 0) return null
+    return {
       options: {
         xaxis: {
-          categories: ['Vụ tài chính', 'Vụ Kế hoạch Đầu tư', 'Thanh tra Bộ', 'Vụ An Toàn Giao Thông']
+          categories: this.unitStats.map(s => s.title)
         }
       },
       series: [
         {
-          data: [30, 40, 45, 50]
+          data: this.unitStats.map(s => {
+            if (this.taskStateFilter === 'doing') {
+              return s.doing + s.doingOutDate
+            } else if (this.taskStateFilter === 'done') {
+              return s.done + s.doneOutDate
+            }
+            return s.total
+          }),
+          name: ''
         }
       ]
     }
-    this.personalTaskChart = {
+  }
+
+  @computed get personalTaskChart(): { options: ApexCharts.ApexOptions; series: ApexNonAxisChartSeries } {
+    const stat = this.personalStat
+    if (!stat) return null
+    const result = {
       options: {
-        labels: ['Vụ tài chính', 'Vụ Kế hoạch Đầu tư', 'Thanh tra Bộ', 'Vụ An Toàn Giao Thông'],
+        labels: ['Chờ xác nhận', 'Trong hạn', 'Đã hoàn thành', 'Quá hạn'],
         legend: {
           itemMargin: {
             vertical: 8
           }
         }
       },
-      series: [30, 40, 45, 50]
+      series: [stat.aprroving ?? 0, stat.doing - stat.doingOutDate ?? 0, stat.done ?? 0, stat.doneOutDate ?? 0]
     }
-    this.updatedTasks = [
-      { title: 'Nhiệm vụ 1', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 2', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 3', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 4', updatedDate: '21/10/2020', updatedComrade: 'Huyền' },
-      { title: 'Nhiệm vụ 5', updatedDate: '21/10/2020', updatedComrade: 'Huyền' }
-    ]
-    this.unupdatedTasks = ['Nhiệm vụ a', 'Nhiệm vụ b', 'Nhiệm vụ c']
+    return result
   }
 
-  @action changeUpdatedTaskFilter(val: any) {
-    this.updatedTaskFilter = val
+  @computed get topStatCriterias() {
+    return flatStats(this.topStats)
   }
 }
