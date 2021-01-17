@@ -7,33 +7,20 @@
         </v-icon>
       </v-btn>
     </template>
-    <v-card>
-      <v-container fluid px-5 py-2>
-        <v-row>
-          <v-col cols="12" class="pa-2">
-            <div class="mb-4" @click="actionSubTask('detail')">
-              <v-icon color="blue" left>visibility</v-icon>
-              <span class="blue--text" style="cursor: pointer">Xem nhiệm vụ </span>
-            </div>
-            <div class="mb-4" @click="actionSubTask('edit')">
-              <v-icon color="blue" left>edit</v-icon>
-              <span class="blue--text" style="cursor: pointer">Sửa nhiệm vụ</span>
-            </div>
-            <div class="mb-4" @click="actionSubTask('delete')">
-              <v-icon color="blue" left>delete</v-icon>
-              <span class="blue--text" style="cursor: pointer">Xóa nhiệm vụ</span>
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-card>
+    <v-list>
+      <v-list-item v-for="item in items" :key="item.type" @click.stop="$emit('task-action', item.type)">
+        <v-icon color="blue" left>{{ item.icon }}</v-icon>
+        <span class="blue--text">{{ item.title }}</span>
+      </v-list-item>
+    </v-list>
   </v-menu>
 </template>
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
-import { Component, Inject, Prop, PropSync, Vue } from 'vue-property-decorator'
+import { permissionHelper } from '@/helpers/permission-helper'
+import { actionConfigs, TaskActionType, TaskModel } from '@/models/task-model'
+import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {}
@@ -43,8 +30,19 @@ export default class TaskSubActionMenu extends Vue {
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Prop() task: TaskModel
 
-  actionSubTask(typeAction: string) {
-    this.$emit('sub-task-action', typeAction)
+  items: { icon: string; type: TaskActionType; title: string }[] = []
+
+  @Watch('task', { immediate: true }) onTaskChanged(task: TaskModel) {
+    if (!task) return
+    this.items = [
+      { icon: 'visibility', type: 'read', title: 'Xem nhiệm vụ' },
+      ...actionConfigs
+        .filter(t => t.type === 'edit' || t.type === 'delete')
+        .filter(t => permissionHelper.check(`task.sub.${t.permission}`))
+        .map(({ icon, type, title }) => {
+          return { icon, type, title }
+        })
+    ]
   }
 }
 </script>

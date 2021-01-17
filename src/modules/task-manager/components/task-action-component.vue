@@ -1,55 +1,29 @@
 <template>
   <v-list>
-    <v-list-item-title v-permission="'task.main.edit'" class="mb-4 px-4" @click.stop="taskActionCommon('edit')">
-      <v-icon color="blue" left>edit</v-icon>
-      <span class="blue--text" style="cursor: pointer">Cập nhật thông tin</span>
-    </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4" @click.stop="taskActionCommon('retrive')">
-      <v-icon color="blue" left>replay</v-icon>
-      <span class="blue--text" style="cursor: pointer">Thu hồi nhiệm vụ</span>
-    </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4" @click.stop="taskActionCommon('extend')">
-      <v-icon color="blue" left>access_time</v-icon>
-      <span class="blue--text" style="cursor: pointer">Gia hạn nhiệm vụ</span>
-    </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4" @click.stop="taskActionCommon('return')">
-      <v-icon color="blue" left>replay</v-icon>
-      <span class="blue--text" style="cursor: pointer">Trả lại nhiệm vụ</span>
-    </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4" @click.stop="taskActionCommon('assign')">
-      <v-icon color="blue" left>pan_tool</v-icon>
-      <span class="blue--text" style="cursor: pointer">Giao thực hiện</span>
-    </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4" @click.stop="taskActionCommon('approve')">
-      <v-icon color="blue" left>offline_pin</v-icon>
-      <span class="blue--text" style="cursor: pointer">Phê duyệt nhiệm vụ</span>
-    </v-list-item-title>
-    <v-list-item-title v-permission="'task.main.update'" class="mb-4 px-4" @click.stop="taskActionCommon('editState')">
-      <v-icon color="blue" left>account_box</v-icon>
-      <span class="blue--text" style="cursor: pointer">Cập nhật tiến độ</span>
-    </v-list-item-title>
-    <v-list-item-title v-permission="'task.main.update'" class="mb-4 px-4">
-      <v-icon color="blue" left>edit</v-icon>
-      <span class="blue--text" style="cursor: pointer">Sửa cập nhật</span>
-    </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4">
-      <v-icon color="blue" left>delete</v-icon>
-      <span class="blue--text" style="cursor: pointer">Xóa cập nhật</span>
-    </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4" @click.stop="taskActionCommon('reOpen')">
-      <v-icon color="blue" left>lock_open</v-icon>
-      <span class="blue--text" style="cursor: pointer">Mở lại nhiệm vụ</span>
-    </v-list-item-title>
-    <v-list-item-title class="mb-4 px-4" @click.stop="taskActionCommon('delete')">
-      <v-icon color="blue" left>delete</v-icon>
-      <span class="blue--text" style="cursor: pointer">Xóa nhiệm vụ</span>
-    </v-list-item-title>
+    <v-list-item
+      v-for="item in items"
+      :key="item.type"
+      @click.stop="$emit('task-action', item.type)"
+      :disabled="!item.enable"
+    >
+      <v-icon :color="item.enable ? 'blue' : null" left>{{ item.icon }}</v-icon>
+      <span :class="item.enable && 'blue--text'">{{ item.title }}</span>
+    </v-list-item>
   </v-list>
 </template>
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { Component, Inject, PropSync, Vue } from 'vue-property-decorator'
+import { permissionHelper } from '@/helpers/permission-helper'
+import { actionConfigs, TaskActionType, TaskModel } from '@/models/task-model'
+import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
+
+interface TaskActionDisplay {
+  icon: string
+  type: TaskActionType
+  title: string
+  enable: boolean
+}
 
 @Component({
   components: {}
@@ -57,9 +31,18 @@ import { Component, Inject, PropSync, Vue } from 'vue-property-decorator'
 export default class TaskActionDialog extends Vue {
   @Inject() providers!: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
+  @Prop() task: TaskModel
 
-  taskActionCommon(typeAction: string) {
-    this.$emit('task-action', typeAction)
+  items: TaskActionDisplay[] = []
+
+  @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
+    if (!val) return
+    const taskType = val.parent ? 'sub' : 'main'
+    this.items = actionConfigs
+      .filter(t => permissionHelper.check(`task.${taskType}.${t.permission}`))
+      .map(({ icon, type, title, checkEnable }) => {
+        return { icon, type, title, enable: checkEnable(val) }
+      })
   }
 }
 </script>

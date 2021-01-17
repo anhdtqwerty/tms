@@ -37,7 +37,7 @@
             </template>
 
             <template v-slot:[`item.actions`]="{ item }">
-              <v-menu attach :close-on-content-click="true" transition="scale-transition" left>
+              <v-menu :close-on-content-click="true" transition="scale-transition" left>
                 <template v-slot:activator="{ on }">
                   <v-btn small icon v-on="on">
                     <v-icon>
@@ -45,7 +45,7 @@
                     </v-icon>
                   </v-btn>
                 </template>
-                <task-action-component @task-action="taskActionCommon($event, item)" />
+                <task-action-component @task-action="taskActionCommon($event, item)" :task="item" />
               </v-menu>
             </template>
 
@@ -71,7 +71,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskModel, TaskRouteType } from '@/models/task-model'
+import { TaskActionType, TaskModel, TaskRouteType } from '@/models/task-model'
 import { Component, Inject, Provide, Vue, Watch } from 'vue-property-decorator'
 import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
 
@@ -114,7 +114,9 @@ export default class TaskManagerPage extends Vue {
   selectedTask: TaskModel = null
 
   @Watch('$route.params.tasktype', { immediate: true }) onTaskParamChange(val: TaskRouteType) {
-    this.viewmodel.loadData(val)
+    if (val) {
+      this.viewmodel.loadData(val)
+    }
   }
 
   headers = [
@@ -128,13 +130,13 @@ export default class TaskManagerPage extends Vue {
     { value: 'actions', align: 'right', sortable: false }
   ]
 
-  taskActionCommon(typeAction: any, item: any) {
+  taskActionCommon(typeAction: TaskActionType, item: any) {
     switch (typeAction) {
       case 'edit':
         this.showEditDialog = true
         this.selectedTask = item
         break
-      case 'retrive':
+      case 'revoke':
         this.showRetriveDialog = true
         this.selectedTask = item
         break
@@ -154,11 +156,11 @@ export default class TaskManagerPage extends Vue {
         this.showApproveDialog = true
         this.selectedTask = item
         break
-      case 'editState':
+      case 'update':
         this.showEditStateDialog = true
         this.selectedTask = item
         break
-      case 'reOpen':
+      case 'reopen':
         this.showReopenDialog = true
         this.selectedTask = item
         break
@@ -166,8 +168,8 @@ export default class TaskManagerPage extends Vue {
         this.showDeletingDialog = true
         this.selectedTask = item
         break
-
       default:
+        console.warn('taskActionCommon not handle', typeAction)
         break
     }
   }

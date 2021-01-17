@@ -10,9 +10,7 @@ export class TaskManagerViewModel {
   private _searchParams = {}
   private currentRoute: TaskRouteType = null
 
-  constructor(private provider: AppProvider) {
-    this.search()
-  }
+  constructor(private provider: AppProvider) {}
 
   @asyncAction *loadData(val: TaskRouteType) {
     const params: any = {}

@@ -30,7 +30,7 @@ export class LogManagerViewModel {
       displayFeature: apiLogNames[l.action] + ' ' + ApiRouteNames[l.feature],
       displayDescription:
         l.description ?? _.get(l.comrade, 'name') + ' đã ' + apiLogNames[l.action] + ' ' + ApiRouteNames[l.feature],
-      displayDatetime: moment(l.created_at).format('H[h]mm [ngày] DD/MM/yyyy')
+      displayDatetime: moment(l.created_at).format('H[h]mm [ngày] DD/MM/YYYY')
     }))
   }
 }

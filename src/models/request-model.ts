@@ -1,5 +1,6 @@
+import moment from 'moment'
 import { ComradeModel } from './comrade-model'
-import { TaskModel, TaskStateType } from './task-model';
+import { TaskModel, TaskStateType } from './task-model'
 
 export interface RequestModel {
   id?: string
@@ -12,4 +13,11 @@ export interface RequestModel {
   files?: string
   config?: {}
   metadata?: {}
+  updated_at?: string
+  created_at?: string
+}
+
+export const canChangeRequest = (request: RequestModel) => {
+  if (!request) return false
+  return moment().isBefore(moment(request.created_at).add(1, 'day'))
 }
