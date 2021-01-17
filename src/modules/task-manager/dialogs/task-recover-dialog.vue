@@ -14,7 +14,7 @@
           <v-row>
             <v-col cols="12" class="pa-2">
               <app-textarea v-model="reasonRecover" :rules="$appRules.taskExplain" label="Lý do thu hồi" />
-              <app-file-input hide-details label="File đính kèm" />
+              <app-file-input hide-details :value.sync="selectedFiles" label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -50,6 +50,7 @@ export default class TaskRecoverDialog extends Vue {
   title = ''
   code = ''
   reasonRecover = ''
+  selectedFiles: File[] = []
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -62,12 +63,24 @@ export default class TaskRecoverDialog extends Vue {
       try {
         const api = this.providers.api
         const request = await api.request.create({
-          // title, files, approver
           description: this.reasonRecover,
           type: 'recovered',
           requestor: authStore.comrade.id,
           task: this.task.id
         })
+
+        if (this.selectedFiles.length) {
+          await Promise.all(
+            this.selectedFiles.map(f =>
+              this.providers.api.uploadFiles(f, {
+                model: 'request',
+                modelId: request.id,
+                modelField: 'files'
+              })
+            )
+          )
+        }
+
         try {
           const subtaskIds = this.task.subtasks.map(x => _.get(x, 'id'))
           let subsubTasks: TaskModel[] = []
@@ -76,31 +89,29 @@ export default class TaskRecoverDialog extends Vue {
           }
 
           const allTasks = [this.task, ...(this.task.subtasks as TaskModel[]), ...subsubTasks]
-          if (allTasks.length) {
-            await Promise.all(
-              allTasks.map(task => {
-                return api.task.update(
-                  task.id,
-                  createTaskBody(
-                    {},
-                    {
-                      state: 'recovered',
-                      status: null,
-                      executedUnit: null,
-                      executedComrade: null,
-                      supportedUnits: null,
-                      supportedComrades: null,
-                      supervisorUnit: null,
-                      supervisors: null,
-                      explainState: this.reasonRecover
-                    }
-                  )
+          const tasks = await Promise.all(
+            allTasks.map(task => {
+              return api.task.update(
+                task.id,
+                createTaskBody(
+                  {},
+                  {
+                    state: 'recovered',
+                    status: null,
+                    executedUnit: null,
+                    executedComrade: null,
+                    supportedUnits: null,
+                    supportedComrades: null,
+                    supervisorUnit: null,
+                    supervisors: null,
+                    explainState: this.reasonRecover
+                  }
                 )
-              })
-            )
-          }
+              )
+            })
+          )
 
-          this.$emit('success')
+          this.$emit('success', tasks[0])
           this.syncedValue = false
           this.form.reset()
           this.providers.snackbar.updateSuccess()

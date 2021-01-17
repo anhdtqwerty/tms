@@ -153,9 +153,6 @@ export default class TaskEditDialog extends Vue {
     if (this.form.validate()) {
       try {
         if (this.selectedFiles.length) {
-          if (this.task.files) {
-            await Promise.all(this.task.files.map(f => this.providers.api.deleteFile(_.get(f, 'id'))))
-          }
           await Promise.all(
             this.selectedFiles.map(f =>
               this.providers.api.uploadFiles(f, {

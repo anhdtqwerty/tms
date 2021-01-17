@@ -59,7 +59,6 @@ export default class TaskReturnDialog extends Vue {
       try {
         const api = this.providers.api
         const request = await api.request.create({
-          // title, files, approver
           description: this.reasonReturn,
           type: 'returned',
           requestor: authStore.comrade.id,

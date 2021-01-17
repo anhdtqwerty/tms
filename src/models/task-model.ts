@@ -40,6 +40,9 @@ export interface TaskModel {
   createdBy?: string | ComradeModel
   requests?: (string | Request)[]
 
+  createdDepartment?: string | DepartmentModel
+  createdUnit?: string | UnitModel
+
   explainState?: string
   documentInfo?: string
 }

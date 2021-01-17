@@ -58,7 +58,6 @@ export default class TaskReopenDialog extends Vue {
       try {
         const api = this.providers.api
         const request = await api.request.create({
-          // title, files, approver
           description: this.reasonReopen,
           type: 'waiting',
           requestor: authStore.comrade.id,

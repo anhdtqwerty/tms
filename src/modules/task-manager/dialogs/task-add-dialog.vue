@@ -148,6 +148,8 @@ export default class TaskAddDialog extends Vue {
               supportedComrades: this.supportedComradeIds,
 
               createdBy: authStore.comrade.id,
+              createdDepartment: _.get(authStore.comrade.department, 'id'),
+              createdUnit: _.get(authStore.comrade.unit, 'id'),
               documentInfo: this.docsInfo
             }
           )

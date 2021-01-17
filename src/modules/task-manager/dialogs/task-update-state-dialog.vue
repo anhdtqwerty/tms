@@ -16,7 +16,7 @@
               <task-state-select :includes="taskStateIncludes" :value.sync="state" label="Trạng thái" />
               <date-picker-input :value.sync="startedDate" :rules="$appRules.taskStartedDate" label="Ngày thực hiện" />
               <app-text-field v-model="explain" :rules="$appRules.taskExplain" label="Diễn giải trạng thái" />
-              <app-file-input hide-details label="File đính kèm" />
+              <app-file-input hide-details :value.sync="selectedFiles" label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -38,6 +38,7 @@ import { AppProvider } from '@/app-provider'
 import { RequestModel } from '@/models/request-model'
 import { createTaskBody, getLastRequest, TaskModel, TaskStateType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -59,6 +60,7 @@ export default class TaskUpdateStateDialog extends Vue {
   startedDate: string = null
   taskStateIncludes: TaskStateType[] = ['todo', 'doing', 'waiting', 'done']
   request: RequestModel = null
+  selectedFiles: File[] = []
 
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
     if (val) {
@@ -82,22 +84,35 @@ export default class TaskUpdateStateDialog extends Vue {
     if (this.form.validate()) {
       try {
         const api = this.providers.api
-        let request
+        let request: RequestModel = null
         if (this.request) {
+          // modify update -> edit request
           request = await api.request.update(this.request.id, {
             type: this.state,
             startedDate: this.startedDate,
             description: this.explain
           })
         } else {
+          // update state task
           request = await api.request.create({
-            // title, files, approver
             description: this.explain,
             type: this.state,
             startedDate: this.startedDate,
             requestor: authStore.comrade.id,
             task: this.task.id
           })
+        }
+
+        if (this.selectedFiles.length) {
+          await Promise.all(
+            this.selectedFiles.map(f =>
+              this.providers.api.uploadFiles(f, {
+                model: 'request',
+                modelId: request.id,
+                modelField: 'files'
+              })
+            )
+          )
         }
 
         try {

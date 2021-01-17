@@ -22,7 +22,9 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <task-approvement-status-select disabled :value.sync="approvementStatus" label="Trạng thái" />
-              <app-file-input label="File đính kèm" />
+              <document-files v-if="task.files.length" :files="task.files" />
+              <app-file-input v-else disabled label="File đính kèm" />
+
               <app-text-field disabled v-model="explain" hide-details label="Diễn giải trạng thái" />
             </v-col>
           </v-row>
@@ -45,7 +47,7 @@
               />
             </v-col>
             <v-col class="pa-2">
-              <app-file-input hide-details label="File đính kèm" />
+              <app-file-input hide-details :value.sync="approverSelectedFiles" label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -71,7 +73,8 @@ import { createTaskBody, getLastRequest, TaskApprovementStatusType, TaskModel } 
 @Component({
   components: {
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
-    TaskApprovementStatusSelect: () => import('@/components/autocomplete/task-approvement-status-select.vue')
+    TaskApprovementStatusSelect: () => import('@/components/autocomplete/task-approvement-status-select.vue'),
+    DocumentFiles: () => import('@/components/files/document-files.vue')
   }
 })
 export default class TaskApproveDialog extends Vue {
@@ -87,6 +90,7 @@ export default class TaskApproveDialog extends Vue {
   approvementStatus: TaskApprovementStatusType = 'approving'
   explain = ''
   approveStatusResult: TaskApprovementStatusType = 'approved'
+  approverSelectedFiles: File[] = []
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -100,14 +104,25 @@ export default class TaskApproveDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      // todo: file in request
       try {
         let task: TaskModel = {
           description: this.description,
           status: this.approveStatusResult,
           state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
         }
+
+        await Promise.all(
+          this.approverSelectedFiles.map(f =>
+            this.providers.api.uploadFiles(f, {
+              model: 'task',
+              modelId: task.id,
+              modelField: 'files'
+            })
+          )
+        )
+
         task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
+
         this.$emit('success', task)
         this.syncedValue = false
         this.providers.snackbar.updateSuccess()
