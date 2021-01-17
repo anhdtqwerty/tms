@@ -114,7 +114,7 @@
           hide-details
           label="Nhập từ khóa để tìm kiếm nhiệm vụ"
           v-model="simpleSearchKeyword"
-          @click:append="search"
+          v-on:keyup.enter="search"
           ><v-icon slot="append" color="blue">
             search
           </v-icon>
@@ -139,6 +139,7 @@ import {
 import moment from 'moment'
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import _ from 'lodash'
+import { textHelpers } from '@/helpers/text-helper'
 
 @Component({
   components: {
@@ -209,7 +210,10 @@ export default class TaskSearchComponent extends Vue {
       }
       this.$emit('advance-search', params)
     } else {
-      this.$emit('simple-search', this.simpleSearchKeyword)
+      const cleaned = textHelpers.clearUnicode(this.simpleSearchKeyword)
+      const simpleParam = cleaned ? { keywords_contains: cleaned } : {}
+      console.log(cleaned, simpleParam)
+      this.$emit('simple-search', simpleParam)
     }
   }
 

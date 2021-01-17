@@ -28,9 +28,9 @@ export class ReportDetailViewModel {
     this._advanceParams = params
     this.search()
   }
-  simpleSearch(keyword: string) {
+  simpleSearch(params: string) {
     this._advanceParams = {}
-    this._simpleParams = { keywords_contain: textHelpers.clearUnicode(keyword) }
+    this._simpleParams = params
     this.search()
   }
 
