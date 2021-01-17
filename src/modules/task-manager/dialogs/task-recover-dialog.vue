@@ -70,17 +70,17 @@ export default class TaskRecoverDialog extends Vue {
         })
         try {
           const subtaskIds = this.task.subtasks.map(x => _.get(x, 'id'))
-          const subsubTasks = (await api.task.find({
-            parent_in: subtaskIds
-          })) as TaskModel[]
+          let subsubTasks: TaskModel[] = []
+          if (!_.isEmpty(subtaskIds)) {
+            subsubTasks = await api.task.find({ parent_in: subtaskIds })
+          }
 
-          const allTaskIds = [this.task.id, ...subtaskIds, ...subsubTasks.map(x => x.id)]
-          console.log('allSubtaskIDs', allTaskIds)
-          if (allTaskIds.length) {
+          const allTasks = [this.task, ...(this.task.subtasks as TaskModel[]), ...subsubTasks]
+          if (allTasks.length) {
             await Promise.all(
-              allTaskIds.map(id => {
+              allTasks.map(task => {
                 return api.task.update(
-                  id,
+                  task.id,
                   createTaskBody(
                     {},
                     {
@@ -92,7 +92,7 @@ export default class TaskRecoverDialog extends Vue {
                       supportedComrades: null,
                       supervisorUnit: null,
                       supervisors: null,
-                      data: { explain: this.reasonRecover }
+                      data: { ...task.data, explain: this.reasonRecover }
                     }
                   )
                 )

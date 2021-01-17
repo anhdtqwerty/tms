@@ -1,5 +1,5 @@
 <template>
-  <v-chip v-if="highlight" color="primary" text-color="white">
+  <v-chip v-if="state === 'doing'" color="primary" text-color="white">
     {{ state | taskState }}
   </v-chip>
   <div v-else>{{ state | taskState }}</div>
