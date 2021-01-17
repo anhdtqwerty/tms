@@ -40,10 +40,11 @@ export interface TaskModel {
   createdBy?: string | ComradeModel
   requests?: (string | Request)[]
 
-  data?: {
-    explain?: string
-    docsInfo?: string // thong tin van ban den
-  }
+  createdDepartment?: string | DepartmentModel
+  createdUnit?: string | UnitModel
+
+  explainState?: string
+  documentInfo?: string
 }
 
 export type TaskPriorityType = 'level_1' | 'level_2' | 'level_3' | 'urgent'
@@ -226,7 +227,12 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
 }
 
 export const getLastRequest = (task: TaskModel) => {
-  return _.maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
+  const updateTaskTypes: TaskStateType[] = ['doing', 'todo', 'waiting', 'done']
+  const lastest = _.maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
+  console.log('lastest', lastest)
+
+  if (lastest && updateTaskTypes.includes(_.get(lastest, 'type'))) return lastest
+  else return null
 }
 
 export type TaskActionType =

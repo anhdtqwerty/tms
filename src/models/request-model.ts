@@ -6,6 +6,7 @@ export interface RequestModel {
   id?: string
   title?: string
   type?: TaskStateType
+  startedDate?: string
   task?: string | TaskModel
   description?: string
   requestor?: string | ComradeModel

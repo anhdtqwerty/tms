@@ -52,5 +52,15 @@ export const appRules = {
   comradePhone: [rules.phone],
   comradeUnit: [rules.required],
   comradeUsername: [rules.required, rules.maxLength(20)],
-  comradePassword: [rules.required, rules.maxLength(20), rules.password]
+  comradePassword: [rules.required, rules.maxLength(20), rules.password],
+
+  //task
+  taskCode: [rules.required, rules.maxLength(50)],
+  taskDescription: [rules.required, rules.maxLength(1000)],
+  taskPriority: [rules.required],
+  taskDeadlineType: [rules.required],
+  taskPublishedDate: [rules.required],
+  taskExtendDate: [rules.required],
+  taskStartedDate: [rules.required],
+  taskExplain: [rules.required, rules.maxLength(1000)]
 }

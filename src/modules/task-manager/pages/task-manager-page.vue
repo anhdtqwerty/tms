@@ -62,7 +62,7 @@
     </v-row>
     <task-add-dialog :value.sync="showAddTask" @success="viewmodel.taskAdded" />
     <task-edit-dialog :value.sync="showEditDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
-    <task-recover-dialog :value.sync="showRetriveDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
+    <task-recover-dialog :value.sync="showRetriveDialog" :task="selectedTask" @success="viewmodel.taskRecovered" />
     <task-extend-dialog :value.sync="showExtendDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-assign-dialog :value.sync="showAssignDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />
     <task-approve-dialog :value.sync="showApproveDialog" :task="selectedTask" @success="viewmodel.taskUpdated" />

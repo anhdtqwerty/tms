@@ -12,27 +12,31 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
-            <v-col cols="12" sm="6">
-              <app-text-field v-model="code" label="Số/ký hiệu" />
-              <date-picker-input :value.sync="publishedDate" label="Ngày ban hành" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <app-text-field v-model="code" disabled label="Số/ký hiệu" />
+              <date-picker-input
+                :value.sync="publishedDate"
+                :rules="$appRules.taskPublishedDate"
+                label="Ngày ban hành"
+              />
               <app-text-field v-model="title" label="Trích yếu" />
             </v-col>
-            <v-col cols="12" sm="6">
-              <task-priority-select :value.sync="priority" label="Mức độ quan trọng" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <task-priority-select :value.sync="priority" :rules="$appRules.taskPriority" label="Mức độ quan trọng" />
               <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
               <app-text-field v-model="docsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
 
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
-            <v-col cols="12" sm="6">
-              <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <app-text-field v-model="description" :rules="$appRules.taskDescription" label="Nội dung nhiệm vụ" />
               <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị thực hiện" />
               <unit-autocomplete :value.sync="supportedUnitIds" multiple label="Đơn vị phối hợp" />
               <comrade-autocomplete
@@ -44,11 +48,18 @@
                 :value.sync="supportedComradeIds"
                 :unit="supportedUnitIds"
                 multiple
+                hide-details
                 label="Chuyên viên phối hợp"
               />
             </v-col>
-            <v-col>
-              <task-deadline-type-select class="mb-6" hide-details :value.sync="deadlineType" label="Loại hạn xử lý" />
+            <v-col cols="12" sm="6" class="pa-2">
+              <task-deadline-type-select
+                class="mb-6"
+                hide-details
+                :value.sync="deadlineType"
+                :rules="$appRules.taskDeadlineType"
+                label="Loại hạn xử lý"
+              />
               <date-picker-input
                 :value.sync="expiredDate"
                 :disabled="deadlineType === 'noDeadline'"
@@ -56,7 +67,7 @@
               />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
               <comrade-autocomplete :value.sync="supervisorId" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
-              <task-state-select :value.sync="state" label="Trạng thái" />
+              <task-state-select :value.sync="state" hide-details label="Trạng thái" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -98,7 +109,7 @@ export default class TaskEditDialog extends Vue {
   @Prop() task: TaskModel
 
   code = ''
-  publishedDate = ''
+  publishedDate: string = null
   title = ''
   priority: TaskPriorityType = null
   attachFile = ''
@@ -112,7 +123,7 @@ export default class TaskEditDialog extends Vue {
   state: TaskStateType = null
   supervisorId = ''
   supervisorUnitId = ''
-  expiredDate = ''
+  expiredDate: string = null
   selectedFiles: File[] = []
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
@@ -135,49 +146,54 @@ export default class TaskEditDialog extends Vue {
       this.supportedUnitIds = _.map(val.supportedUnits, 'id')
       this.supportedComradeIds = _.map(val.supportedComrades, 'id')
 
-      this.docsInfo = val.data.docsInfo
+      this.docsInfo = val.documentInfo
     }
   }
 
   async save() {
     if (this.form.validate()) {
-      if (this.task.files) {
-        await Promise.all(this.task.files.map(f => this.providers.api.deleteFile(_.get(f, 'id'))))
+      try {
+        if (this.selectedFiles.length) {
+          await Promise.all(
+            this.selectedFiles.map(f =>
+              this.providers.api.uploadFiles(f, {
+                model: 'task',
+                modelId: this.task.id,
+                modelField: 'files'
+              })
+            )
+          )
+        }
+
+        let task: TaskModel = {
+          code: this.code,
+          description: this.description,
+          publishedDate: this.publishedDate,
+          type: this.deadlineType,
+          expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
+          title: this.title,
+          state: this.state,
+          priority: this.priority,
+
+          executedUnit: this.executedUnitId,
+          executedComrade: this.executedComradeId,
+
+          supervisorUnit: this.supervisorUnitId,
+          supervisors: this.supervisorId ? [this.supervisorId] : [],
+
+          supportedUnits: this.supportedUnitIds,
+          supportedComrades: this.supportedComradeIds,
+
+          documentInfo: this.docsInfo
+        }
+        task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
+
+        this.$emit('success', task)
+        this.syncedValue = false
+        this.providers.snackbar.updateSuccess()
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      await Promise.all(
-        this.selectedFiles.map(f =>
-          this.providers.api.uploadFiles(f, {
-            model: 'task',
-            modelId: this.task.id,
-            modelField: 'files'
-          })
-        )
-      )
-      let task: TaskModel = {
-        code: this.code,
-        description: this.description,
-        publishedDate: this.publishedDate,
-        type: this.deadlineType,
-        expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
-        title: this.title,
-        state: this.state,
-        priority: this.priority,
-
-        executedUnit: this.executedUnitId,
-        executedComrade: this.executedComradeId,
-
-        supervisorUnit: this.supervisorUnitId,
-        supervisors: this.supervisorId ? [this.supervisorId] : [],
-
-        supportedUnits: this.supportedUnitIds,
-        supportedComrades: this.supportedComradeIds,
-
-        data: { ...(this.task.data ?? {}), docsInfo: this.docsInfo }
-      }
-      task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
-
-      this.$emit('success', task)
-      this.syncedValue = false
     }
   }
 }

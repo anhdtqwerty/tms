@@ -21,7 +21,7 @@ export const apiLogNames: { [name in ApiLogType]: string } = {
   delete: 'Xóa',
   update: 'Cập nhật'
 }
-export type ApiTableType = 'user' | 'unit' | 'department' | 'position' | 'comrade' | 'task' | 'log'
+export type ApiTableType = 'user' | 'unit' | 'department' | 'position' | 'comrade' | 'task' | 'log' | 'request'
 export type ApiRouteType =
   | 'users'
   | 'units'

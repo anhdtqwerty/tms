@@ -12,11 +12,11 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12">
-              <task-state-select :value.sync="state" label="Trạng thái" />
-              <date-picker-input label="Ngày thực hiện" />
-              <app-text-field v-model="description" label="Diễn giải trạng thái" />
-              <app-file-input label="File đính kèm" />
+            <v-col cols="12" class="pa-2">
+              <task-state-select :includes="taskStateIncludes" :value.sync="state" label="Trạng thái" />
+              <date-picker-input :value.sync="startedDate" :rules="$appRules.taskStartedDate" label="Ngày thực hiện" />
+              <app-text-field v-model="explain" :rules="$appRules.taskExplain" label="Diễn giải trạng thái" />
+              <app-file-input hide-details :value.sync="selectedFiles" label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -35,8 +35,10 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { createTaskBody, TaskModel, TaskStateType } from '@/models/task-model'
+import { RequestModel } from '@/models/request-model'
+import { createTaskBody, getLastRequest, TaskModel, TaskStateType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -50,15 +52,31 @@ export default class TaskUpdateStateDialog extends Vue {
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Ref('form') form: any
   @Prop() task: TaskModel
+  @Prop() isUpdateTask!: boolean
 
   code = ''
   state: TaskStateType = null
-  description = ''
+  explain = ''
+  startedDate: string = null
+  taskStateIncludes: TaskStateType[] = ['todo', 'doing', 'waiting', 'done']
+  request: RequestModel = null
+  selectedFiles: File[] = []
 
-  @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
+  @Watch('value', { immediate: true }) onValueChanged(val: string) {
     if (val) {
-      this.code = val.code
-      this.state = val.state
+      if (this.isUpdateTask) {
+        this.code = this.task.code
+        this.state = this.task.state
+      } else {
+        const lastRequest = getLastRequest(this.task)
+        if (!lastRequest) this.syncedValue = false
+        else {
+          this.request = lastRequest
+          this.state = lastRequest.type
+          this.startedDate = lastRequest.startedDate
+          this.explain = lastRequest.description
+        }
+      }
     }
   }
 
@@ -66,21 +84,44 @@ export default class TaskUpdateStateDialog extends Vue {
     if (this.form.validate()) {
       try {
         const api = this.providers.api
+        let request: RequestModel = null
+        if (this.request) {
+          // modify update -> edit request
+          request = await api.request.update(this.request.id, {
+            type: this.state,
+            startedDate: this.startedDate,
+            description: this.explain
+          })
+        } else {
+          // update state task
+          request = await api.request.create({
+            description: this.explain,
+            type: this.state,
+            startedDate: this.startedDate,
+            requestor: authStore.comrade.id,
+            task: this.task.id
+          })
+        }
 
-        const request = await api.request.create({
-          // title, files, approver
-          description: this.description,
-          type: this.state,
-          requestor: authStore.comrade.id,
-          task: this.task.id
-        })
+        if (this.selectedFiles.length) {
+          await Promise.all(
+            this.selectedFiles.map(f =>
+              this.providers.api.uploadFiles(f, {
+                model: 'request',
+                modelId: request.id,
+                modelField: 'files'
+              })
+            )
+          )
+        }
+
         try {
           const modifyTask = await api.task.update(
             this.task.id,
             createTaskBody(this.task, {
               state: this.state,
               status: this.state === 'done' ? 'approving' : null,
-              data: { ...(this.task.data ?? {}), explain: this.description }
+              explainState: this.explain
             })
           )
           this.$emit('success', modifyTask)
@@ -88,7 +129,7 @@ export default class TaskUpdateStateDialog extends Vue {
           this.form.reset()
           this.providers.snackbar.updateSuccess()
         } catch (error) {
-          await api.request.delete(request.id)
+          if (!this.request) await api.request.delete(request.id)
           throw error
         }
       } catch (error) {

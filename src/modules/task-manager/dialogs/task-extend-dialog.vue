@@ -12,13 +12,13 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12">
-              <app-text-field v-model="code" label="Số/ký hiệu" />
+            <v-col cols="12" class="pa-2">
+              <app-text-field disabled v-model="code" label="Số/ký hiệu" />
               <date-picker-input disabled v-model="expireDateOld" label="Hạn xử lý" />
-              <date-picker-input :value.sync="expireDateNew" label="Hạn xử lý mới" />
-              <app-text-field v-model="description" label="Nội dung nhiệm vụ" />
-              <app-text-field v-model="reasonExtend" label="Lý do gia hạn" />
-              <app-file-input label="File đính kèm" />
+              <date-picker-input :value.sync="expireDateNew" :rules="$appRules.taskExtendDate" label="Hạn xử lý mới" />
+              <app-textarea v-model="description" rows="2" disabled label="Nội dung nhiệm vụ" />
+              <app-text-field v-model="reasonExtend" :rules="$appRules.taskExplain" label="Lý do gia hạn" />
+              <app-file-input hide-details :value.sync="selectedFiles" label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -39,6 +39,7 @@
 import { AppProvider } from '@/app-provider'
 import { createTaskBody, TaskModel } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -57,6 +58,7 @@ export default class TaskExtendDialog extends Vue {
   reasonExtend = ''
   expireDateOld: string = null
   expireDateNew: string = null
+  selectedFiles: File[] = []
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -70,19 +72,32 @@ export default class TaskExtendDialog extends Vue {
     if (this.form.validate()) {
       try {
         const api = this.providers.api
+
         const request = await api.request.create({
-          // title, files, approver
           description: this.reasonExtend,
           type: this.task.state,
           requestor: authStore.comrade.id,
           task: this.task.id
         })
+
+        if (this.selectedFiles.length) {
+          await Promise.all(
+            this.selectedFiles.map(f =>
+              this.providers.api.uploadFiles(f, {
+                model: 'request',
+                modelId: request.id,
+                modelField: 'files'
+              })
+            )
+          )
+        }
+
         try {
           const modifyTask = await api.task.update(
             this.task.id,
             createTaskBody(this.task, {
               expiredDate: this.expireDateNew,
-              data: { ...(this.task.data ?? {}), explain: this.reasonExtend }
+              explainState: this.reasonExtend
             })
           )
           this.$emit('success', modifyTask)
