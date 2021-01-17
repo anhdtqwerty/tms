@@ -15,14 +15,20 @@
     <v-row>
       <v-col cols="12" class="pa-2">
         <v-card>
-          <v-data-table :items="viewmodel.comrades" item-key="id" :headers="headers" mobile-breakpoint="0">
+          <v-data-table
+            :items="viewmodel.comrades"
+            item-key="id"
+            :headers="selectedHeaders"
+            mobile-breakpoint="0"
+            :server-items-length="viewmodel.totalCount"
+            @update:page="viewmodel.searchPage($event)"
+            :footer-props="{ itemsPerPageOptions: [25] }"
+          >
             <template v-slot:top>
               <v-container fluid class="px-5 py-0">
                 <v-row>
                   <v-col cols="12" align="end" class="pa-2">
-                    <v-btn icon x-small>
-                      <v-icon>settings</v-icon>
-                    </v-btn>
+                    <table-header-setting :headers="headers" @change="selectedHeaders = $event" />
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
                     <app-text-field class="mr-4" hide-details v-model="searchName" label="Mã cán bộ" />
@@ -52,6 +58,9 @@
               <v-chip v-if="item.user" :color="item.user.blocked ? 'red' : 'green'" text-color="white">
                 {{ item.user.blocked ? 'Blocked' : 'Hoạt động' }}
               </v-chip>
+            </template>
+            <template v-slot:[`item.data.bod`]="{ item }">
+              {{ item.data.bod | ddmmyyyy }}
             </template>
           </v-data-table>
         </v-card>
@@ -84,11 +93,13 @@ export default class UserMangerPage extends Vue {
 
   showAddUser = false
   username = ''
+  selectedHeaders: any[] = []
   headers = [
     { text: 'Mã cán bộ', value: 'code', sortable: false },
     { text: 'Họ và Tên', value: 'name', sortable: false },
-    { text: 'Tên truy cập', value: 'user.username', sortable: true },
     { text: 'Trạng Thái', value: 'user.blocked', sortable: false },
+    { text: 'Ngày sinh', value: 'data.bod', sortable: true, defaultHide: true },
+    { text: 'Tên truy cập', value: 'user.username', sortable: true },
     { text: 'Phòng ban', value: 'department.title', sortable: true },
     { text: 'Chức vị', value: 'position.title', sortable: true },
     { text: 'Email', value: 'user.email', sortable: false },
@@ -96,9 +107,9 @@ export default class UserMangerPage extends Vue {
       text: 'Số Điện Thoại',
       value: 'phone',
       align: 'left',
-      sortable: false
+      sortable: false,
+      defaultHide: true
     }
-    // { value: 'actions', show: true }
   ]
 
   search() {

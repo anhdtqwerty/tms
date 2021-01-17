@@ -136,7 +136,7 @@
     </v-row>
 
     <!-- child task list -->
-    <v-row>
+    <v-row v-if="$permission('task.sub.read')">
       <v-col cols="12" class="pa-2">
         <v-card>
           <v-data-table
@@ -150,7 +150,7 @@
           >
             <template v-slot:top>
               <task-search-component
-                title="Danh sách các nhiệm vụ"
+                title="Danh sách các nhiệm vụ chi nhỏ"
                 @advance-search="vm.advanceSearch($event)"
                 @simple-search="vm.simpleSearch($event)"
               >
@@ -426,6 +426,10 @@ export default class TaskDetailPage extends Vue {
     { text: 'CV thực hiện', value: 'executedComrade.title', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
     { text: 'Tình hình thực hiện', value: 'explainState', sortable: false },
+    { text: 'Số/ký hiệu', value: 'code', sortable: false, defaultHide: true },
+    { text: 'Ngày ban hành', value: 'publishedDate', sortable: false, defaultHide: true },
+    { text: 'Trích yếu', value: 'title', sortable: true, defaultHide: true },
+    { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false, defaultHide: true },
     { value: 'actions', align: 'right', sortable: false }
   ]
 

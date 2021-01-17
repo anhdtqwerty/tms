@@ -12,24 +12,20 @@ export class UserManagerViewModel {
     this.search()
   }
 
-  @asyncAction *loadData() {
-    const results = yield Promise.all([
-      this.provider.api.comarde.count(),
-      this.provider.api.comarde.find<ComradeModel>()
-    ])
-    this.totalCount = results[0]
-    this.comrades = results[1]
-  }
-
-  @asyncAction *search(code: string = null, name: string = null, department: string = null, blocked = false) {
-    const api = this.provider.api
+  search(code: string = null, name: string = null, department: string = null, blocked = false) {
     let input: any = {}
     if (name) input = { ...input, name_contains: name }
     if (code) input = { ...input, code_contains: code }
     if (department) input = { ...input, department }
     input = { ...input, 'user.blocked': blocked }
     this._searchParams = input
-    const results = yield Promise.all([api.comarde.count(this._searchParams), api.comarde.find(this._searchParams)])
+    this.searchPage()
+  }
+
+  @asyncAction *searchPage(page = 1) {
+    const api = this.provider.api
+    const params = { ...this._searchParams, _start: 25 * (page - 1) }
+    const results = yield Promise.all([api.comarde.count(params), api.comarde.find(params)])
     this.totalCount = results[0]
     this.comrades = results[1]
   }

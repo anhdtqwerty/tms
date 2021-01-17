@@ -56,6 +56,9 @@
             <template v-slot:[`item.state`]="{ item }">
               <task-state-component :state="item.state" />
             </template>
+            <template v-slot:[`item.supervisors`]="{ item }">
+              {{ item.supervisors.length ? item.supervisors[0].name : '' }}
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
@@ -133,8 +136,11 @@ export default class TaskManagerPage extends Vue {
     { text: 'Trích yếu', value: 'title', sortable: true },
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false },
-    { text: 'Trạng thái', value: 'state', sortable: false },
-    { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
+    { text: 'CV theo dõi', value: 'supervisors', sortable: false },
+    { text: 'ĐV thực hiện', value: 'executedUnit.title', sortable: false },
+    { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false, defaultHide: true },
+    { text: 'Hạn xử lý', value: 'expiredDate', sortable: false, defaultHide: true },
+    { text: 'Trạng thái', value: 'state', sortable: false, defaultHide: true },
     { value: 'actions', align: 'right', sortable: false }
   ]
 
