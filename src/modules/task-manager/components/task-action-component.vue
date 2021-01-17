@@ -1,11 +1,6 @@
 <template>
   <v-list>
-    <v-list-item
-      v-for="item in items"
-      :key="item.type"
-      @click.stop="$emit('task-action', item.type)"
-      :disabled="!item.enable"
-    >
+    <v-list-item v-for="item in items" :key="item.type" @click.stop="menuClick(item)" :disabled="!item.enable">
       <v-icon :color="item.enable ? 'blue' : null" left>{{ item.icon }}</v-icon>
       <span :class="item.enable && 'blue--text'">{{ item.title }}</span>
     </v-list-item>
@@ -34,6 +29,10 @@ export default class TaskActionDialog extends Vue {
   @Prop() task: TaskModel
 
   items: TaskActionDisplay[] = []
+
+  menuClick(item: TaskActionDisplay) {
+    this.$emit('task-action', item.type)
+  }
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (!val) return

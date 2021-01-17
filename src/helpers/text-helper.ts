@@ -1,5 +1,6 @@
 export const textHelpers = {
   clearUnicode(str = '') {
+    if (!str) str = ''
     str = str.replace(/\s\s+/g, ' ').trim()
     str = str.toLowerCase()
     str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a')

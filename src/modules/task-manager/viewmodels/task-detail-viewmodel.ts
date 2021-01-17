@@ -1,8 +1,7 @@
 import { AppProvider } from '@/app-provider'
 import { mailBuilder } from '@/helpers/mail-helper'
-import { textHelpers } from '@/helpers/text-helper'
 import { RequestModel } from '@/models/request-model'
-import { RequestType, TaskModel, TaskStateType } from '@/models/task-model'
+import { RequestType, TaskModel } from '@/models/task-model'
 import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -39,9 +38,9 @@ export class TaskDetailViewModel {
     this.search()
   }
 
-  simpleSearch(keyword: string) {
+  simpleSearch(params: string) {
     this._advanceParams = {}
-    this._simpleParams = { keywords_contain: textHelpers.clearUnicode(keyword) }
+    this._simpleParams = params
     this.search()
   }
 

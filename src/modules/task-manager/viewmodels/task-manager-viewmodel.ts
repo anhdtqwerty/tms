@@ -1,5 +1,4 @@
 import { AppProvider } from '@/app-provider'
-import { textHelpers } from '@/helpers/text-helper'
 import { TaskModel, TaskRouteType, taskTypeToFilterParams } from '@/models/task-model'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -43,9 +42,9 @@ export class TaskManagerViewModel {
     this._advanceParams = params
     this.search()
   }
-  simpleSearch(keyword: string) {
+  simpleSearch(params: string) {
     this._advanceParams = {}
-    this._simpleParams = { keywords_contain: textHelpers.clearUnicode(keyword) }
+    this._simpleParams = params
     this.search()
   }
 
