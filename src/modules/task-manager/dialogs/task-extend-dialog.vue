@@ -80,7 +80,7 @@ export default class TaskExtendDialog extends Vue {
           requestor: authStore.comrade.id,
           task: this.task.id,
           data: {
-            oldExpiredDate: this.task.expiredDate,
+            oldExpiredDate: this.expireDateOld,
             newExpiredDate: this.expireDateNew
           }
         })
