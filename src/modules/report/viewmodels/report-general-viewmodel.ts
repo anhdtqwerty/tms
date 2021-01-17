@@ -13,8 +13,8 @@ export class ReportGeneralViewModel {
 
   @asyncAction *loadData(from: string, to: string) {
     this.reports = yield this.provider.api.getUnitsTaskReport({
-      from: moment(from).format('yyyy-MM-DD'),
-      to: moment(to).format('yyyy-MM-DD')
+      from: moment(from).format('YYYY-MM-DD'),
+      to: moment(to).format('YYYY-MM-DD')
     })
     this.exportedDate = moment().toISOString()
   }

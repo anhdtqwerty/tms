@@ -51,11 +51,11 @@ export default class DatePickerInput extends Vue {
 
   selectDate(date: string) {
     if (this.type === 'date') {
-      this.syncedValue = moment(date, 'yyyy-MM-DD')
+      this.syncedValue = moment(date, 'YYYY-MM-DD')
         .endOf('day')
         .toISOString()
     } else {
-      this.syncedValue = moment(date, 'yyyy-MM').toISOString()
+      this.syncedValue = moment(date, 'YYYY-MM').toISOString()
     }
     this.show = false
   }
@@ -63,9 +63,9 @@ export default class DatePickerInput extends Vue {
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
     if (!val) return
     if (this.type === 'date') {
-      this.selectedDate = moment(val).format('yyyy-MM-DD')
+      this.selectedDate = moment(val).format('YYYY-MM-DD')
     } else {
-      this.selectedDate = moment(val).format('yyyy-MM')
+      this.selectedDate = moment(val).format('YYYY-MM')
     }
   }
 
@@ -73,7 +73,7 @@ export default class DatePickerInput extends Vue {
     if (this.dateFormat) {
       return this.dateFormat
     } else {
-      return this.type === 'date' ? 'DD/MM/yyyy' : 'MM/yyyy'
+      return this.type === 'date' ? 'DD/MM/YYYY' : 'MM/YYYY'
     }
   }
 }

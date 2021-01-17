@@ -52,7 +52,7 @@ export default class DatePickerInput extends Vue {
   selectedRange: string[] = []
 
   @Watch('value', { immediate: true }) onValueChanged(val: string[]) {
-    this.selectedRange = (val ?? []).map(d => moment(d).format('yyyy-MM-DD'))
+    this.selectedRange = (val ?? []).map(d => moment(d).format('YYYY-MM-DD'))
   }
 
   cancel() {
@@ -61,8 +61,8 @@ export default class DatePickerInput extends Vue {
 
   ok() {
     this.syncedValue = [
-      moment(this.selectedRange[0], 'yyyy-MM-DD').toISOString(),
-      moment(this.selectedRange[1], 'yyyy-MM-DD')
+      moment(this.selectedRange[0], 'YYYY-MM-DD').toISOString(),
+      moment(this.selectedRange[1], 'YYYY-MM-DD')
         .endOf('day')
         .toISOString()
     ]
@@ -71,12 +71,12 @@ export default class DatePickerInput extends Vue {
 
   menuChanged(open: boolean) {
     if (!open) {
-      this.selectedRange = (this.syncedValue ?? []).map(d => moment(d).format('yyyy-MM-DD'))
+      this.selectedRange = (this.syncedValue ?? []).map(d => moment(d).format('YYYY-MM-DD'))
     }
   }
 
   get displayDateRange() {
-    return this.syncedValue.map(d => moment(d).format('DD/MM/yyyy')).join(' - ')
+    return this.syncedValue.map(d => moment(d).format('DD/MM/YYYY')).join(' - ')
   }
 }
 </script>
