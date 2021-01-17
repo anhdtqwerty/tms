@@ -8,7 +8,7 @@
     <v-card :style="`max-width: ${colNumber * 220}px`">
       <v-container fluid>
         <v-row class="d-inline-flex">
-          <v-col :cols="12 / colNumber" v-for="(i, index) in headers" :key="index">
+          <v-col :cols="12 / colNumber" v-for="(i, index) in headers.filter(h => h.text)" :key="index">
             <v-checkbox :label="i.text" hide-details :value="i" v-model="selecteds" class="pa-0 ma-0"></v-checkbox>
           </v-col>
         </v-row>

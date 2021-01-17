@@ -28,6 +28,8 @@
           :items="viewmodel.tasks"
           item-key="id"
           :headers="selectedHeaders"
+          :server-items-length="viewmodel.totalTask"
+          @update:page="viewmodel.search($event)"
           :footer-props="{ itemsPerPageOptions: [25] }"
           mobile-breakpoint="0"
         >

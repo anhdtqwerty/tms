@@ -179,6 +179,9 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
     case 'task-done':
       params.state = 'done'
       break
+    case 'task-unfinished':
+      _.set(params, 'state_ne', 'done')
+      break
     default:
       console.error(`not support ${taskType}`)
       break

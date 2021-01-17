@@ -2,7 +2,7 @@
   <v-container fluid px-5 py-2>
     <v-row justify="space-between" align="center">
       <v-col cols="8" class="pa-2">
-        <div class="text-h6">Nhiệm vụ giao</div>
+        <div class="text-h6">{{ pageTitle }}</div>
         <breadcrumbs />
       </v-col>
       <v-col cols="4" align="right" class="pa-2">
@@ -19,16 +19,20 @@
             :items="viewmodel.tasks"
             item-key="id"
             @click:row="showDetail"
-            :headers="headers"
+            :headers="selectedHeaders"
+            :server-items-length="viewmodel.totalCount"
+            @update:page="viewmodel.search($event)"
             :footer-props="{ itemsPerPageOptions: [25] }"
             mobile-breakpoint="0"
           >
             <template v-slot:top>
-              <task-search-component title="Danh sách các nhiệm vụ giao">
+              <task-search-component
+                title="Danh sách các nhiệm vụ"
+                @advance-search="viewmodel.advanceSearch($event)"
+                @simple-search="viewmodel.simpleSearch($event)"
+              >
                 <div>
-                  <v-btn icon small>
-                    <v-icon>settings</v-icon>
-                  </v-btn>
+                  <table-header-setting :headers="headers" @change="selectedHeaders = $event" />
                   <v-btn icon small>
                     <v-icon>more_horiz</v-icon>
                   </v-btn>
@@ -71,7 +75,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { TaskActionType, TaskModel, TaskRouteType } from '@/models/task-model'
+import { TaskActionType, TaskModel, taskRouteNameMap, TaskRouteType } from '@/models/task-model'
 import { Component, Inject, Provide, Vue, Watch } from 'vue-property-decorator'
 import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
 
@@ -113,12 +117,16 @@ export default class TaskManagerPage extends Vue {
 
   selectedTask: TaskModel = null
 
+  pageTitle = ''
+
   @Watch('$route.params.tasktype', { immediate: true }) onTaskParamChange(val: TaskRouteType) {
     if (val) {
-      this.viewmodel.loadData(val)
+      this.pageTitle = taskRouteNameMap[val]
+      this.viewmodel.changeTaskType(val)
     }
   }
 
+  selectedHeaders: any[] = []
   headers = [
     { text: 'Số/ký hiệu', value: 'code', sortable: false },
     { text: 'Ngày ban hành', value: 'publishedDate', sortable: false },
@@ -176,10 +184,6 @@ export default class TaskManagerPage extends Vue {
 
   showDetail(item: TaskModel) {
     this.$router.push({ path: '/task/' + item.id })
-  }
-
-  search() {
-    // this.viewmodel.search(this.searchCode, this.searchtitle, this.searchPriority, this.searchState)
   }
 }
 </script>
