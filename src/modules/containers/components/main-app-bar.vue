@@ -20,12 +20,12 @@
       <template v-slot:activator="{ on }">
         <v-btn text v-on="on">
           <app-avatar
-            :avatar="providers | _get('authStore.comrade.avatar')"
+            :avatar="providers.authStore.comrade | _get('avatar')"
             :class="{ 'mr-4': !$vuetify.breakpoint.xs, 'mr-n6': $vuetify.breakpoint.xs }"
             size="40"
           />
           <div class="d-none d-sm-flex black--text">
-            {{ providers | _get('authStore.comrade.name') }}
+            {{ providers.authStore.comrade | _get('name') }}
           </div>
         </v-btn>
       </template>

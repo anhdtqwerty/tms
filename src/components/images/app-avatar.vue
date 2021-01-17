@@ -24,8 +24,10 @@ export default class AppAvatar extends Vue {
       if (val instanceof File) {
         this.url = URL.createObjectURL(val)
       } else if (typeof val === 'string') {
-        const model = await this.providers.api.getFile(val)
-        this.url = fileHelpers.getApiFileUrl(model)
+        if (val) {
+          const model = await this.providers.api.getFile(val)
+          this.url = fileHelpers.getApiFileUrl(model)
+        }
       } else if (val) {
         this.url = fileHelpers.getApiFileUrl(val)
       }
