@@ -15,6 +15,7 @@ import { RequestModel } from '@/models/request-model'
 import { TaskStatModel } from '@/models/report-model'
 import { appProvider } from '@/app-provider'
 import { MailModel } from '@/helpers/mail-helper'
+import { ConfigModel } from '@/models/config-model'
 
 export type ApiLogType = 'create' | 'delete' | 'update'
 export const apiLogNames: { [name in ApiLogType]: string } = {
@@ -89,7 +90,12 @@ export class ApiHandler<T> {
   }
 
   async update(id: any, model: T, options?: { logMessage: string }): Promise<T> {
-    const res = await this.axios.put(`${this.route}/${id}`, model)
+    let res: any
+    if (id) {
+      res = await this.axios.put(`${this.route}/${id}`, model)
+    } else {
+      res = await this.axios.put(`${this.route}`, model)
+    }
     if (this.allowLog) {
       this.log('update', options?.logMessage, res.data)
     }
@@ -247,5 +253,15 @@ export class ApiService {
       return res.data
     }
     return null
+  }
+
+  async getConfig(): Promise<ConfigModel> {
+    const res = await this.axios.get('config')
+    return res.data
+  }
+
+  async updateConfig(model: ConfigModel) {
+    const res = await this.axios.put('config', model)
+    return res.data
   }
 }

@@ -137,9 +137,10 @@ import {
   TaskStateType
 } from '@/models/task-model'
 import moment from 'moment'
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Inject, Prop, Vue } from 'vue-property-decorator'
 import _ from 'lodash'
 import { textHelpers } from '@/helpers/text-helper'
+import { AppProvider } from '@/app-provider'
 
 @Component({
   components: {
@@ -154,6 +155,7 @@ import { textHelpers } from '@/helpers/text-helper'
   }
 })
 export default class TaskSearchComponent extends Vue {
+  @Inject() providers: AppProvider
   @Prop() title!: string
 
   simpleSearchKeyword = ''
@@ -174,7 +176,7 @@ export default class TaskSearchComponent extends Vue {
   searchPushlishedDate: string = null
   searchRangeDate: string[] = []
 
-  search() {
+  async search() {
     console.log('search', this.advanceSearch)
     if (this.advanceSearch) {
       const params: TaskModel = {}
@@ -186,9 +188,9 @@ export default class TaskSearchComponent extends Vue {
       if (this.searchExecuteStaff) params.executedComrade = this.searchExecuteStaff
       if (this.searchApprovementStatus) params.status = this.searchApprovementStatus
       if (this.searchProcessingExpire) {
+        params.type = 'hasDeadline'
         switch (this.searchProcessingExpire) {
           case 'inProcessing':
-            params.type = 'hasDeadline'
             _.set(params, 'expiredDate_gt', moment().toISOString())
             break
           case 'expired':
@@ -196,8 +198,13 @@ export default class TaskSearchComponent extends Vue {
             _.set(params, 'expiredDate_lt', moment().toISOString())
             break
           case 'almostExpired':
-            console.warn('Sắp hết hạn chưa hỗ trợ')
             break
+        }
+        if (this.searchProcessingExpire === 'almostExpired') {
+          const config = await this.providers.api.getConfig()
+          const max = moment().add(config.data?.earlyExpiredDays ?? 10, 'd')
+          _.set(params, 'expiredDate_gt', moment().toISOString())
+          _.set(params, 'expiredDate_lt', max.toISOString())
         }
       }
       if (this.searchSupervisorUnit) params.supervisorUnit = this.searchSupervisorUnit

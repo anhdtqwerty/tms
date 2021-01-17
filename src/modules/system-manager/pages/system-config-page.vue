@@ -19,10 +19,9 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { UserModel } from '@/models/auth-model'
-import { Component, Inject, Provide, Ref, Vue } from 'vue-property-decorator'
+import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
 import { SystemConfigViewModel } from '../viewmodels/system-config.viewmodel'
-
+import _ from 'lodash'
 @Component
 export default class ChangePasswordPage extends Vue {
   @Inject() providers!: AppProvider
@@ -30,14 +29,21 @@ export default class ChangePasswordPage extends Vue {
 
   numberDays = ''
 
-  async change() {
-    console.log(this.numberDays)
-    const { api, authStore, snackbar, router } = this.providers
+  async mounted() {
+    const { api, snackbar } = this.providers
     try {
-      const user: UserModel = await api.user.findOne(authStore.user.id)
-      // await api.user.update(user.id, { ...user, password: this.password })
-      // snackbar.updateSuccess()
-      // router.replace('/dashboard')
+      const config: any = await api.getConfig()
+
+      this.numberDays = _.get(config.data, 'earlyExpiredDays') ?? 10
+    } catch (error) {
+      snackbar.commonError(error)
+    }
+  }
+
+  async change() {
+    const { api, snackbar } = this.providers
+    try {
+      await api.updateConfig({ data: { earlyExpiredDays: +this.numberDays } })
     } catch (error) {
       snackbar.commonError(error)
     }
