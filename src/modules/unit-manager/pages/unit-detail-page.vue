@@ -13,7 +13,7 @@
             <v-row>
               <v-col cols="12" class="d-flex justify-space-between pa-2">
                 <div class="text-h5 font-weight-medium primary--text">{{ viewmodel.unit.title }}</div>
-                <v-btn v-permission="'system.unit.edit'" icon small @click="showEditUnit = true">
+                <v-btn v-if="$permission('system.unit.edit')" icon small @click="showEditUnit = true">
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
               </v-col>
@@ -50,7 +50,12 @@
                 <v-row>
                   <v-col cols="12" class="pa-2 d-flex justify-space-between">
                     <div class="text-subtitle-1 font-weight-medium">Danh sách phòng ban trực thuộc</div>
-                    <v-btn v-permission="'system.unit.add'" color="primary" small @click="showAddDepartment = true">
+                    <v-btn
+                      v-if="$permission('system.unit.add')"
+                      color="primary"
+                      small
+                      @click="showAddDepartment = true"
+                    >
                       <v-icon left>add</v-icon>Thêm
                     </v-btn>
                   </v-col>
@@ -63,7 +68,7 @@
               </text-link>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon v-permission="'system.unit.edit'" small @click="editDepartment(item)">
+              <v-icon v-if="$permission('system.unit.edit')" small @click="editDepartment(item)">
                 mdi-pencil
               </v-icon>
             </template>

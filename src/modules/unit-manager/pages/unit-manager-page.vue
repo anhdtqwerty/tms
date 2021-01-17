@@ -6,7 +6,7 @@
         <breadcrumbs />
       </v-col>
       <v-col cols="4" align="right" class="pa-2">
-        <v-btn v-permission="'system.unit.add'" medium color="success" @click="showAddUnit = true">
+        <v-btn v-if="$permission('system.unit.add')" medium color="success" @click="showAddUnit = true">
           <v-icon left>add</v-icon>
           <span>Thêm đơn vị</span>
         </v-btn>
@@ -52,10 +52,10 @@
               <div class="staff-department">{{ item.department.title }}</div>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon v-permission="'system.unit.edit'" small class="mr-2" @click="editUnit(item)">
+              <v-icon v-if="$permission('system.unit.edit')" small class="mr-2" @click="editUnit(item)">
                 mdi-pencil
               </v-icon>
-              <v-icon v-permission="'system.unit.delete'" small @click="viewmodel.deleteUnit(item)">
+              <v-icon v-if="$permission('system.unit.delete')" small @click="viewmodel.deleteUnit(item)">
                 mdi-delete
               </v-icon>
             </template>

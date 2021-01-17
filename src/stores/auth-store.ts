@@ -11,8 +11,6 @@ class AuthStore {
   @observable user: UserModel = null
   @observable comrade: ComradeModel = null
 
-  ipAdress = ''
-
   constructor() {
     const userRaw = localStorage.getItem('user')
     if (userRaw) {
@@ -43,16 +41,6 @@ class AuthStore {
         else localStorage.removeItem('comrade')
       }
     )
-    this.fetchInfor()
-  }
-
-  async fetchInfor() {
-    try {
-      const res = await Axios.get('http://jsonip.com')
-      this.ipAdress = res.data.ip
-    } catch (error) {
-      console.error('fetchInfor', error)
-    }
   }
 
   @action onLogout() {
@@ -88,6 +76,7 @@ class AuthStore {
     const unit = this.comrade?.unit as UnitModel
     const department = this.comrade?.department as DepartmentModel
     return {
+      ministry: unit?.type === 'ministry' ? unit?.id : undefined,
       unit: unit?.type === 'ministry' ? undefined : unit?.id,
       department: department?.id
     }
