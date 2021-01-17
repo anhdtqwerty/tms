@@ -64,11 +64,3 @@ export const appRules = {
   taskStartedDate: [rules.required],
   taskExplain: [rules.required, rules.maxLength(1000)]
 }
-
-export const inputRulesPlugin = {
-  install: (Vue: any) => {
-    console.log('inputRulesPlugin')
-    Vue.prototype.$rules = rules
-    Vue.prototype.$appRules = appRules
-  }
-}

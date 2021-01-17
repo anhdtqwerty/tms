@@ -6,7 +6,7 @@
         <breadcrumbs />
       </v-col>
       <v-col cols="4" align="right" class="pa-2">
-        <v-btn v-permission="'system.role.add'" medium color="success" @click="showAddDialog = true">
+        <v-btn v-if="$permission('system.role.add')" medium color="success" @click="showAddDialog = true">
           <v-icon left>add</v-icon>
           <span>Thêm vai trò</span>
         </v-btn>
@@ -22,7 +22,7 @@
               </text-link>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon v-permission="'system.role.edit'" small class="mr-2" @click="edit(item)">
+              <v-icon v-if="$permission('system.role.edit')" small class="mr-2" @click="edit(item)">
                 mdi-pencil
               </v-icon>
               <v-icon small @click="viewmodel.deleteRole(item)">

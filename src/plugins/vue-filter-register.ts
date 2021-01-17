@@ -11,7 +11,6 @@ import { apiLogNames, ApiLogType } from '@/services/api-service'
 import _ from 'lodash'
 import moment from 'moment'
 import Vue from 'vue'
-import { appProvider } from '@/app-provider'
 import { fileHelpers } from '@/helpers/file-helper'
 
 export const vueFilterRegister = () => {
@@ -26,6 +25,12 @@ export const vueFilterRegister = () => {
 
   Vue.filter('_get', (any: any, path: string, defaultValue = '') => {
     return _.get(any, path, defaultValue)
+  })
+  Vue.filter('_empty', (any: any) => {
+    return !_.isNumber(any) && (!any || _.isEmpty(any))
+  })
+  Vue.filter('_hasValue', (any: any) => {
+    return _.isNumber(any) || (any && !_.isEmpty(any))
   })
 
   Vue.filter('permission', (val: string) => permissionHelper.check(val))

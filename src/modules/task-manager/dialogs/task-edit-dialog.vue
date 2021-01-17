@@ -66,7 +66,7 @@
                 label="Hạn xử lý"
               />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
-              <comrade-autocomplete :value.sync="supervisorIds" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
+              <comrade-autocomplete :value.sync="supervisorId" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
               <task-state-select :value.sync="state" hide-details label="Trạng thái" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
@@ -87,6 +87,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { ComradeModel } from '@/models/comrade-model'
 import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType, TaskStateType } from '@/models/task-model'
 import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
@@ -120,7 +121,7 @@ export default class TaskEditDialog extends Vue {
   supportedComradeIds: string[] = []
   deadlineType: TaskDeadlineType = null
   state: TaskStateType = null
-  supervisorIds: string[] = []
+  supervisorId = ''
   supervisorUnitId = ''
   expiredDate: string = null
   selectedFiles: File[] = []
@@ -140,7 +141,7 @@ export default class TaskEditDialog extends Vue {
       this.executedComradeId = _.get(val.executedComrade, 'id')
 
       this.supervisorUnitId = _.get(val.supervisorUnit, 'id')
-      this.supervisorIds = _.map(val.supervisors, 'id')
+      this.supervisorId = _.first(val.supervisors as ComradeModel[])?.id
 
       this.supportedUnitIds = _.map(val.supportedUnits, 'id')
       this.supportedComradeIds = _.map(val.supportedComrades, 'id')
@@ -178,7 +179,7 @@ export default class TaskEditDialog extends Vue {
           executedComrade: this.executedComradeId,
 
           supervisorUnit: this.supervisorUnitId,
-          supervisors: this.supervisorIds,
+          supervisors: this.supervisorId ? [this.supervisorId] : [],
 
           supportedUnits: this.supportedUnitIds,
           supportedComrades: this.supportedComradeIds,

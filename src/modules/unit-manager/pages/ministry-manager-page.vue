@@ -15,7 +15,7 @@
                 <div class="d-flex justify-space-between">
                   <div class="text-h5 font-weight-medium primary--text">{{ viewmodel.ministry.title }}</div>
                   <v-btn
-                    v-permission="'system.unit.edit'"
+                    v-if="$permission('system.unit.edit')"
                     class="d-flex d-sm-none"
                     icon
                     small
@@ -37,7 +37,7 @@
               </div>
             </v-col>
             <v-col class="d-none d-sm-flex justify-end" cols="0" sm="2" lg="4" xl="6">
-              <v-btn v-permission="'system.unit.edit'" icon small @click="editUnit(viewmodel.ministry)">
+              <v-btn v-if="$permission('system.unit.edit')" icon small @click="editUnit(viewmodel.ministry)">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
             </v-col>
@@ -60,7 +60,7 @@
                 <v-row>
                   <v-col cols="12" class="pa-2 d-flex justify-space-between">
                     <div class="text-subtitle-1 font-weight-medium">Danh sách cán đơn vị trực thuộc</div>
-                    <v-btn v-permission="'system.unit.add'" color="primary" small @click="showAddUnit = true">
+                    <v-btn v-if="$permission('system.unit.add')" color="primary" small @click="showAddUnit = true">
                       <v-icon left>add</v-icon>Thêm
                     </v-btn>
                   </v-col>
@@ -77,10 +77,10 @@
               <div class="staff-department">{{ item.department.title }}</div>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon v-permission="'system.unit.edit'" small class="mr-2" @click="editUnit(item)">
+              <v-icon v-if="$permission('system.unit.edit')" small class="mr-2" @click="editUnit(item)">
                 mdi-pencil
               </v-icon>
-              <v-icon v-permission="'system.unit.delete'" small @click="viewmodel.deleteUnit(item)">
+              <v-icon v-if="$permission('system.unit.delete')" small @click="viewmodel.deleteUnit(item)">
                 mdi-delete
               </v-icon>
             </template>

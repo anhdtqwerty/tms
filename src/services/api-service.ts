@@ -45,6 +45,7 @@ export const ApiRouteNames: { [name in ApiRouteType]: string } = {
 }
 
 const browser = Bowser.getParser(window.navigator.userAgent)
+let ipAddress = ''
 export class ApiHandler<T> {
   constructor(private route: ApiRouteType, private axios: AxiosInstance, private allowLog = true) {}
 
@@ -119,7 +120,7 @@ export class ApiHandler<T> {
         comrade: authStore.comrade?.id,
         description: description ?? ds.length > 0 ? ds.join(', ') : undefined,
         data: {
-          ip: authStore.ipAdress,
+          ip: ipAddress,
           browser: browser.getBrowser().name
         }
       })
@@ -145,6 +146,7 @@ export class ApiService {
 
   constructor() {
     this.setupAuthInjector()
+    this.getIpAddress()
   }
 
   setupAuthInjector() {
@@ -235,5 +237,14 @@ export class ApiService {
   async getComradeTaskReport(params: { from?: string; to?: string; id: string }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/comrade/statistic`, { params })
     return res.data
+  }
+
+  async getIpAddress() {
+    try {
+      const res = await this.axios.get('config/ip')
+      ipAddress = _.get(res.data, 'request.header.x-forwarded-for')
+    } catch (error) {
+      console.error('getIpAddress', error)
+    }
   }
 }

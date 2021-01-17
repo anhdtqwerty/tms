@@ -1,13 +1,16 @@
 import { AppProvider } from '@/app-provider'
+import { textHelpers } from '@/helpers/text-helper'
 import { TaskModel } from '@/models/task-model'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
 export class TaskDetailViewModel {
+  @observable task: TaskModel = null
+
   @observable subtaskTotalCount = 0
   @observable subtasks: TaskModel[] = []
-  private _searchParams = {}
-  @observable task: TaskModel = null
+  private _advanceParams: any = {}
+  private _simpleParams: any = {}
 
   constructor(private provider: AppProvider) {}
 
@@ -25,15 +28,26 @@ export class TaskDetailViewModel {
     this.subtasks = subtasksApi[1]
   }
 
-  @asyncAction *search(code: string = null, name: string = null) {
-    const api = this.provider.api
-    let input: any = {}
-    if (name) input = { ...input, name_contains: name }
-    if (code) input = { ...input, code_contains: code }
-    this._searchParams = input
-    const results = yield Promise.all([api.task.count(this._searchParams), api.task.find(this._searchParams)])
-    this.subtaskTotalCount = results[0]
-    this.subtasks = results[1]
+  advanceSearch(params: any) {
+    this._simpleParams = {}
+    this._advanceParams = params
+    this.search()
+  }
+  simpleSearch(keyword: string) {
+    this._advanceParams = {}
+    this._simpleParams = { keywords_contain: textHelpers.clearUnicode(keyword) }
+    this.search()
+  }
+
+  @asyncAction *search(page = 1) {
+    const params = {
+      ...this._simpleParams,
+      ...this._advanceParams,
+      _start: (page - 1) * 25
+    }
+    const results = yield Promise.all([this.provider.api.task.find(params), this.provider.api.task.count(params)])
+    this.subtasks = results[0]
+    this.subtaskTotalCount = results[1]
   }
 
   @action.bound taskUpdated(item: TaskModel) {

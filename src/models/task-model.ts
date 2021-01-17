@@ -155,10 +155,21 @@ export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
   return changes
 }
 export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
+  const unitPrams = authStore.unitParams
   const params: TaskModel = {}
   switch (taskType) {
     case 'task-created':
+      // if (authStore.isLeader) {
+      //   if (unitPrams.department) {
+      //     _.set(params, 'createdBy.department', unitPrams.department)
+      //   } else if (unitPrams.unit) {
+      //     _.set(params, 'createdBy.unit', unitPrams.unit)
+      //   } else if (unitPrams.ministry) {
+      //     _.set(params, 'createdBy.unit', unitPrams.ministry)
+      //   }
+      // } else {
       params.createdBy = authStore.comrade.id
+      // }
       break
     case 'task-assigned':
       params.executedComrade = authStore.comrade.id
@@ -176,9 +187,23 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
     case 'task-approving':
       params.state = 'done'
       params.status = 'approving'
+      // if (authStore.isLeader) {
+      //   if (unitPrams.department) {
+      //     _.set(params, 'createdBy.department', unitPrams.department)
+      //   } else if (unitPrams.unit) {
+      //     _.set(params, 'createdBy.unit', unitPrams.unit)
+      //   } else if (unitPrams.ministry) {
+      //     _.set(params, 'createdBy.unit', unitPrams.ministry)
+      //   }
+      // } else {
+      params.createdBy = authStore.comrade.id
+      // }
       break
     case 'task-done':
       params.state = 'done'
+      break
+    case 'task-unfinished':
+      _.set(params, 'state_ne', 'done')
       break
     default:
       console.error(`not support ${taskType}`)

@@ -63,7 +63,7 @@
                 label="Hạn xử lý"
               />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
-              <comrade-autocomplete :value.sync="supervisorIds" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
+              <comrade-autocomplete :value.sync="supervisorId" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -118,7 +118,7 @@ export default class TaskAddDialog extends Vue {
 
   executedComradeId = ''
   supportedComradeIds: string[] = []
-  supervisorIds: string[] = []
+  supervisorId = ''
   selectedFiles: File[] = []
 
   async save() {
@@ -142,7 +142,7 @@ export default class TaskAddDialog extends Vue {
               executedComrade: this.executedComradeId,
 
               supportedUnits: this.supportedUnitIds,
-              supervisors: this.supervisorIds,
+              supervisors: this.supervisorId ? [this.supervisorId] : [],
 
               supervisorUnit: this.supervisorUnitId,
               supportedComrades: this.supportedComradeIds,
