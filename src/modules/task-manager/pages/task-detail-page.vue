@@ -99,8 +99,8 @@
             <v-col cols="12">
               <div>Chuyên viên</div>
             </v-col>
-            <v-col cols="12" v-if="vm.task.supervisors && vm.task.supervisors.length">
-              <app-avatar :avatar="vm.task.supervisors[0]" width="80" height="80" />
+            <v-col cols="12" v-if="!$_empty(vm.task.supervisors)">
+              <app-avatar :avatar="vm.task.supervisors[0].avatar" width="80" height="80" />
               <span class="ml-4 font-weight-bold">
                 {{ vm.task.supervisors[0].name }}
               </span>

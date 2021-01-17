@@ -1,5 +1,6 @@
 <template>
   <v-autocomplete
+    :disabled="unitRequired && unit | _empty"
     v-bind="$attrs"
     v-model="syncedValue"
     dense
@@ -18,6 +19,7 @@ import { ComradeModel } from '@/models/comrade-model'
 import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 import { AppProvider } from '@/app-provider'
 import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
 
 @Component
 export default class ComradeAutoComplete extends Vue {
@@ -25,13 +27,19 @@ export default class ComradeAutoComplete extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
   @Prop({ default: false }) autoselect: boolean
-  @Prop() unit: string
+  @Prop() unit: string | string[]
   @Prop({ default: false }) multiple: boolean
+  @Prop({ default: true }) unitRequired: boolean
 
   items: ComradeModel[] = []
   loading = false
 
   @Watch('unit', { immediate: true }) async onUnitChanged(val: any) {
+    if (this.unitRequired && !this.unit && _.isEmpty(val)) {
+      this.items = []
+      this.syncedValue = null
+      return
+    }
     this.loading = true
     try {
       const params: any = {}

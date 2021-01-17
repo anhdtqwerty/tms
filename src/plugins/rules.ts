@@ -54,11 +54,3 @@ export const appRules = {
   comradeUsername: [rules.required, rules.maxLength(20)],
   comradePassword: [rules.required, rules.maxLength(20), rules.password]
 }
-
-export const inputRulesPlugin = {
-  install: (Vue: any) => {
-    console.log('inputRulesPlugin')
-    Vue.prototype.$rules = rules
-    Vue.prototype.$appRules = appRules
-  }
-}

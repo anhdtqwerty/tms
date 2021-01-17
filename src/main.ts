@@ -4,12 +4,12 @@ import router from './router'
 import '@mdi/font/css/materialdesignicons.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import vuetify from './plugins/vuetify'
-import { inputRulesPlugin } from './plugins/rules'
 import moment from 'moment'
 import VueApexCharts from 'vue-apexcharts'
 import { componentRegister } from './plugins/component-register'
 import { directiveRegister } from './plugins/directive-register'
 import { vueFilterRegister } from './plugins/vue-filter-register'
+import { pluginsRegister } from './plugins/plugins-register'
 
 Vue.config.productionTip = false
 
@@ -19,7 +19,7 @@ Vue.component('apexchart', VueApexCharts)
 Vue.use(VueApexCharts)
 
 // app configs
-Vue.use(inputRulesPlugin)
+pluginsRegister()
 componentRegister()
 directiveRegister()
 vueFilterRegister()
