@@ -23,6 +23,8 @@
         :outlined="outlined"
         :hide-details="hideDetails"
         :disabled="disabled"
+        clearable
+        @click:clear="selectedDate = null"
       />
     </template>
     <v-date-picker locale="vi" :value="selectedDate" @input="selectDate" :type="type"></v-date-picker>

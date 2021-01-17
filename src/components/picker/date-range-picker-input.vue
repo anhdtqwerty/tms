@@ -23,6 +23,8 @@
         validate-on-blur
         :hide-details="hideDetails"
         :outlined="outlined"
+        clearable
+        @click:clear="selectedRange = []"
       />
     </template>
     <v-date-picker locale="vi" v-model="selectedRange" range>

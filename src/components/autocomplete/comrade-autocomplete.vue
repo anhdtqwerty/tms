@@ -10,6 +10,7 @@
     item-value="id"
     :multiple="multiple"
     :loading="loading"
+    clearable
   >
   </v-autocomplete>
 </template>

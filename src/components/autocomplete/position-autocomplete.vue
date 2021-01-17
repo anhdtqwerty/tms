@@ -8,6 +8,7 @@
     :items="items"
     item-value="id"
     :loading="loading"
+    clearable
   >
   </v-autocomplete>
 </template>

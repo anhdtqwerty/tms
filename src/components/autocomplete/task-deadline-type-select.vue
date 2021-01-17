@@ -7,6 +7,7 @@
     item-text="value"
     item-value="type"
     :items="items"
+    clearable
   />
 </template>
 

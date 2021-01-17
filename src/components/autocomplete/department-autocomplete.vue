@@ -9,6 +9,7 @@
     item-value="id"
     :loading="loading"
     v-bind="$attrs"
+    clearable
   >
   </v-autocomplete>
 </template>

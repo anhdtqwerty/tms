@@ -87,7 +87,7 @@ import { mailBuilder } from '@/helpers/mail-helper'
 import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
-import { Component, Inject, PropSync, Prop, Ref, Vue } from 'vue-property-decorator'
+import { Component, Inject, PropSync, Prop, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
@@ -121,6 +121,12 @@ export default class TaskAddDialog extends Vue {
   supportedComradeIds: string[] = []
   supervisorId = ''
   selectedFiles: File[] = []
+
+  @Watch('deadlineType') onDeadlineTypeChange(val: TaskDeadlineType) {
+    if (val !== 'hasDeadline') {
+      this.expiredDate = null
+    }
+  }
 
   async save() {
     if (this.form.validate()) {

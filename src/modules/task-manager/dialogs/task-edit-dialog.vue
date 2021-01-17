@@ -62,7 +62,7 @@
               />
               <date-picker-input
                 :value.sync="expiredDate"
-                :disabled="deadlineType === 'noDeadline'"
+                :disabled="deadlineType !== 'hasDeadline'"
                 label="Hạn xử lý"
               />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
@@ -147,6 +147,12 @@ export default class TaskEditDialog extends Vue {
       this.supportedComradeIds = _.map(val.supportedComrades, 'id')
 
       this.docsInfo = val.documentInfo
+    }
+  }
+
+  @Watch('deadlineType') onDeadlineTypeChange(val: TaskDeadlineType) {
+    if (val !== 'hasDeadline') {
+      this.expiredDate = null
     }
   }
 
