@@ -22,8 +22,8 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <task-approvement-status-select disabled :value.sync="approvementStatus" label="Trạng thái" />
-              <document-files v-if="task.files.length" :files="task.files" />
-              <app-file-input v-else disabled label="File đính kèm" />
+              <!-- <document-files v-if="task.files.length" :files="task.files" /> -->
+              <app-file-input label="File đính kèm" />
 
               <app-text-field disabled v-model="explain" hide-details label="Diễn giải trạng thái" />
             </v-col>
