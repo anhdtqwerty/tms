@@ -22,10 +22,16 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <task-approvement-status-select disabled :value.sync="approvementStatus" label="Trạng thái" />
-              <!-- <document-files v-if="task.files.length" :files="task.files" /> -->
-              <app-file-input label="File đính kèm" />
-
-              <app-text-field disabled v-model="explain" hide-details label="Diễn giải trạng thái" />
+              <app-text-field disabled v-model="explain" label="Diễn giải trạng thái" />
+              <div class="d-flex">
+                File đính kèm
+                <v-menu :close-on-content-click="true" transition="scale-transition" left>
+                  <template v-slot:activator="{ on }">
+                    <div class="blue--text ml-4" v-on="on">Xem</div>
+                  </template>
+                  <task-files-component :container="task" :canDelete="false" />
+                </v-menu>
+              </div>
             </v-col>
           </v-row>
 
@@ -75,7 +81,7 @@ import { mailBuilder } from '@/helpers/mail-helper'
   components: {
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskApprovementStatusSelect: () => import('@/components/autocomplete/task-approvement-status-select.vue'),
-    DocumentFiles: () => import('@/components/files/document-files.vue')
+    TaskFilesComponent: () => import('@/components/files/task-files-component.vue')
   }
 })
 export default class TaskApproveDialog extends Vue {
@@ -107,9 +113,7 @@ export default class TaskApproveDialog extends Vue {
     if (this.form.validate()) {
       try {
         let task: TaskModel = {
-          description: this.description,
-          status: this.approveStatusResult,
-          state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
+          status: this.approveStatusResult
         }
 
         await Promise.all(
@@ -127,7 +131,7 @@ export default class TaskApproveDialog extends Vue {
         this.providers.api.sendMail(mailBuilder.approveTask(task, this.approveStatusResult === 'approved'))
         this.$emit('success', task)
         this.syncedValue = false
-        this.providers.snackbar.updateSuccess()
+        this.providers.snackbar.success('Phê duyệt kết quả thành công')
       } catch (error) {
         this.providers.snackbar.commonError(error)
       }

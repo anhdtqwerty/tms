@@ -5,7 +5,7 @@
     scrollable
     :value="controller.show"
     @input="controller.changeShow"
-    persistent
+    :persistent="controller.config && controller.config.persistent"
   >
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0" fixed>
@@ -24,7 +24,7 @@
               </v-col>
               <v-col cols="12" class="pa-2" align="end">
                 <v-btn depressed color="primary" medium @click="controller.ok">
-                  <span>Xác nhận</span>
+                  <span>{{ controller.config.ok }}</span>
                 </v-btn>
               </v-col>
             </v-row>

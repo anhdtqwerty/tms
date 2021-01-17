@@ -68,8 +68,7 @@ export default class TaskReopenDialog extends Vue {
           const modifyTask = await api.task.update(
             this.task.id,
             createTaskBody(this.task, {
-              state: 'waiting',
-              status: null,
+              status: 'rejected',
               explainState: this.reasonReopen
             })
           )

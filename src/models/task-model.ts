@@ -35,6 +35,7 @@ export interface TaskModel {
 
   expiredDate?: string
   publishedDate?: string
+  doneDate?: string
 
   files?: (string | FileModel)[]
   createdBy?: string | ComradeModel
@@ -228,7 +229,6 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
 export const getLastRequest = (task: TaskModel) => {
   const updateTaskTypes: RequestType[] = ['doing', 'todo', 'waiting', 'done']
   const lastest = _.maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
-  console.log('lastest', lastest)
 
   if (lastest && updateTaskTypes.includes(_.get(lastest, 'type'))) return lastest
   else return null

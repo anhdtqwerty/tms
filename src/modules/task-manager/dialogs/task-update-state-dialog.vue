@@ -16,7 +16,18 @@
               <task-state-select :includes="taskStateIncludes" :value.sync="state" label="Trạng thái" />
               <date-picker-input :value.sync="startedDate" :rules="$appRules.taskStartedDate" label="Ngày thực hiện" />
               <app-text-field v-model="explain" :rules="$appRules.taskExplain" label="Diễn giải trạng thái" />
-              <app-file-input hide-details :value.sync="selectedFiles" label="File đính kèm" />
+              <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
+              <div class="d-flex">
+                <div class="d-flex">
+                  File đã tải trước đó
+                  <v-menu :close-on-content-click="true" transition="scale-transition" left>
+                    <template v-slot:activator="{ on }">
+                      <div class="blue--text ml-4" v-on="on">Xem</div>
+                    </template>
+                    <task-files-component :container="task" />
+                  </v-menu>
+                </div>
+              </div>
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -40,12 +51,14 @@ import { RequestModel } from '@/models/request-model'
 import { createTaskBody, getLastRequest, TaskModel, TaskStateType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
+import moment from 'moment'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
-    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
+    TaskFilesComponent: () => import('@/components/files/task-files-component.vue')
   }
 })
 export default class TaskUpdateStateDialog extends Vue {
@@ -123,6 +136,7 @@ export default class TaskUpdateStateDialog extends Vue {
             createTaskBody(this.task, {
               state: this.state,
               status: this.state === 'done' ? 'approving' : null,
+              doneDate: this.state === 'done' ? moment().toISOString() : null,
               explainState: this.explain
             })
           )
@@ -130,7 +144,11 @@ export default class TaskUpdateStateDialog extends Vue {
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()
-          this.providers.snackbar.updateSuccess()
+          this.providers.snackbar.success(
+            this.request
+              ? 'Lưu thành công'
+              : 'Cập nhật tiến độ xử lý thành công, sau 24 giờ bạn sẽ không thể thay đổi kết quả đã cập nhật.'
+          )
         } catch (error) {
           if (!this.request) await api.request.delete(request.id)
           throw error

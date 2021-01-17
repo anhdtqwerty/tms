@@ -62,14 +62,18 @@
                 <div>Văn bản đính kèm</div>
               </v-col>
               <v-col cols="6" class="pa-2">
-                <document-files :files="vm.task.files" />
-                <!-- <div class="blue--text">Xem</div> -->
+                <v-menu :close-on-content-click="true" transition="scale-transition" left>
+                  <template v-slot:activator="{ on }">
+                    <div class="blue--text" v-on="on">Xem</div>
+                  </template>
+                  <task-files-component :container="vm.task" />
+                </v-menu>
               </v-col>
               <v-col cols="6" class="pa-2">
                 <div>Văn bản đến</div>
               </v-col>
               <v-col cols="6" class="pa-2">
-                <div class="blue--text">Xem</div>
+                <div class="blue--text" @click="showDocsInfo">Xem</div>
               </v-col>
               <v-col cols="6" class="pa-2">
                 <div>Thời hạn xử lý</div>
@@ -77,10 +81,12 @@
               <v-col cols="6" class="pa-2">
                 <div class="font-weight-bold">{{ vm.task.expiredDate | ddmmyyyy }}</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="pa-2">
                 <div>Nội dung nhiệm vụ</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="12" class="pa-2">
                 <div class="font-weight-bold">{{ vm.task.description }}</div>
               </v-col>
             </v-row>
@@ -193,6 +199,14 @@
             </template>
             <template v-slot:[`item.updated_at`]="{ item }">
               {{ item.updated_at | ddmmyyyy }}
+            </template>
+            <template v-slot:[`item.attachFile`]="{ item }">
+              <v-menu :close-on-content-click="true" transition="scale-transition" left>
+                <template v-slot:activator="{ on }">
+                  <div class="blue--text" v-on="on">Xem</div>
+                </template>
+                <task-files-component :container="item" />
+              </v-menu>
             </template>
           </v-data-table>
         </v-card>
@@ -310,7 +324,7 @@ import { TaskActionType, TaskModel } from '@/models/task-model'
     AppAvatar: () => import('@/components/images/app-avatar.vue'),
     TaskStateComponent: () => import('../components/task-state-component.vue'),
     TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
-    DocumentFiles: () => import('@/components/files/document-files.vue')
+    TaskFilesComponent: () => import('@/components/files/task-files-component.vue')
   }
 })
 export default class TaskDetailPage extends Vue {
@@ -398,6 +412,10 @@ export default class TaskDetailPage extends Vue {
         console.warn('taskActionCommon not handle', typeAction)
         break
     }
+  }
+
+  async showDocsInfo() {
+    await this.providers.alert.info('Thông tin văn bản đến', this.vm.task.documentInfo)
   }
 
   selectedHeaders: any[] = []
