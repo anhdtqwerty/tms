@@ -339,4 +339,4 @@ export const actionConfigs: TaskActionConfig[] = [
 ]
 
 // HACK: mock allow all
-actionConfigs.forEach(ac => (ac.checkEnable = () => true))
+// actionConfigs.forEach(ac => (ac.checkEnable = () => true))
