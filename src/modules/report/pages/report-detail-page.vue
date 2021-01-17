@@ -41,7 +41,7 @@
             >
               <div>
                 <table-header-setting :headers="headers" @change="selectedHeaders = $event" />
-                <v-btn icon small>
+                <v-btn icon small @click="viewmodel.exportExcel()">
                   <v-icon>more_horiz</v-icon>
                 </v-btn>
               </div>

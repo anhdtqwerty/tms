@@ -156,7 +156,7 @@
               >
                 <div>
                   <table-header-setting :headers="subtaskHeaders" @change="selectedHeaders = $event" />
-                  <v-btn icon small>
+                  <v-btn icon small @click="vm.exportExcel()">
                     <v-icon>more_horiz</v-icon>
                   </v-btn>
                 </div>

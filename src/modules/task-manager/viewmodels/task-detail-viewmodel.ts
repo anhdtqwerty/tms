@@ -1,4 +1,5 @@
 import { AppProvider } from '@/app-provider'
+import { excelHelper } from '@/helpers/excel-helper'
 import { mailBuilder } from '@/helpers/mail-helper'
 import { RequestModel } from '@/models/request-model'
 import { RequestType, TaskModel } from '@/models/task-model'
@@ -18,6 +19,16 @@ export class TaskDetailViewModel {
 
   constructor(private provider: AppProvider) {
     //
+  }
+
+  async exportExcel() {
+    const tasks = await this.provider.api.task.find({
+      ...this._simpleParams,
+      ...this._advanceParams,
+      parent: this.task.id,
+      _limit: -1
+    })
+    excelHelper.task(tasks)
   }
 
   @asyncAction *loadData(id: string) {

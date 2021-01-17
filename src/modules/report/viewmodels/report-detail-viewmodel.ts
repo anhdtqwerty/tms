@@ -1,4 +1,5 @@
 import { AppProvider } from '@/app-provider'
+import { excelHelper } from '@/helpers/excel-helper'
 import { textHelpers } from '@/helpers/text-helper'
 import { TaskModel, TaskRouteType, taskTypeToFilterParams } from '@/models/task-model'
 import _ from 'lodash'
@@ -16,6 +17,15 @@ export class ReportDetailViewModel {
 
   constructor(private provider: AppProvider) {
     //
+  }
+
+  async exportExcel() {
+    const tasks = await this.provider.api.task.find({
+      ...this._simpleParams,
+      ...this._advanceParams,
+      _limit: -1
+    })
+    excelHelper.task(tasks)
   }
 
   changeTaskType(taskType: TaskRouteType) {

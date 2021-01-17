@@ -1,4 +1,5 @@
 import { AppProvider } from '@/app-provider'
+import { excelHelper } from '@/helpers/excel-helper'
 import { TaskModel, TaskRouteType, taskTypeToFilterParams } from '@/models/task-model'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -31,6 +32,15 @@ export class TaskManagerViewModel {
   //   this.totalCount = results[0]
   //   this.tasks = results[1]
   // }
+
+  async exportExcel() {
+    const tasks = await this.provider.api.task.find({
+      ...this._simpleParams,
+      ...this._advanceParams,
+      _limit: -1
+    })
+    excelHelper.task(tasks)
+  }
 
   changeTaskType(taskType: TaskRouteType) {
     this._taskTypeParams = taskTypeToFilterParams(taskType)
