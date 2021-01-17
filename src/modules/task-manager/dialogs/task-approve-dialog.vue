@@ -69,6 +69,7 @@
 import { AppProvider } from '@/app-provider'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 import { createTaskBody, getLastRequest, TaskApprovementStatusType, TaskModel } from '@/models/task-model'
+import { mailBuilder } from '@/helpers/mail-helper'
 
 @Component({
   components: {
@@ -123,6 +124,7 @@ export default class TaskApproveDialog extends Vue {
 
         task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
 
+        this.providers.api.sendMail(mailBuilder.approveTask(task, this.approveStatusResult === 'approved'))
         this.$emit('success', task)
         this.syncedValue = false
         this.providers.snackbar.updateSuccess()

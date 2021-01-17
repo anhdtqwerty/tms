@@ -127,6 +127,7 @@ export default class UserAddDialog extends Vue {
             name: this.name,
             code: this.code,
             phone: this.phone,
+            email: this.email,
             data: {
               bod: this.bod,
               sex: this.sex,

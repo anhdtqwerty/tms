@@ -41,6 +41,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { mailBuilder } from '@/helpers/mail-helper'
 import { ComradeModel } from '@/models/comrade-model'
 import { TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
@@ -78,6 +79,7 @@ export default class TaskAssignDialog extends Vue {
           executedComrade: this.executedComradeId
         }
         task = await this.providers.api.task.update(this.task.id, task)
+        this.providers.api.sendMail(mailBuilder.assignTask(task))
         this.$emit('success', task)
         this.syncedValue = false
         this.providers.snackbar.updateSuccess()

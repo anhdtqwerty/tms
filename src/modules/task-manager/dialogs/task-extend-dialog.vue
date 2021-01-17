@@ -37,6 +37,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { mailBuilder } from '@/helpers/mail-helper'
 import { createTaskBody, TaskModel } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
@@ -104,6 +105,7 @@ export default class TaskExtendDialog extends Vue {
               explainState: this.reasonExtend
             })
           )
+          this.providers.api.sendMail(mailBuilder.extendTask(modifyTask))
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()

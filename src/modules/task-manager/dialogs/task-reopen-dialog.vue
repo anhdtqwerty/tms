@@ -32,6 +32,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { mailBuilder } from '@/helpers/mail-helper'
 import { createTaskBody, TaskModel } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
@@ -72,6 +73,7 @@ export default class TaskReopenDialog extends Vue {
               explainState: this.reasonReopen
             })
           )
+          this.providers.api.sendMail(mailBuilder.reopenTask(modifyTask))
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()

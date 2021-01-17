@@ -14,6 +14,7 @@ import Bowser from 'bowser'
 import { RequestModel } from '@/models/request-model'
 import { TaskStatModel } from '@/models/report-model'
 import { appProvider } from '@/app-provider'
+import { MailModel } from '@/helpers/mail-helper'
 
 export type ApiLogType = 'create' | 'delete' | 'update'
 export const apiLogNames: { [name in ApiLogType]: string } = {
@@ -238,5 +239,13 @@ export class ApiService {
     } catch (error) {
       console.error('getIpAddress', error)
     }
+  }
+
+  async sendMail(mail: MailModel) {
+    if (process.env.NODE_ENV !== 'development') {
+      const res = await this.axios.post('email', mail)
+      return res.data
+    }
+    return null
   }
 }

@@ -33,6 +33,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { mailBuilder } from '@/helpers/mail-helper'
 import { createTaskBody, TaskModel } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
@@ -111,6 +112,7 @@ export default class TaskRecoverDialog extends Vue {
             })
           )
 
+          this.providers.api.sendMail(mailBuilder.assignTask(tasks[0]))
           this.$emit('success', tasks[0])
           this.syncedValue = false
           this.form.reset()

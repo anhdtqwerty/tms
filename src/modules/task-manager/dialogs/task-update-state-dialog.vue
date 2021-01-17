@@ -35,6 +35,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { mailBuilder } from '@/helpers/mail-helper'
 import { RequestModel } from '@/models/request-model'
 import { createTaskBody, getLastRequest, TaskModel, TaskStateType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
@@ -125,6 +126,7 @@ export default class TaskUpdateStateDialog extends Vue {
               explainState: this.explain
             })
           )
+          this.providers.api.sendMail(mailBuilder.updateProgressTask(modifyTask))
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()

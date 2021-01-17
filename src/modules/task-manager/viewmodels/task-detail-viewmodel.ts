@@ -1,4 +1,5 @@
 import { AppProvider } from '@/app-provider'
+import { mailBuilder } from '@/helpers/mail-helper'
 import { textHelpers } from '@/helpers/text-helper'
 import { RequestModel } from '@/models/request-model'
 import { RequestType, TaskModel, TaskStateType } from '@/models/task-model'
@@ -23,6 +24,7 @@ export class TaskDetailViewModel {
   @asyncAction *loadData(id: string) {
     const api = this.provider.api
     this.task = yield api.task.findOne(id)
+    mailBuilder.createTask(this.task)
     this.search()
     this.loadHistories()
   }

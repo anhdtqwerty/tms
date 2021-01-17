@@ -10,6 +10,7 @@ export class ComradeModel {
   avatar?: string | FileModel
   code: string
   phone: string
+  email: string
   data: {
     sex: ComradeSex
     title: string

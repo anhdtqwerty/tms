@@ -83,6 +83,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { mailBuilder } from '@/helpers/mail-helper'
 import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
@@ -154,6 +155,7 @@ export default class TaskAddDialog extends Vue {
             }
           )
         )
+        this.providers.api.sendMail(mailBuilder.createTask(task))
         const files = await Promise.all(
           this.selectedFiles.map(f =>
             this.providers.api.uploadFiles(f, {
