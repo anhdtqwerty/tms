@@ -75,7 +75,7 @@ export default class TaskReturnDialog extends Vue {
             })
           )
           this.providers.api.sendMail(mailBuilder.returnTask(modifyTask))
-          this.$emit('success', modifyTask)
+          this.$emit('success', modifyTask, request)
           this.syncedValue = false
           this.form.reset()
           this.providers.snackbar.updateSuccess()

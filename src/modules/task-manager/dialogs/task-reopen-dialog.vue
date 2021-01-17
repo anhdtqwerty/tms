@@ -73,7 +73,7 @@ export default class TaskReopenDialog extends Vue {
             })
           )
           this.providers.api.sendMail(mailBuilder.reopenTask(modifyTask))
-          this.$emit('success', modifyTask)
+          this.$emit('success', modifyTask, request)
           this.syncedValue = false
           this.form.reset()
           this.providers.snackbar.updateSuccess()

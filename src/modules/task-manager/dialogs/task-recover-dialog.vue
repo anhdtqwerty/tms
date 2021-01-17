@@ -113,7 +113,7 @@ export default class TaskRecoverDialog extends Vue {
           )
 
           this.providers.api.sendMail(mailBuilder.assignTask(tasks[0]))
-          this.$emit('success', tasks[0])
+          this.$emit('success', tasks[0], request)
           this.syncedValue = false
           this.form.reset()
           this.providers.snackbar.updateSuccess()

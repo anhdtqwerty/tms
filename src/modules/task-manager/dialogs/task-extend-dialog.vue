@@ -106,7 +106,7 @@ export default class TaskExtendDialog extends Vue {
             })
           )
           this.providers.api.sendMail(mailBuilder.extendTask(modifyTask))
-          this.$emit('success', modifyTask)
+          this.$emit('success', modifyTask, request)
           this.syncedValue = false
           this.form.reset()
           this.providers.snackbar.success('Gia hạn thành công')

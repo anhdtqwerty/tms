@@ -2,7 +2,9 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>CẬP NHẬT TIẾN ĐỘ XỬ LÝ NHIỆM VỤ {{ task && task.code }}</v-toolbar-title>
+        <v-toolbar-title>
+          {{ this.isUpdateTask ? '' : 'SỬA ' }}CẬP NHẬT TIẾN ĐỘ XỬ LÝ NHIỆM VỤ {{ task && task.code }}
+        </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -50,7 +52,6 @@ import { mailBuilder } from '@/helpers/mail-helper'
 import { RequestModel } from '@/models/request-model'
 import { createTaskBody, getLastRequest, TaskModel, TaskStateType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
-import _ from 'lodash'
 import moment from 'moment'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
@@ -141,7 +142,7 @@ export default class TaskUpdateStateDialog extends Vue {
             })
           )
           this.providers.api.sendMail(mailBuilder.updateProgressTask(modifyTask))
-          this.$emit('success', modifyTask)
+          this.$emit('success', modifyTask, request)
           this.syncedValue = false
           this.form.reset()
           this.providers.snackbar.success(
