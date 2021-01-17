@@ -1,3 +1,4 @@
+import { textHelpers } from '@/helpers/text-helper'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
 import moment from 'moment'
@@ -152,7 +153,12 @@ export const taskRouteNames: { type: TaskRouteType; name: string }[] = Object.en
 )
 
 export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
-  return changes
+  // calculate keywords only
+  const t = { ...task, ...changes }
+  const keywords = [t.code, t.description, t.documentInfo, t.title, t.explainState]
+    .map(x => textHelpers.clearUnicode(x))
+    .join(' | ')
+  return { ...changes, keywords }
 }
 export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
   const unitPrams = authStore.unitParams
