@@ -108,7 +108,7 @@ export default class TaskEditDialog extends Vue {
   @Prop() task: TaskModel
 
   code = ''
-  publishedDate = ''
+  publishedDate: string = null
   title = ''
   priority: TaskPriorityType = null
   attachFile = ''
@@ -122,7 +122,7 @@ export default class TaskEditDialog extends Vue {
   state: TaskStateType = null
   supervisorIds: string[] = []
   supervisorUnitId = ''
-  expiredDate = ''
+  expiredDate: string = null
   selectedFiles: File[] = []
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
@@ -145,7 +145,7 @@ export default class TaskEditDialog extends Vue {
       this.supportedUnitIds = _.map(val.supportedUnits, 'id')
       this.supportedComradeIds = _.map(val.supportedComrades, 'id')
 
-      this.docsInfo = val.data.docsInfo
+      this.docsInfo = val.documentInfo
     }
   }
 
@@ -186,7 +186,7 @@ export default class TaskEditDialog extends Vue {
           supportedUnits: this.supportedUnitIds,
           supportedComrades: this.supportedComradeIds,
 
-          data: { ...(this.task.data ?? {}), docsInfo: this.docsInfo }
+          documentInfo: this.docsInfo
         }
         task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
 

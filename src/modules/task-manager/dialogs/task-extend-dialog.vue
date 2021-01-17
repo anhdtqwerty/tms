@@ -82,7 +82,7 @@ export default class TaskExtendDialog extends Vue {
             this.task.id,
             createTaskBody(this.task, {
               expiredDate: this.expireDateNew,
-              data: { ...(this.task.data ?? {}), explain: this.reasonExtend }
+              explainState: this.reasonExtend
             })
           )
           this.$emit('success', modifyTask)

@@ -71,7 +71,7 @@ export default class TaskReturnDialog extends Vue {
             createTaskBody(this.task, {
               state: 'waiting',
               executedComrade: null,
-              data: { ...(this.task.data ?? {}), explain: this.reasonReturn }
+              explainState: this.reasonReturn
             })
           )
           this.$emit('success', modifyTask)

@@ -248,7 +248,18 @@
     <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-approve-dialog :value.sync="showApproveDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-update-state-dialog :value.sync="showEditStateDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-update-state-dialog
+      :value.sync="showEditStateDialog"
+      :isUpdateTask="true"
+      :task="vm.task"
+      @success="vm.taskUpdated"
+    />
+    <task-update-state-dialog
+      :value.sync="showModifyRequest"
+      :task="vm.task"
+      :isUpdateTask="false"
+      @success="vm.taskUpdated"
+    />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-delete-dialog :value.sync="showDeletingDialog" :task="deletingTask" @success="vm.taskDeleted" />
   </v-container>
@@ -302,6 +313,8 @@ export default class TaskDetailPage extends Vue {
   deletingTask: TaskModel = null
   editingTask: TaskModel = null
 
+  showModifyRequest = false
+
   @Watch('$route.params.taskid', { immediate: true }) onTaskParamChange(val: any) {
     if (val) {
       this.vm.loadData(val)
@@ -350,6 +363,9 @@ export default class TaskDetailPage extends Vue {
         break
       case 'update':
         this.showEditStateDialog = true
+        break
+      case 'modify-update':
+        this.showModifyRequest = true
         break
       case 'reopen':
         this.showReopenDialog = true

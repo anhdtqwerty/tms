@@ -61,7 +61,7 @@ export const appRules = {
   taskDeadlineType: [rules.required],
   taskPublishedDate: [rules.required],
   taskExtendDate: [rules.required],
-  taskExecutedDate: [rules.required],
+  taskStartedDate: [rules.required],
   taskExplain: [rules.required, rules.maxLength(1000)]
 }
 

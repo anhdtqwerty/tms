@@ -70,7 +70,7 @@ export default class TaskReopenDialog extends Vue {
             createTaskBody(this.task, {
               state: 'waiting',
               status: null,
-              data: { ...(this.task.data ?? {}), explain: this.reasonReopen }
+              explainState: this.reasonReopen
             })
           )
           this.$emit('success', modifyTask)

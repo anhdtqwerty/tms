@@ -17,7 +17,7 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="code" disabled label="Số/ký hiệu" />
-              <date-picker-input :value.sync="executedDate" disabled label="Ngày thực hiện" />
+              <date-picker-input :value.sync="startedDate" disabled label="Ngày thực hiện" />
               <app-textarea v-model="description" rows="2" hide-details disabled label="Nội dung nhiệm vụ" />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
@@ -38,7 +38,7 @@
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field
                 hide-details
-                v-model="reason"
+                v-model="reasonReject"
                 v-if="approveStatusResult === 'reject'"
                 :rules="$appRules.taskExplain"
                 label="Lý do"
@@ -66,7 +66,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
-import { createTaskBody, TaskApprovementStatusType, TaskModel } from '@/models/task-model'
+import { createTaskBody, getLastRequest, TaskApprovementStatusType, TaskModel } from '@/models/task-model'
 
 @Component({
   components: {
@@ -81,10 +81,10 @@ export default class TaskApproveDialog extends Vue {
   @Prop() task: TaskModel
 
   code = ''
-  executedDate = ''
+  startedDate: string = null
   description = ''
-  reason = ''
-  approvementStatus = 'approving'
+  reasonReject = ''
+  approvementStatus: TaskApprovementStatusType = 'approving'
   explain = ''
   approveStatusResult: TaskApprovementStatusType = 'approved'
 
@@ -92,11 +92,15 @@ export default class TaskApproveDialog extends Vue {
     if (val) {
       this.code = val.code
       this.description = val.description
+      this.explain = val.explainState
+      const lastRequest = getLastRequest(val)
+      if (lastRequest) this.startedDate = lastRequest.startedDate
     }
   }
 
   async save() {
     if (this.form.validate()) {
+      // todo: file in request
       try {
         let task: TaskModel = {
           description: this.description,
