@@ -69,10 +69,11 @@ export default class TaskUpdateStateDialog extends Vue {
         this.state = this.task.state
       } else {
         const lastRequest = getLastRequest(this.task)
-        if (!lastRequest) this.syncedValue = false
-        else {
+        if (!lastRequest) {
+          this.syncedValue = false
+        } else {
           this.request = lastRequest
-          this.state = lastRequest.type
+          this.state = lastRequest.type as TaskStateType
           this.startedDate = lastRequest.startedDate
           this.explain = lastRequest.description
         }

@@ -1,11 +1,11 @@
 import moment from 'moment'
 import { ComradeModel } from './comrade-model'
-import { TaskModel, TaskStateType } from './task-model'
+import { RequestType, TaskModel } from './task-model'
 
 export interface RequestModel {
   id?: string
   title?: string
-  type?: TaskStateType
+  type?: RequestType
   startedDate?: string
   task?: string | TaskModel
   description?: string
@@ -16,6 +16,10 @@ export interface RequestModel {
   metadata?: {}
   updated_at?: string
   created_at?: string
+  data?: {
+    oldExpiredDate: string
+    newExpiredDate: string
+  }
 }
 
 export const canChangeRequest = (request: RequestModel) => {

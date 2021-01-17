@@ -106,15 +106,14 @@ export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name
       value
     } as any)
 )
-
-export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered' | 'returned'
+export type RequestType = TaskStateType | 'returned' | 'extended'
+export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered'
 export const taskStateNameMap: { [name in TaskStateType]: string } = {
   waiting: 'Chưa cập nhật tiến độ',
   todo: 'Chưa thực hiện',
   doing: 'Đang thực hiện',
   done: 'Đã hoàn thành',
-  recovered: 'Bị thu hồi',
-  returned: 'Trả lại'
+  recovered: 'Bị thu hồi'
 }
 export const taskStateNames: { type: TaskStateType; name: string }[] = Object.entries(taskStateNameMap).map(
   ([type, value]) =>
@@ -156,20 +155,25 @@ export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
 }
 export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
   const unitPrams = authStore.unitParams
-  const params: TaskModel = {}
+  const leaderParams: any = {}
+  if (authStore.isLeader) {
+    if (unitPrams.department) {
+      leaderParams.createdDepartment = unitPrams.department
+    } else if (unitPrams.unit) {
+      leaderParams.createdUnit = unitPrams.unit
+    } else if (unitPrams.ministry) {
+      leaderParams.createdUnit = unitPrams.ministry
+    }
+  }
+
+  let params: TaskModel = {}
   switch (taskType) {
     case 'task-created':
-      // if (authStore.isLeader) {
-      //   if (unitPrams.department) {
-      //     _.set(params, 'createdBy.department', unitPrams.department)
-      //   } else if (unitPrams.unit) {
-      //     _.set(params, 'createdBy.unit', unitPrams.unit)
-      //   } else if (unitPrams.ministry) {
-      //     _.set(params, 'createdBy.unit', unitPrams.ministry)
-      //   }
-      // } else {
-      params.createdBy = authStore.comrade.id
-      // }
+      if (authStore.isLeader) {
+        params = { ...params, ...leaderParams }
+      } else {
+        params.createdBy = authStore.comrade.id
+      }
       break
     case 'task-assigned':
       params.executedComrade = authStore.comrade.id
@@ -183,27 +187,36 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
     case 'task-expired':
       params.type = 'hasDeadline'
       _.set(params, 'expiredDate_lt', moment().toISOString())
+      if (authStore.isLeader) {
+        params = { ...params, ...leaderParams }
+      } else {
+        params.createdBy = authStore.comrade.id
+      }
       break
     case 'task-approving':
       params.state = 'done'
       params.status = 'approving'
-      // if (authStore.isLeader) {
-      //   if (unitPrams.department) {
-      //     _.set(params, 'createdBy.department', unitPrams.department)
-      //   } else if (unitPrams.unit) {
-      //     _.set(params, 'createdBy.unit', unitPrams.unit)
-      //   } else if (unitPrams.ministry) {
-      //     _.set(params, 'createdBy.unit', unitPrams.ministry)
-      //   }
-      // } else {
-      params.createdBy = authStore.comrade.id
-      // }
+      if (authStore.isLeader) {
+        params = { ...params, ...leaderParams }
+      } else {
+        params.createdBy = authStore.comrade.id
+      }
       break
     case 'task-done':
       params.state = 'done'
+      if (authStore.isLeader) {
+        params = { ...params, ...leaderParams }
+      } else {
+        params.createdBy = authStore.comrade.id
+      }
       break
     case 'task-unfinished':
       _.set(params, 'state_ne', 'done')
+      if (authStore.isLeader) {
+        params = { ...params, ...leaderParams }
+      } else {
+        params.createdBy = authStore.comrade.id
+      }
       break
     default:
       console.error(`not support ${taskType}`)
@@ -213,7 +226,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
 }
 
 export const getLastRequest = (task: TaskModel) => {
-  const updateTaskTypes: TaskStateType[] = ['doing', 'todo', 'waiting', 'done']
+  const updateTaskTypes: RequestType[] = ['doing', 'todo', 'waiting', 'done']
   const lastest = _.maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
   console.log('lastest', lastest)
 

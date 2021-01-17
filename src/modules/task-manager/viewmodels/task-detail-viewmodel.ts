@@ -1,7 +1,8 @@
 import { AppProvider } from '@/app-provider'
 import { textHelpers } from '@/helpers/text-helper'
-import { TaskModel } from '@/models/task-model'
-import { action, observable } from 'mobx'
+import { RequestModel } from '@/models/request-model'
+import { RequestType, TaskModel, TaskStateType } from '@/models/task-model'
+import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
 export class TaskDetailViewModel {
@@ -9,23 +10,25 @@ export class TaskDetailViewModel {
 
   @observable subtaskTotalCount = 0
   @observable subtasks: TaskModel[] = []
+
   private _advanceParams: any = {}
   private _simpleParams: any = {}
 
-  constructor(private provider: AppProvider) {}
+  @observable requestHistories: RequestModel[] = []
+
+  constructor(private provider: AppProvider) {
+    //
+  }
 
   @asyncAction *loadData(id: string) {
     const api = this.provider.api
-    const results = yield Promise.all([api.task.findOne(id)])
-    this.task = results[0]
+    this.task = yield api.task.findOne(id)
+    this.search()
+    this.loadHistories()
+  }
 
-    //subtask
-    const subtasksApi = yield Promise.all([
-      this.provider.api.task.count({ parent: id }),
-      this.provider.api.task.find<TaskModel>({ parent: id })
-    ])
-    this.subtaskTotalCount = subtasksApi[0]
-    this.subtasks = subtasksApi[1]
+  @asyncAction *loadHistories() {
+    this.requestHistories = yield this.provider.api.request.find({ task: this.task.id }, { _limit: 100 })
   }
 
   advanceSearch(params: any) {
@@ -33,6 +36,7 @@ export class TaskDetailViewModel {
     this._advanceParams = params
     this.search()
   }
+
   simpleSearch(keyword: string) {
     this._advanceParams = {}
     this._simpleParams = { keywords_contain: textHelpers.clearUnicode(keyword) }
@@ -43,6 +47,7 @@ export class TaskDetailViewModel {
     const params = {
       ...this._simpleParams,
       ...this._advanceParams,
+      parent: this.task.id,
       _start: (page - 1) * 25
     }
     const results = yield Promise.all([this.provider.api.task.find(params), this.provider.api.task.count(params)])
@@ -75,5 +80,20 @@ export class TaskDetailViewModel {
     } else {
       this.subtasks = this.subtasks.filter(t => t.id !== id)
     }
+  }
+
+  @computed get progressHistory() {
+    const progressTypes: RequestType[] = ['doing', 'done', 'recovered', 'todo']
+    return this.requestHistories.filter(r => progressTypes.includes(r.type))
+  }
+
+  @computed get returnedHistory() {
+    return this.requestHistories.filter(r => r.type === 'returned')
+  }
+
+  @computed get extendedHistory() {
+    return this.requestHistories.filter(r => r.type === 'extended')
+    // const progressTypes: TaskStateType[] = ['doing', 'done', 'recovered', 'todo']
+    // return this.requestHistories.filter(r => progressTypes.includes(r.type))
   }
 }

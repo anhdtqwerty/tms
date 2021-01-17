@@ -1,7 +1,6 @@
 import { AppProvider } from '@/app-provider'
 import { textHelpers } from '@/helpers/text-helper'
 import { TaskModel, TaskRouteType, taskTypeToFilterParams } from '@/models/task-model'
-import { authStore } from '@/stores/auth-store'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
