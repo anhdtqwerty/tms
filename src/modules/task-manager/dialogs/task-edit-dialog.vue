@@ -67,7 +67,7 @@
               />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
               <comrade-autocomplete :value.sync="supervisorId" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
-              <task-state-select :value.sync="state" hide-details label="Trạng thái" />
+              <task-state-select :value.sync="state" disabled hide-details label="Trạng thái" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">

@@ -41,11 +41,11 @@ export class AlertController {
 
   @action.bound ok() {
     this.show = false
-    this.config.callback(true)
+    this.config.callback && this.config.callback(true)
   }
 
   @action.bound cancel() {
     this.show = false
-    this.config.callback(false)
+    this.config.callback && this.config.callback(false)
   }
 }

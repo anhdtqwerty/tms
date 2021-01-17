@@ -200,6 +200,14 @@
             <template v-slot:[`item.updated_at`]="{ item }">
               {{ item.updated_at | ddmmyyyy }}
             </template>
+            <template v-slot:[`item.attachFile`]="{ item }">
+              <v-menu :close-on-content-click="true" transition="scale-transition" left>
+                <template v-slot:activator="{ on }">
+                  <div class="blue--text" v-on="on">Xem</div>
+                </template>
+                <task-files-component :container="item" />
+              </v-menu>
+            </template>
           </v-data-table>
         </v-card>
       </v-col>

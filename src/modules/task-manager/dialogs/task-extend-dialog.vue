@@ -107,7 +107,7 @@ export default class TaskExtendDialog extends Vue {
           this.$emit('success', modifyTask)
           this.syncedValue = false
           this.form.reset()
-          this.providers.snackbar.updateSuccess()
+          this.providers.snackbar.success('Gia hạn thành công')
         } catch (error) {
           await api.request.delete(request.id)
           throw error
