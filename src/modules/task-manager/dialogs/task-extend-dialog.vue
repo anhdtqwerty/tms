@@ -14,7 +14,7 @@
           <v-row>
             <v-col cols="12" class="pa-2">
               <app-text-field disabled v-model="code" label="Số/ký hiệu" />
-              <date-picker-input disabled v-model="expireDateOld" label="Hạn xử lý" />
+              <date-picker-input disabled :value="expireDateOld" label="Hạn xử lý" />
               <date-picker-input :value.sync="expireDateNew" :rules="$appRules.taskExtendDate" label="Hạn xử lý mới" />
               <app-textarea v-model="description" rows="2" disabled label="Nội dung nhiệm vụ" />
               <app-text-field v-model="reasonExtend" :rules="$appRules.taskExplain" label="Lý do gia hạn" />
@@ -75,9 +75,13 @@ export default class TaskExtendDialog extends Vue {
 
         const request = await api.request.create({
           description: this.reasonExtend,
-          type: this.task.state,
+          type: 'extended',
           requestor: authStore.comrade.id,
-          task: this.task.id
+          task: this.task.id,
+          data: {
+            oldExpiredDate: this.task.expiredDate,
+            newExpiredDate: this.expireDateNew
+          }
         })
 
         if (this.selectedFiles.length) {

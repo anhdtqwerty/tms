@@ -136,20 +136,20 @@
           <v-data-table
             item-key="id"
             :items="vm.subtasks"
-            :headers="subtaskHeaders"
+            :headers="selectedHeaders"
+            :server-items-length="vm.subtaskTotalCount"
+            @update:page="vm.search($event)"
             :footer-props="{ itemsPerPageOptions: [25] }"
             mobile-breakpoint="0"
           >
             <template v-slot:top>
-              <task-search-component title="Danh sách các nhiệm vụ chia nhỏ">
+              <task-search-component
+                title="Danh sách các nhiệm vụ"
+                @advance-search="vm.advanceSearch($event)"
+                @simple-search="vm.simpleSearch($event)"
+              >
                 <div>
-                  <v-btn medium color="success" class="mr-8" @click="showAddSubtask = true">
-                    <v-icon left>add</v-icon>
-                    <span>Thêm</span>
-                  </v-btn>
-                  <v-btn icon small>
-                    <v-icon>settings</v-icon>
-                  </v-btn>
+                  <table-header-setting :headers="subtaskHeaders" @change="selectedHeaders = $event" />
                   <v-btn icon small>
                     <v-icon>more_horiz</v-icon>
                   </v-btn>
@@ -159,10 +159,6 @@
 
             <template v-slot:[`item.actions`]="{ item }">
               <task-sub-action-menu :task="item" @task-action="subTaskAction($event, item)" />
-            </template>
-
-            <template v-slot:[`item.state`]="{ item }">
-              <task-state-component :state="item.state" />
             </template>
           </v-data-table>
         </v-card>
@@ -175,6 +171,7 @@
         <v-card>
           <v-data-table
             item-key="id"
+            :items="vm.progressHistory"
             :headers="processingHeaders"
             :footer-props="{ itemsPerPageOptions: [25] }"
             mobile-breakpoint="0"
@@ -188,6 +185,15 @@
                 </v-row>
               </v-container>
             </template>
+            <template v-slot:[`item.type`]="{ item }">
+              <task-state-component :state="item.type" />
+            </template>
+            <template v-slot:[`item.startedDate`]="{ item }">
+              {{ item.startedDate | ddmmyyyy }}
+            </template>
+            <template v-slot:[`item.updated_at`]="{ item }">
+              {{ item.updated_at | ddmmyyyy }}
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
@@ -199,6 +205,7 @@
         <v-card>
           <v-data-table
             item-key="id"
+            :items="vm.returnedHistory"
             :headers="taskReturnHistoryHeaders"
             :footer-props="{ itemsPerPageOptions: [25] }"
             mobile-breakpoint="0"
@@ -212,6 +219,9 @@
                 </v-row>
               </v-container>
             </template>
+            <template v-slot:[`item.created_at`]="{ item }">
+              {{ item.created_at | ddmmyyyy }}
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
@@ -223,6 +233,7 @@
         <v-card>
           <v-data-table
             item-key="id"
+            :items="vm.extendedHistory"
             :headers="taskExtendDateHistoryHeaders"
             :footer-props="{ itemsPerPageOptions: [25] }"
             mobile-breakpoint="0"
@@ -235,6 +246,15 @@
                   </v-col>
                 </v-row>
               </v-container>
+            </template>
+            <template v-slot:[`item.created_at`]="{ item }">
+              {{ item.created_at | ddmmyyyy }}
+            </template>
+            <template v-slot:[`item.data.oldExpiredDate`]="{ item }">
+              {{ $_get(item, 'data.oldExpiredDate') | ddmmyyyy }}
+            </template>
+            <template v-slot:[`item.data.newExpiredDate`]="{ item }">
+              {{ $_get(item, 'data.newExpiredDate') | ddmmyyyy }}
             </template>
           </v-data-table>
         </v-card>
@@ -380,40 +400,40 @@ export default class TaskDetailPage extends Vue {
     }
   }
 
+  selectedHeaders: any[] = []
   subtaskHeaders = [
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
-    { text: 'Hạn xử lý', value: 'expireDate', sortable: false },
+    { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
     { text: 'ĐV thực hiện', value: 'supervisorUnit.title', sortable: true },
-    { text: 'CV thực hiện', value: 'executeStaff', sortable: false },
+    { text: 'CV thực hiện', value: 'executedComrade.title', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
-    { text: 'Tình hình thực hiện', value: 'data.explain', sortable: false },
+    { text: 'Tình hình thực hiện', value: 'explainState', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]
 
   processingHeaders = [
-    { text: 'Ngày cập nhật', value: 'updateDate', sortable: false },
-    { text: 'Ngày thực hiện', value: 'executeDate', sortable: false },
-    { text: 'Trạng thái', value: 'status', sortable: true },
-    { text: 'Nội dung nhiệm vụ', value: 'descriptionTask', sortable: false },
-    { text: 'Người cập nhật', value: 'updator', sortable: false },
+    { text: 'Ngày cập nhật', value: 'updated_at', sortable: false },
+    { text: 'Ngày thực hiện', value: 'startedDate', sortable: false },
+    { text: 'Trạng thái', value: 'type', sortable: true },
+    { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
+    { text: 'Người cập nhật', value: 'requestor.name', sortable: false },
     { text: 'File đính kèm', value: 'attachFile', sortable: false }
   ]
 
   taskReturnHistoryHeaders = [
-    { text: 'Nội dung nhiệm vụ', value: 'descriptionTask', sortable: false },
-    { text: 'Ngày trả lại', value: 'returnDate', sortable: false },
-    { text: 'Lý do trả lại', value: 'returnReason', sortable: false },
-    { text: 'Nội dung', value: 'description', sortable: true },
-    { text: 'Đơn vị gửi trả', value: 'returnUnit', sortable: false },
-    { text: 'Người gửi trả', value: 'returner', sortable: false }
+    { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
+    { text: 'Ngày trả lại', value: 'created_at', sortable: false },
+    { text: 'Lý do trả lại', value: 'description', sortable: false },
+    { text: 'Đơn vị gửi trả', value: 'requestor.unit.title', sortable: false },
+    { text: 'Người gửi trả', value: 'requestor.name', sortable: false }
   ]
 
   taskExtendDateHistoryHeaders = [
-    { text: 'Nội dung nhiệm vụ', value: 'descriptionTask', sortable: false },
-    { text: 'Ngày gia hạn', value: 'extendDate', sortable: false },
-    { text: 'Hạn xử lý cũ', value: 'oldExpireDate', sortable: false },
-    { text: 'Hạn xử lý mới', value: 'newExpireDate', sortable: true },
-    { text: 'Lý do gia hạn', value: 'extendReason', sortable: false }
+    { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
+    { text: 'Ngày gia hạn', value: 'created_at', sortable: false },
+    { text: 'Hạn xử lý cũ', value: 'data.oldExpiredDate', sortable: false },
+    { text: 'Hạn xử lý mới', value: 'data.newExpiredDate', sortable: true },
+    { text: 'Lý do gia hạn', value: 'description', sortable: false }
   ]
 }
 </script>

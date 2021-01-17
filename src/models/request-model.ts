@@ -16,6 +16,10 @@ export interface RequestModel {
   metadata?: {}
   updated_at?: string
   created_at?: string
+  data?: {
+    oldExpiredDate: string
+    newExpiredDate: string
+  }
 }
 
 export const canChangeRequest = (request: RequestModel) => {

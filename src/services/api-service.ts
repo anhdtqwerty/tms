@@ -70,17 +70,9 @@ export class ApiHandler<T> {
     return res.data
   }
 
-  async find<T>(
-    params?: any,
-    settings: boolean | { _sort?: string; _limit?: number; _start?: number } = true
-  ): Promise<T[]> {
-    if (settings !== false) {
-      const settingDefault = { _sort: 'created_at:DESC', _limit: 25, _start: 0 }
-      params = { ...settingDefault, ...(params ?? {}) }
-      if (typeof settings === 'object') {
-        params = { ...settings, ...params }
-      }
-    }
+  async find<T>(params?: any, settings: { _sort?: string; _limit?: number; _start?: number } = {}): Promise<T[]> {
+    const settingDefault = { _sort: 'created_at:DESC', _limit: 25, _start: 0 }
+    params = { ...settingDefault, ...settings, ...(params ?? {}) }
     const res = await this.axios.get(this.route, { params })
     return res.data
   }
