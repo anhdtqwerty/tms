@@ -15,7 +15,7 @@
               <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên phòng ban" />
               <app-text-field v-if="unit" :value="unit.title" disabled label="Đơn vị cha" />
               <unit-autocomplete v-else :value.sync="selectedUnitId" label="Đơn vị cha" />
-              <app-text-field v-model="code" :rules="$appRules.unitCode" label="Mã phòng ban" />
+              <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã phòng ban" />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email phòng ban" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại phòng ban" />
               <app-textarea v-model="description" label="Mô tả" counter="5000" />

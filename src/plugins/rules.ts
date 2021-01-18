@@ -33,17 +33,17 @@ export const rules = {
     !v ||
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v) ||
     'Phải có ít nhất 8 ký tự, gồm có: chữ hoa, chữ thường, số, ký tự đặc biệt',
-  nospace: (v: string) => !v || !/ /.test(v.trim()) || 'Space is not allowed',
+  nospace: (v: string) => !v || !/ /.test(v.trim()) || 'Chứa khoảng cách',
   notEmpty: (v: string) => !Array.isArray(v) || !!v.length || 'Required'
 }
 
 export const appRules = {
   unitName: [rules.required, rules.maxLength(250)],
-  unitCode: [rules.required, rules.maxLength(20)],
+  unitCode: [rules.required, rules.maxLength(20), rules.nospace],
   unitEmail: [rules.required, rules.email],
   unitPhone: [rules.phone],
   comradeName: [rules.required, rules.maxLength(100)],
-  comradeCode: [rules.required, rules.maxLength(20)],
+  comradeCode: [rules.required, rules.maxLength(20), rules.nospace],
   comradeSex: [rules.required],
   comradeBod: [rules.required],
   comradeGroup: [rules.required],
@@ -51,7 +51,7 @@ export const appRules = {
   comradeEmail: [rules.required, rules.email, rules.maxLength(100)],
   comradePhone: [rules.phone],
   comradeUnit: [rules.required],
-  comradeUsername: [rules.required, rules.maxLength(20)],
+  comradeUsername: [rules.required, rules.maxLength(20), rules.nospace],
   comradePassword: [rules.required, rules.maxLength(20), rules.password],
 
   //task

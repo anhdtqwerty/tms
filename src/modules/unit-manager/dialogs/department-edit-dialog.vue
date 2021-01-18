@@ -15,7 +15,7 @@
               <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên đơn vị" />
               <app-text-field v-if="unit" :value="unit.title" disabled label="Đơn vị cha" />
               <unit-autocomplete v-else :value.sync="selectedUnitId" label="Đơn vị cha" />
-              <app-text-field v-model="code" :rules="$appRules.unitCode" label="Mã đơn vị" />
+              <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã đơn vị" />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
               <app-textarea v-model="description" label="Mô tả" counter="5000" />

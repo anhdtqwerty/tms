@@ -14,7 +14,7 @@
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2 pb-6">Thông tin người dùng</div>
               <app-text-field v-model="name" label="Họ và Tên" :rules="$appRules.comradeName" />
-              <app-text-field v-model="code" label="Mã cán bộ" :rules="$appRules.comradeCode" />
+              <app-text-field v-model="code" label="Mã cán bộ" :rules="$appRules.comradeCode" @keydown.space.prevent />
               <v-radio-group label="Giới tính" row class="ma-0 pa-0" v-model="sex" :rules="$appRules.comradeSex">
                 <v-radio label="Nam" value="male" />
                 <v-radio label="Nữ" value="female" />
@@ -32,7 +32,12 @@
                 <v-switch class="ma-0" v-model="active" />
               </div>
               <div class="text-subtitle-2 pb-6">Thông tin đăng nhập</div>
-              <app-text-field v-model="username" label="Tên truy cập" :rules="$appRules.comradeUsername" />
+              <app-text-field
+                v-model="username"
+                label="Tên truy cập"
+                :rules="$appRules.comradeUsername"
+                @keydown.space.prevent
+              />
               <app-text-field
                 label="Mật khẩu"
                 v-model="password"

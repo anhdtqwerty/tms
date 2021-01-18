@@ -13,7 +13,7 @@
           <v-row>
             <v-col cols="12" class="pa-2">
               <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên đơn vị" />
-              <app-text-field v-model="code" :rules="$appRules.unitCode" label="Mã đơn vị" />
+              <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã đơn vị" />
               <app-text-field value="BỘ GIAO THÔNG VẬN TẢI" label="Đơn vị cha" disabled />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
