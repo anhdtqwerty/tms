@@ -10,11 +10,13 @@ class AuthStore {
   @observable jwt = localStorage.getItem('jwt')
   @observable user: UserModel = null
   @observable comrade: ComradeModel = null
+  saveAccount = false
 
   constructor() {
     const userRaw = localStorage.getItem('user')
     if (userRaw) {
       this.user = JSON.parse(userRaw)
+      this.saveAccount = true
     }
     const comradeRaw = localStorage.getItem('comrade')
     if (comradeRaw) {
@@ -23,21 +25,21 @@ class AuthStore {
     reaction(
       () => this.jwt,
       jwt => {
-        if (jwt) localStorage.setItem('jwt', jwt)
+        if (jwt && this.saveAccount) localStorage.setItem('jwt', jwt)
         else localStorage.removeItem('jwt')
       }
     )
     reaction(
       () => this.user,
       user => {
-        if (user) localStorage.setItem('user', JSON.stringify(user))
+        if (user && this.saveAccount) localStorage.setItem('user', JSON.stringify(user))
         else localStorage.removeItem('user')
       }
     )
     reaction(
       () => this.comrade,
       comrade => {
-        if (comrade) localStorage.setItem('comrade', JSON.stringify(comrade))
+        if (comrade && this.saveAccount) localStorage.setItem('comrade', JSON.stringify(comrade))
         else localStorage.removeItem('comrade')
       }
     )
@@ -49,7 +51,8 @@ class AuthStore {
     this.comrade = null
   }
 
-  @action onLogin(jwt: string, user: UserModel) {
+  @action onLogin(saveAccount: boolean, jwt: string, user: UserModel) {
+    this.saveAccount = saveAccount
     this.jwt = jwt
     this.user = user
     this.comrade = user?.comrade as ComradeModel

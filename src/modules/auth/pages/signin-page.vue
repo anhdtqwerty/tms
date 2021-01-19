@@ -28,7 +28,7 @@
       />
     </v-form>
     <div class="d-flex justify-space-between align-center">
-      <v-checkbox label="Nhớ tài khoản" />
+      <v-checkbox label="Nhớ tài khoản" v-model="saveAccount" />
       <router-link to="forgot-password" class="text-decoration-none primary--text">Quên mật khẩu</router-link>
     </div>
     <v-card-actions class="d-flex flex-column justify-content-center">
@@ -48,10 +48,11 @@ export default class SignInPage extends Vue {
   @Provide() viewmodel = new SigninViewModel(this.providers)
 
   showPassword = false
+  saveAccount = false
 
   submit() {
     if ((this.$refs.form as any).validate()) {
-      this.viewmodel.handleLogin()
+      this.viewmodel.handleLogin(this.saveAccount)
     }
   }
 }

@@ -40,7 +40,7 @@
                       label="Phòng ban"
                       :unitRequired="false"
                     />
-                    <userstatus-select class="mr-4" hide-details label="Trạng thái" />
+                    <userstatus-select class="mr-4" hide-details label="Trạng thái" :value.sync="searchStatus" />
                     <v-btn depressed color="primary" medium @click="search">
                       <span class="d-none d-md-flex">Tìm kiếm</span>
                       <v-icon dark>search</v-icon>

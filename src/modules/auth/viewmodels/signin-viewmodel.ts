@@ -22,11 +22,11 @@ export class SigninViewModel {
     this.password = value
   }
 
-  @asyncAction *handleLogin() {
+  @asyncAction *handleLogin(saveAccount: boolean) {
     try {
       const res = yield this._api.login(this.username, this.password)
       const { jwt, user } = res
-      authStore.onLogin(jwt, user)
+      authStore.onLogin(saveAccount, jwt, user)
       try {
         const comrade = yield this._api.comarde.findOne(_.get(user, 'comrade.id'))
         authStore.changeComrade(comrade)
