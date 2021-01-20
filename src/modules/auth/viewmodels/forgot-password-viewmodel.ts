@@ -6,8 +6,14 @@ export class ForgotPasswordViewModel {
 
   constructor(public providers: AppProvider) {}
 
-  @action submit() {
-    this.providers.api.forgotPassword(this.email)
+  async submit() {
+    try {
+      await this.providers.api.forgotPassword(this.email)
+      await this.providers.alert.confirm('Thành công', 'Hãy check email của bạn')
+      this.providers.router.replace('/signin')
+    } catch (error) {
+      this.providers.snackbar.commonError(error)
+    }
   }
 
   @action.bound changeEmail(value: string) {

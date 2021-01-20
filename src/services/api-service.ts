@@ -188,11 +188,12 @@ export class ApiService {
   }
 
   async resetPassword(code: string, password: string, passwordConfirmation: string): Promise<any> {
-    await this.axios.post('/auth/reset-password', {
+    const res = await this.axios.post('/auth/reset-password', {
       code,
       password,
       passwordConfirmation
     })
+    return res.data
   }
 
   async uploadFiles(files: any, relation?: { model: ApiTableType; modelId: string; modelField: string }) {

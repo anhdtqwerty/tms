@@ -1,6 +1,6 @@
 <template>
   <div align="start">
-    <v-form ref="form">
+    <v-form ref="form" @submit.prevent>
       <div class="text-h4 primary--text font-weight-bold text-center text-uppercase">
         quên mật khẩu
       </div>

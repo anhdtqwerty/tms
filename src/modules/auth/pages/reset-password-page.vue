@@ -29,10 +29,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-
+import { AppProvider } from '@/app-provider'
+import { Component, Inject, Vue } from 'vue-property-decorator'
+import { get } from 'lodash'
+import { ComradeModel } from '@/models/comrade-model'
 @Component
 export default class ResetPasswordPage extends Vue {
+  @Inject() providers!: AppProvider
+
   code = ''
   password = ''
   passwordConfirmation = ''
@@ -43,8 +47,27 @@ export default class ResetPasswordPage extends Vue {
     return (password: string) => password === this.passwordConfirmation || 'Không chính xác'
   }
 
-  submit() {
-    this.$router.replace('signin')
+  created() {
+    this.code = this.$route.query.code as string
+  }
+
+  async submit() {
+    if ((this.$refs.form as any).validate()) {
+      const { api, authStore, snackbar } = this.providers
+      try {
+        const { jwt, user } = await api.resetPassword(this.code, this.password, this.passwordConfirmation)
+        authStore.onLogin(false, jwt, user)
+        try {
+          const comrade = await api.comarde.findOne<ComradeModel>(get(user, 'comrade.id'))
+          authStore.changeComrade(comrade)
+        } catch (error) {
+          console.error('handleLogin get comrade', error)
+        }
+        this.providers.router.replace('dashboard')
+      } catch (error) {
+        snackbar.commonError(error)
+      }
+    }
   }
 }
 </script>
