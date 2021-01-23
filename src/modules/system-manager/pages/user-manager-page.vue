@@ -31,8 +31,8 @@
                     <table-header-setting :headers="headers" @change="selectedHeaders = $event" />
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
-                    <app-text-field class="mr-4" hide-details v-model="searchName" label="Mã cán bộ" />
-                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Họ và tên" />
+                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã cán bộ" />
+                    <app-text-field class="mr-4" hide-details v-model="searchName" label="Họ và tên" />
                     <department-autocomplete
                       class="mr-4"
                       hide-details

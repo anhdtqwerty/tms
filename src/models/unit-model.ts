@@ -1,3 +1,4 @@
+import { ComradeModel } from './comrade-model'
 import { DepartmentModel } from './department-model'
 
 export interface UnitModel {
@@ -12,4 +13,5 @@ export interface UnitModel {
   data?: {}
   departments?: string[] | DepartmentModel[]
   type: 'ministry' | 'unit'
+  comrades?: (string | ComradeModel)[]
 }
