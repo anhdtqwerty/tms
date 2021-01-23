@@ -50,7 +50,7 @@ export class UnitManagerViewModel {
     if (ok) {
       try {
         if (!unit.comrades.length && !unit.departments.length) {
-          const task = yield this.provider.api.task.find<TaskModel>(
+          const tasks = yield this.provider.api.task.find<TaskModel>(
             {
               _where: {
                 _or: [
@@ -64,7 +64,7 @@ export class UnitManagerViewModel {
             { _limit: 1 }
           )
 
-          if (task) {
+          if (tasks.length) {
             this.provider.snackbar.error('Không thể xóa Đơn vị này.')
           } else {
             yield this.provider.api.unit.delete(unit.id)
