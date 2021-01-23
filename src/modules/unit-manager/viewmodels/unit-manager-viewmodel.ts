@@ -1,4 +1,5 @@
 import { AppProvider } from '@/app-provider'
+import { TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -47,8 +48,25 @@ export class UnitManagerViewModel {
       'Bạn có CHẮC CHẮN muốn xóa đơn vị này? Bạn sẽ không thể hoàn tác thao tác.'
     )
     if (ok) {
-      this.provider.api.unit.delete(unit.id)
-      this.units = this.units.filter(u => u.id !== unit.id)
+      try {
+        const allTasks = (yield this.provider.api.task.find<TaskModel>()) as TaskModel[]
+        const taskContainUnit = allTasks.some(
+          t =>
+            (t.createdUnit as string) === unit.id ||
+            (t.executedUnit as string) === unit.id ||
+            (t.supportedUnits as string[]).includes(unit.id) ||
+            (t.supervisorUnit as string) === unit.id
+        )
+
+        if (unit.comrades.length || taskContainUnit) {
+          this.provider.snackbar.error('Không thể xóa Đơn vị này.')
+        } else {
+          this.provider.api.unit.delete(unit.id)
+          this.units = this.units.filter(u => u.id !== unit.id)
+        }
+      } catch (error) {
+        this.provider.snackbar.commonError(error)
+      }
     }
   }
 }
