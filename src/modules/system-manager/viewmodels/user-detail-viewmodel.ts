@@ -1,6 +1,7 @@
 import { AppProvider } from '@/app-provider'
 import { UserModel } from '@/models/auth-model'
 import { ComradeModel } from '@/models/comrade-model'
+import { TaskModel } from '@/models/task-model'
 import _ from 'lodash'
 import { observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -46,18 +47,34 @@ export class UserDetailViewModel {
   }
 
   @asyncAction *deleteComrade() {
-    if (
-      yield this.provider.alert.confirm(
-        'Xác nhận xóa',
-        'Bạn có CHẮC CHẮN muốn xóa Nhân viên này? Bạn sẽ không thể hoàn tác thao tác.'
-      )
-    ) {
-      yield Promise.all([
-        this.provider.api.comarde.delete(this.comrade.id),
-        this.provider.api.user.delete((this.comrade.user as UserModel).id)
-      ])
-      this.provider.router.go(-1)
-      this.provider.snackbar.deleteSuccess()
+    const { api, snackbar, alert, router } = this.provider
+
+    if (yield alert.confirmDelete('Nhân viên')) {
+      try {
+        const tasks = yield api.task.find<TaskModel>(
+          {
+            _where: {
+              _or: [
+                { createdBy: this.comrade.id },
+                { executedComrade: this.comrade.id },
+                { supportedComrades_contains: this.comrade.id },
+                { supervisors_contains: this.comrade.id }
+              ]
+            }
+          },
+          { _limit: 1 }
+        )
+
+        if (tasks.length) {
+          snackbar.commonDeleteError('Nhân viên')
+        } else {
+          yield Promise.all([api.comarde.delete(this.comrade.id), api.user.delete((this.comrade.user as UserModel).id)])
+          router.go(-1)
+          snackbar.deleteSuccess()
+        }
+      } catch (error) {
+        snackbar.commonError(error)
+      }
     }
   }
 

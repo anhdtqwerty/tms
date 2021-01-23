@@ -43,14 +43,12 @@ export class UnitManagerViewModel {
   }
 
   @asyncAction *deleteUnit(unit: UnitModel) {
-    const ok = yield this.provider.alert.confirm(
-      'XÁC NHẬN XÓA',
-      'Bạn có CHẮC CHẮN muốn xóa đơn vị này? Bạn sẽ không thể hoàn tác thao tác.'
-    )
-    if (ok) {
+    const { api, snackbar, alert } = this.provider
+
+    if (yield alert.confirmDelete('Đơn vị')) {
       try {
         if (!unit.comrades.length && !unit.departments.length) {
-          const tasks = yield this.provider.api.task.find<TaskModel>(
+          const tasks = yield api.task.find<TaskModel>(
             {
               _where: {
                 _or: [
@@ -65,16 +63,16 @@ export class UnitManagerViewModel {
           )
 
           if (tasks.length) {
-            this.provider.snackbar.error('Không thể xóa Đơn vị này.')
+            snackbar.commonDeleteError('Đơn vị')
           } else {
-            yield this.provider.api.unit.delete(unit.id)
+            yield api.unit.delete(unit.id)
             this.units = this.units.filter(u => u.id !== unit.id)
           }
         } else {
-          this.provider.snackbar.error('Không thể xóa Đơn vị này.')
+          snackbar.commonDeleteError('Đơn vị')
         }
       } catch (error) {
-        this.provider.snackbar.commonError(error)
+        snackbar.commonError(error)
       }
     }
   }

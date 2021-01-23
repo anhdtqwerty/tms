@@ -65,6 +65,16 @@ export class SnackBarController {
     this.show = true
   }
 
+  @action commonDeleteError(type: string) {
+    this.config = {
+      icon: 'error',
+      message: `Không thể xóa ${type} này`,
+      color: 'error',
+      timeout: 8000
+    }
+    this.show = true
+  }
+
   @action close() {
     this.show = false
   }
