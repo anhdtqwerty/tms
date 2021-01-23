@@ -163,7 +163,10 @@ export class ApiService {
           Authorization: `Bearer ${jwtToken}`
         }
       }
-      config.paramsSerializer = params => qs.stringify(params, { arrayFormat: 'repeat' })
+      config.paramsSerializer = params => {
+        if ('_where' in params) return qs.stringify(params)
+        else return qs.stringify(params, { arrayFormat: 'repeat' })
+      }
       return config
     })
     this.axios.interceptors.response.use(

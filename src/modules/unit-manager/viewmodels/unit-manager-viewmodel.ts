@@ -49,20 +49,29 @@ export class UnitManagerViewModel {
     )
     if (ok) {
       try {
-        const allTasks = (yield this.provider.api.task.find<TaskModel>()) as TaskModel[]
-        const taskContainUnit = allTasks.some(
-          t =>
-            (t.createdUnit as string) === unit.id ||
-            (t.executedUnit as string) === unit.id ||
-            (t.supportedUnits as string[]).includes(unit.id) ||
-            (t.supervisorUnit as string) === unit.id
-        )
+        if (!unit.comrades.length && !unit.departments.length) {
+          const task = yield this.provider.api.task.find<TaskModel>(
+            {
+              _where: {
+                _or: [
+                  { createdUnit: unit.id },
+                  { executedUnit: unit.id },
+                  { supportedUnits_contains: unit.id },
+                  { supervisorUnit: unit.id }
+                ]
+              }
+            },
+            { _limit: 1 }
+          )
 
-        if (unit.comrades.length || taskContainUnit) {
-          this.provider.snackbar.error('Không thể xóa Đơn vị này.')
+          if (task) {
+            this.provider.snackbar.error('Không thể xóa Đơn vị này.')
+          } else {
+            yield this.provider.api.unit.delete(unit.id)
+            this.units = this.units.filter(u => u.id !== unit.id)
+          }
         } else {
-          this.provider.api.unit.delete(unit.id)
-          this.units = this.units.filter(u => u.id !== unit.id)
+          this.provider.snackbar.error('Không thể xóa Đơn vị này.')
         }
       } catch (error) {
         this.provider.snackbar.commonError(error)
