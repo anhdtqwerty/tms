@@ -1,6 +1,7 @@
 import { AppProvider } from '@/app-provider'
 import { UserModel } from '@/models/auth-model'
 import { ComradeModel } from '@/models/comrade-model'
+import { RequestModel } from '@/models/request-model'
 import { TaskModel } from '@/models/task-model'
 import _ from 'lodash'
 import { observable } from 'mobx'
@@ -51,26 +52,46 @@ export class UserDetailViewModel {
 
     if (yield alert.confirmDelete('Nhân viên')) {
       try {
-        const tasks = yield api.task.find<TaskModel>(
-          {
-            _where: {
-              _or: [
-                { createdBy: this.comrade.id },
-                { executedComrade: this.comrade.id },
-                { supportedComrades_contains: this.comrade.id },
-                { supervisors_contains: this.comrade.id }
-              ]
-            }
-          },
-          { _limit: 1 }
-        )
+        if (!this.comrade.department && !this.comrade.unit && !this.comrade.position) {
+          const tasks = yield api.task.find<TaskModel>(
+            {
+              _where: {
+                _or: [
+                  { createdBy: this.comrade.id },
+                  { executedComrade: this.comrade.id },
+                  { supportedComrades_contains: this.comrade.id },
+                  { supervisors_contains: this.comrade.id }
+                ]
+              }
+            },
+            { _limit: 1 }
+          )
 
-        if (tasks.length) {
-          snackbar.commonDeleteError('Nhân viên')
+          if (!tasks.length) {
+            const request = yield api.request.find<RequestModel>(
+              {
+                _where: {
+                  _or: [{ requestor: this.comrade.id }, { approver: this.comrade.id }]
+                }
+              },
+              { _limit: 1 }
+            )
+
+            if (!request.length) {
+              yield Promise.all([
+                api.comarde.delete(this.comrade.id),
+                api.user.delete((this.comrade.user as UserModel).id)
+              ])
+              router.go(-1)
+              snackbar.deleteSuccess()
+            } else {
+              snackbar.commonDeleteError('Nhân viên')
+            }
+          } else {
+            snackbar.commonDeleteError('Nhân viên')
+          }
         } else {
-          yield Promise.all([api.comarde.delete(this.comrade.id), api.user.delete((this.comrade.user as UserModel).id)])
-          router.go(-1)
-          snackbar.deleteSuccess()
+          snackbar.commonDeleteError('Nhân viên')
         }
       } catch (error) {
         snackbar.commonError(error)

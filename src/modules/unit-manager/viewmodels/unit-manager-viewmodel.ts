@@ -62,11 +62,11 @@ export class UnitManagerViewModel {
             { _limit: 1 }
           )
 
-          if (tasks.length) {
-            snackbar.commonDeleteError('Đơn vị')
-          } else {
+          if (!tasks.length) {
             yield api.unit.delete(unit.id)
             this.units = this.units.filter(u => u.id !== unit.id)
+          } else {
+            snackbar.commonDeleteError('Đơn vị')
           }
         } else {
           snackbar.commonDeleteError('Đơn vị')

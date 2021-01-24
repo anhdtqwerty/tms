@@ -1,4 +1,5 @@
 import { AppProvider } from '@/app-provider'
+import { TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -36,13 +37,37 @@ export class MinistryManagerViewModel {
   }
 
   @asyncAction *deleteUnit(unit: UnitModel) {
-    const ok = yield this.provider.alert.confirm(
-      'XÁC NHẬN XÓA',
-      'Bạn có CHẮC CHẮN muốn xóa đơn vị này? Bạn sẽ không thể hoàn tác thao tác.'
-    )
-    if (ok) {
-      this.provider.api.unit.delete(unit.id)
-      this.units = this.units.filter(u => u.id !== unit.id)
+    const { api, snackbar, alert } = this.provider
+
+    if (yield alert.confirmDelete('Đơn vị')) {
+      try {
+        if (!unit.comrades.length && !unit.departments.length) {
+          const tasks = yield api.task.find<TaskModel>(
+            {
+              _where: {
+                _or: [
+                  { createdUnit: unit.id },
+                  { executedUnit: unit.id },
+                  { supportedUnits_contains: unit.id },
+                  { supervisorUnit: unit.id }
+                ]
+              }
+            },
+            { _limit: 1 }
+          )
+
+          if (!tasks.length) {
+            yield api.unit.delete(unit.id)
+            this.units = this.units.filter(u => u.id !== unit.id)
+          } else {
+            snackbar.commonDeleteError('Đơn vị')
+          }
+        } else {
+          snackbar.commonDeleteError('Đơn vị')
+        }
+      } catch (error) {
+        snackbar.commonError(error)
+      }
     }
   }
 }
