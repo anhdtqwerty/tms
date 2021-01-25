@@ -36,12 +36,7 @@ export class MinistryManagerViewModel {
   }
 
   @asyncAction *deleteUnit(unit: UnitModel) {
-    const ok = yield this.provider.alert.confirm(
-      'XÁC NHẬN XÓA',
-      'Bạn có CHẮC CHẮN muốn xóa đơn vị này? Bạn sẽ không thể hoàn tác thao tác.'
-    )
-    if (ok) {
-      this.provider.api.unit.delete(unit.id)
+    if (yield this.provider.api.deleteUnit(unit)) {
       this.units = this.units.filter(u => u.id !== unit.id)
     }
   }

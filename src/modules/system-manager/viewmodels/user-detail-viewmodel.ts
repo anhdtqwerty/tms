@@ -1,6 +1,8 @@
 import { AppProvider } from '@/app-provider'
 import { UserModel } from '@/models/auth-model'
 import { ComradeModel } from '@/models/comrade-model'
+import { RequestModel } from '@/models/request-model'
+import { TaskModel } from '@/models/task-model'
 import _ from 'lodash'
 import { observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -46,18 +48,8 @@ export class UserDetailViewModel {
   }
 
   @asyncAction *deleteComrade() {
-    if (
-      yield this.provider.alert.confirm(
-        'Xác nhận xóa',
-        'Bạn có CHẮC CHẮN muốn xóa Nhân viên này? Bạn sẽ không thể hoàn tác thao tác.'
-      )
-    ) {
-      yield Promise.all([
-        this.provider.api.comarde.delete(this.comrade.id),
-        this.provider.api.user.delete((this.comrade.user as UserModel).id)
-      ])
+    if (yield this.provider.api.deleteComrade(this.comrade)) {
       this.provider.router.go(-1)
-      this.provider.snackbar.deleteSuccess()
     }
   }
 

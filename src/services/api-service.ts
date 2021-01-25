@@ -268,4 +268,113 @@ export class ApiService {
     const res = await this.axios.put('config', model)
     return res.data
   }
+
+  async deleteUnit(unit: UnitModel) {
+    const { api, snackbar, alert } = appProvider
+
+    if (await alert.confirmDelete('Đơn vị')) {
+      try {
+        if (!unit.comrades.length && !unit.departments.length) {
+          const tasks = await api.task.find<TaskModel>(
+            {
+              _where: {
+                _or: [
+                  { createdUnit: unit.id },
+                  { executedUnit: unit.id },
+                  { supportedUnits_contains: unit.id },
+                  { supervisorUnit: unit.id }
+                ]
+              }
+            },
+            { _limit: 1 }
+          )
+
+          if (!tasks.length) {
+            await api.unit.delete(unit.id)
+            snackbar.deleteSuccess()
+            return true
+          } else {
+            snackbar.commonDeleteError('Đơn vị')
+          }
+        } else {
+          snackbar.commonDeleteError('Đơn vị')
+        }
+      } catch (error) {
+        snackbar.commonError(error)
+      }
+
+      return false
+    }
+  }
+
+  async deleteDepartment(department: DepartmentModel) {
+    const { api, snackbar, alert } = appProvider
+
+    if (await alert.confirmDelete('Phòng ban')) {
+      try {
+        if (!department.comrades.length && !department.unit) {
+          await api.department.delete(department.id)
+          snackbar.deleteSuccess()
+          return true
+        } else {
+          snackbar.commonDeleteError('Phòng ban')
+        }
+      } catch (error) {
+        snackbar.commonError(error)
+      }
+
+      return false
+    }
+  }
+
+  async deleteComrade(comrade: ComradeModel) {
+    const { api, snackbar, alert } = appProvider
+
+    if (await alert.confirmDelete('Nhân viên')) {
+      try {
+        if (!comrade.department && !comrade.unit && !comrade.position) {
+          const tasks = await api.task.find<TaskModel>(
+            {
+              _where: {
+                _or: [
+                  { createdBy: comrade.id },
+                  { executedComrade: comrade.id },
+                  { supportedComrades_contains: comrade.id },
+                  { supervisors_contains: comrade.id }
+                ]
+              }
+            },
+            { _limit: 1 }
+          )
+
+          if (!tasks.length) {
+            const request = await api.request.find<RequestModel>(
+              {
+                _where: {
+                  _or: [{ requestor: comrade.id }, { approver: comrade.id }]
+                }
+              },
+              { _limit: 1 }
+            )
+
+            if (!request.length) {
+              await Promise.all([api.comarde.delete(comrade.id), api.user.delete((comrade.user as UserModel).id)])
+              snackbar.deleteSuccess()
+              return true
+            } else {
+              snackbar.commonDeleteError('Nhân viên')
+            }
+          } else {
+            snackbar.commonDeleteError('Nhân viên')
+          }
+        } else {
+          snackbar.commonDeleteError('Nhân viên')
+        }
+      } catch (error) {
+        snackbar.commonError(error)
+      }
+
+      return false
+    }
+  }
 }

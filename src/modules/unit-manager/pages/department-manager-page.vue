@@ -55,7 +55,7 @@
               <v-icon v-if="$permission('system.unit.edit')" small class="mr-2" @click="editDepartment(item)">
                 mdi-pencil
               </v-icon>
-              <v-icon v-if="$permission('system.unit.delete')" small @click="deleteUnit(item)">
+              <v-icon v-if="$permission('system.unit.delete')" small @click="viewmodel.deleteDepartment(item)">
                 mdi-delete
               </v-icon>
             </template>
@@ -106,14 +106,6 @@ export default class DepartmentManagerPage extends Vue {
     { text: 'Mô tả', value: 'description', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]
-
-  async deleteUnit() {
-    // const ok = await this.providers.alert.confirm(
-    //   'XÁC NHẬN XÓA',
-    //   'Bạn có Chắc Chắn muốn xóa Nhân viên này? Bạn sẽ không thể hoàn tác thao tác.'
-    // )
-    // console.log(ok)
-  }
 
   editDepartment(item: DepartmentModel) {
     this.editingDepartment = item

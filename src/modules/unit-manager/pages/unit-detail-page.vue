@@ -68,8 +68,11 @@
               </text-link>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-icon v-if="$permission('system.unit.edit')" small @click="editDepartment(item)">
+              <v-icon v-if="$permission('system.unit.edit')" small class="mr-2" @click="editDepartment(item)">
                 mdi-pencil
+              </v-icon>
+              <v-icon v-if="$permission('system.unit.delete')" small @click="viewmodel.deleteDepartment(item)">
+                mdi-delete
               </v-icon>
             </template>
           </v-data-table>
@@ -119,7 +122,7 @@ export default class UnitDetailPage extends Vue {
     { text: 'Số điện thoại', value: 'phone', sortable: false },
     { text: 'Email', value: 'email', sortable: true },
     { text: 'Mô tả', value: 'description', sortable: false },
-    { value: 'actions', sortable: false }
+    { value: 'actions', sortable: false, align: 'right' }
   ]
 
   // userHeaders = [

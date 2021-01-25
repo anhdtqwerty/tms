@@ -31,4 +31,10 @@ export class UnitDetailViewModel {
   @action.bound departmentUpdated(department: DepartmentModel) {
     this.departments = this.departments.map(d => (d.id === department.id ? department : d))
   }
+
+  @action.bound *deleteDepartment(department: DepartmentModel) {
+    if (yield this.provider.api.deleteDepartment(department)) {
+      this.departments = this.departments.filter(d => d.id !== department.id)
+    }
+  }
 }
