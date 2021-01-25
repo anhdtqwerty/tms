@@ -271,10 +271,15 @@ export class ApiService {
 
   async deleteUnit(unit: UnitModel) {
     const { api, snackbar, alert } = appProvider
+    let err = ''
 
     if (await alert.confirmDelete('Đơn vị')) {
       try {
-        if (!unit.comrades.length && !unit.departments.length) {
+        if (unit.comrades.length) {
+          err = 'người dùng'
+        } else if (unit.departments.length) {
+          err = 'phòng ban cấp dưới'
+        } else {
           const tasks = await api.task.find<TaskModel>(
             {
               _where: {
@@ -289,15 +294,17 @@ export class ApiService {
             { _limit: 1 }
           )
 
-          if (!tasks.length) {
-            await api.unit.delete(unit.id)
-            snackbar.deleteSuccess()
-            return true
-          } else {
-            snackbar.commonDeleteError('Đơn vị')
+          if (tasks.length) {
+            err = 'nhiệm vụ được giao'
           }
+        }
+
+        if (err) {
+          snackbar.commonDeleteUnitError(err)
         } else {
-          snackbar.commonDeleteError('Đơn vị')
+          await api.unit.delete(unit.id)
+          snackbar.deleteSuccess()
+          return true
         }
       } catch (error) {
         snackbar.commonError(error)
@@ -312,12 +319,54 @@ export class ApiService {
 
     if (await alert.confirmDelete('Phòng ban')) {
       try {
-        if (!department.comrades.length && !department.unit) {
+        if (!department.comrades.length) {
           await api.department.delete(department.id)
           snackbar.deleteSuccess()
           return true
         } else {
-          snackbar.commonDeleteError('Phòng ban')
+          snackbar.commonDeleteDepartmentError()
+        }
+      } catch (error) {
+        snackbar.commonError(error)
+      }
+    }
+
+    return false
+  }
+
+  async deleteComrade(comrade: ComradeModel) {
+    const { api, snackbar, alert } = appProvider
+    let err = ''
+
+    if (await alert.confirmDelete('Nhân viên')) {
+      try {
+        const tasks = await api.task.find<TaskModel>(
+          {
+            _where: {
+              _or: [
+                { createdBy: comrade.id },
+                { executedComrade: comrade.id },
+                { supportedComrades_contains: comrade.id },
+                { supervisors_contains: comrade.id }
+              ]
+            }
+          },
+          { _limit: 1 }
+        )
+
+        if (tasks.length) {
+          err = 'nhiệm vụ'
+        } else {
+          const request = await api.request.find<RequestModel>({ requestor: comrade.id, _limit: 1 })
+          if (request.length) err = 'lịch sử hoạt động'
+        }
+
+        if (err) {
+          snackbar.commonDeleteComradeError(err)
+        } else {
+          await Promise.all([api.comarde.delete(comrade.id), api.user.delete((comrade.user as UserModel).id)])
+          snackbar.deleteSuccess()
+          return true
         }
       } catch (error) {
         snackbar.commonError(error)
@@ -327,48 +376,18 @@ export class ApiService {
     }
   }
 
-  async deleteComrade(comrade: ComradeModel) {
+  async deletePosition(position: PositionModel) {
     const { api, snackbar, alert } = appProvider
 
-    if (await alert.confirmDelete('Nhân viên')) {
+    if (await alert.confirmDelete('Vai trò')) {
       try {
-        if (!comrade.department && !comrade.unit && !comrade.position) {
-          const tasks = await api.task.find<TaskModel>(
-            {
-              _where: {
-                _or: [
-                  { createdBy: comrade.id },
-                  { executedComrade: comrade.id },
-                  { supportedComrades_contains: comrade.id },
-                  { supervisors_contains: comrade.id }
-                ]
-              }
-            },
-            { _limit: 1 }
-          )
-
-          if (!tasks.length) {
-            const request = await api.request.find<RequestModel>(
-              {
-                _where: {
-                  _or: [{ requestor: comrade.id }, { approver: comrade.id }]
-                }
-              },
-              { _limit: 1 }
-            )
-
-            if (!request.length) {
-              await Promise.all([api.comarde.delete(comrade.id), api.user.delete((comrade.user as UserModel).id)])
-              snackbar.deleteSuccess()
-              return true
-            } else {
-              snackbar.commonDeleteError('Nhân viên')
-            }
-          } else {
-            snackbar.commonDeleteError('Nhân viên')
-          }
+        const comrades = await api.comarde.find<ComradeModel>({ position: position.id, _limit: 1 })
+        if (comrades.length) {
+          snackbar.commonDeletePositionError()
         } else {
-          snackbar.commonDeleteError('Nhân viên')
+          await api.position.delete(position.id)
+          snackbar.deleteSuccess()
+          return true
         }
       } catch (error) {
         snackbar.commonError(error)

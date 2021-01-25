@@ -47,20 +47,8 @@ export class RoleManagerViewModel {
   }
 
   @asyncAction *deleteRole(item: PositionModel) {
-    const { api, snackbar, alert } = this.provider
-
-    if (yield alert.confirmDelete('Vai trò')) {
-      try {
-        const comrades = yield api.comarde.find<ComradeModel>({ position: item.id, _limit: 1 })
-        if (comrades.length) {
-          snackbar.commonDeleteError('Vai trò')
-        } else {
-          yield api.position.delete(item.id)
-          this.roles = this.roles.filter(r => r.id !== item.id)
-        }
-      } catch (error) {
-        snackbar.commonError(error)
-      }
+    if (yield this.provider.api.deletePosition(item)) {
+      this.roles = this.roles.filter(r => r.id !== item.id)
     }
   }
 }
