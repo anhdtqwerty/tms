@@ -25,7 +25,7 @@
               <v-icon v-if="$permission('system.role.edit')" small class="mr-2" @click="edit(item)">
                 mdi-pencil
               </v-icon>
-              <v-icon small @click="viewmodel.deleteRole(item)">
+              <v-icon v-if="$permission('system.role.delete')" small @click="viewmodel.deleteRole(item)">
                 mdi-delete
               </v-icon>
             </template>
