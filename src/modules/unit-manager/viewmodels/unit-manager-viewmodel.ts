@@ -1,5 +1,4 @@
 import { AppProvider } from '@/app-provider'
-import { TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -43,37 +42,8 @@ export class UnitManagerViewModel {
   }
 
   @asyncAction *deleteUnit(unit: UnitModel) {
-    const { api, snackbar, alert } = this.provider
-
-    if (yield alert.confirmDelete('Đơn vị')) {
-      try {
-        if (!unit.comrades.length && !unit.departments.length) {
-          const tasks = yield api.task.find<TaskModel>(
-            {
-              _where: {
-                _or: [
-                  { createdUnit: unit.id },
-                  { executedUnit: unit.id },
-                  { supportedUnits_contains: unit.id },
-                  { supervisorUnit: unit.id }
-                ]
-              }
-            },
-            { _limit: 1 }
-          )
-
-          if (!tasks.length) {
-            yield api.unit.delete(unit.id)
-            this.units = this.units.filter(u => u.id !== unit.id)
-          } else {
-            snackbar.commonDeleteError('Đơn vị')
-          }
-        } else {
-          snackbar.commonDeleteError('Đơn vị')
-        }
-      } catch (error) {
-        snackbar.commonError(error)
-      }
+    if (yield this.provider.api.deleteUnit(unit)) {
+      this.units = this.units.filter(u => u.id !== unit.id)
     }
   }
 }

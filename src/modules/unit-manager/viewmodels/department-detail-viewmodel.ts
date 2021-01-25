@@ -30,51 +30,8 @@ export class DepartmentDetailViewModel {
   }
 
   @asyncAction *deleteComrade(comrade: ComradeModel) {
-    const { api, snackbar, alert, router } = this.provider
-
-    if (yield alert.confirmDelete('Nhân viên')) {
-      try {
-        if (!comrade.department && !comrade.unit && !comrade.position) {
-          const tasks = yield api.task.find<TaskModel>(
-            {
-              _where: {
-                _or: [
-                  { createdBy: comrade.id },
-                  { executedComrade: comrade.id },
-                  { supportedComrades_contains: comrade.id },
-                  { supervisors_contains: comrade.id }
-                ]
-              }
-            },
-            { _limit: 1 }
-          )
-
-          if (!tasks.length) {
-            const request = yield api.request.find<RequestModel>(
-              {
-                _where: {
-                  _or: [{ requestor: comrade.id }, { approver: comrade.id }]
-                }
-              },
-              { _limit: 1 }
-            )
-
-            if (!request.length) {
-              yield Promise.all([api.comarde.delete(comrade.id), api.user.delete((comrade.user as UserModel).id)])
-              router.go(-1)
-              snackbar.deleteSuccess()
-            } else {
-              snackbar.commonDeleteError('Nhân viên')
-            }
-          } else {
-            snackbar.commonDeleteError('Nhân viên')
-          }
-        } else {
-          snackbar.commonDeleteError('Nhân viên')
-        }
-      } catch (error) {
-        snackbar.commonError(error)
-      }
+    if (yield this.provider.api.deleteComrade(comrade)) {
+      this.comrades = this.comrades.filter(c => c.id !== c.id)
     }
   }
 
