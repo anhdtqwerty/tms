@@ -1,22 +1,24 @@
 <template>
-  <v-breadcrumbs class="pa-0" :items="items"
-    ><template v-slot:divider>
-      <v-icon>mdi-chevron-right</v-icon>
-    </template></v-breadcrumbs
-  >
+  <div class="d-flex">
+    <div class="d-flex" v-for="(item, index) in items" :key="index">
+      <router-link :to="item.path" class="breadcrumb-item">{{ item.text }}</router-link>
+      <span v-if="index < items.length - 1" class="mx-2">/</span>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
   computed: {
     items() {
-      return this.$route.matched.map(item => {
+      return this.$route.matched.map((item, index) => {
         const title = item.meta && item.meta.title ? item.meta.title : ''
-        const path = item.path ? item.path : '/'
+        const path = item.path || '/dashboard'
+        console.log(path)
         return {
           text: title,
           disabled: false,
-          href: path
+          path: this.$route.matched.length - 1 !== index ? path : ''
         }
       })
     }
@@ -24,7 +26,8 @@ export default {
 }
 </script>
 <style scope>
-.v-breadcrumbs__item {
+.breadcrumb-item {
   color: #9e9e9e !important;
+  text-decoration: none;
 }
 </style>

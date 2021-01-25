@@ -21,6 +21,7 @@
                 <div class="font-weight-medium">
                   <div>Mã đơn vị: {{ viewmodel.unit.code }}</div>
                   <div>Điện thoại: {{ viewmodel.unit.phone }}</div>
+                  <div>Địa chỉ: {{ viewmodel.unit | _get('data.address') }}</div>
                   <div>Email: {{ viewmodel.unit.email }}</div>
                 </div>
               </v-col>
@@ -120,6 +121,7 @@ export default class UnitDetailPage extends Vue {
     { text: 'Tên phòng ban', value: 'title', sortable: false },
     { text: 'Mã phòng ban', value: 'code', sortable: false },
     { text: 'Số điện thoại', value: 'phone', sortable: false },
+    { text: 'Địa chỉ', value: 'data.address', sortable: false },
     { text: 'Email', value: 'email', sortable: true },
     { text: 'Mô tả', value: 'description', sortable: false },
     { value: 'actions', sortable: false, align: 'right' }

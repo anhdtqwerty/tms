@@ -10,7 +10,9 @@ export interface UnitModel {
   description: string
   config?: {}
   metadata?: {}
-  data?: {}
+  data?: {
+    address?: string
+  }
   departments?: string[] | DepartmentModel[]
   type: 'ministry' | 'unit'
   comrades?: (string | ComradeModel)[]
