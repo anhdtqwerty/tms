@@ -300,7 +300,7 @@ export class ApiService {
         }
 
         if (err) {
-          snackbar.commonDeleteUnitError(err)
+          snackbar.error(`Đơn vị đã có ${err}, bạn không thể xóa`)
         } else {
           await api.unit.delete(unit.id)
           snackbar.deleteSuccess()
@@ -324,7 +324,7 @@ export class ApiService {
           snackbar.deleteSuccess()
           return true
         } else {
-          snackbar.commonDeleteDepartmentError()
+          snackbar.error('Phòng ban đã có người dùng, bạn không thể xóa')
         }
       } catch (error) {
         snackbar.commonError(error)
@@ -362,7 +362,7 @@ export class ApiService {
         }
 
         if (err) {
-          snackbar.commonDeleteComradeError(err)
+          snackbar.error(`Người dùng đã có ${err}, bạn không thể xóa`)
         } else {
           await Promise.all([api.comarde.delete(comrade.id), api.user.delete((comrade.user as UserModel).id)])
           snackbar.deleteSuccess()
@@ -383,7 +383,7 @@ export class ApiService {
       try {
         const comrades = await api.comarde.find<ComradeModel>({ position: position.id, _limit: 1 })
         if (comrades.length) {
-          snackbar.commonDeletePositionError()
+          snackbar.error('Vai trò đã có người dùng, bạn không thể xóa')
         } else {
           await api.position.delete(position.id)
           snackbar.deleteSuccess()

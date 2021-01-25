@@ -65,46 +65,6 @@ export class SnackBarController {
     this.show = true
   }
 
-  @action commonDeleteUnitError(type: string) {
-    this.config = {
-      icon: 'error',
-      message: `Đơn vị đã có ${type}, bạn không thể xóa`,
-      color: 'error',
-      timeout: 8000
-    }
-    this.show = true
-  }
-
-  @action commonDeleteComradeError(type: string) {
-    this.config = {
-      icon: 'error',
-      message: `Người dùng đã có ${type}, bạn không thể xóa`,
-      color: 'error',
-      timeout: 8000
-    }
-    this.show = true
-  }
-
-  @action commonDeleteDepartmentError() {
-    this.config = {
-      icon: 'error',
-      message: `Phòng ban đã có người dùng, bạn không thể xóa`,
-      color: 'error',
-      timeout: 8000
-    }
-    this.show = true
-  }
-
-  @action commonDeletePositionError() {
-    this.config = {
-      icon: 'error',
-      message: `Vai trò đã có người dùng, bạn không thể xóa`,
-      color: 'error',
-      timeout: 8000
-    }
-    this.show = true
-  }
-
   @action close() {
     this.show = false
   }
