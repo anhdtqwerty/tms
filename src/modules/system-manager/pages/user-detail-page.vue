@@ -193,8 +193,6 @@ export default class UserDetailPage extends Vue {
 
   async save() {
     if (!this.form.validate()) return
-    const user = { ...(this.viewmodel.comrade.user as UserModel), blocked: !this.active }
-
     const comrade = {
       ...this.viewmodel.comrade,
       name: this.name,
@@ -212,7 +210,7 @@ export default class UserDetailPage extends Vue {
       user: _.get(this.viewmodel.comrade.user, 'id')
     }
 
-    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade, user)) {
+    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade, !this.active)) {
       this.selectedAvatarFile = null
     }
   }
