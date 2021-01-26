@@ -19,9 +19,11 @@ export class UserDetailViewModel {
     this.comrade = yield this.provider.api.comarde.findOne(comradeId)
   }
 
-  @asyncAction *updateComrade(avatarFile: File, comrade: ComradeModel) {
+  @asyncAction *updateComrade(avatarFile: File, comrade: ComradeModel, blocked: boolean) {
     const api = this.provider.api
     try {
+      this.comrade.user = yield api.user.update((this.comrade.user as UserModel).id, { blocked: blocked })
+
       const oldAvatarId = _.get(this.comrade.avatar, 'id')
       let newAvatarId
       if (avatarFile) {

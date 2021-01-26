@@ -210,7 +210,7 @@ export default class UserDetailPage extends Vue {
       user: _.get(this.viewmodel.comrade.user, 'id')
     }
 
-    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade)) {
+    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade, !this.active)) {
       this.selectedAvatarFile = null
     }
   }
