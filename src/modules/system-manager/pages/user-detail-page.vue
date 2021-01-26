@@ -49,7 +49,7 @@
                   :outlined="false"
                   class="mb-4"
                 />
-                <app-text-field outlined disabled v-model="email" label="Email" autocomplete="new-password" />
+                <app-text-field outlined v-model="email" label="Email" autocomplete="new-password" />
                 <app-text-field outlined v-model="phone" label="Số điện thoại" :rules="$appRules.comradePhone" />
                 <div class="d-flex">
                   <div class="text-body-2">Người dùng hoạt động</div>
@@ -193,6 +193,8 @@ export default class UserDetailPage extends Vue {
 
   async save() {
     if (!this.form.validate()) return
+    const user = { ...(this.viewmodel.comrade.user as UserModel), email: this.email, blocked: !this.active }
+
     const comrade = {
       ...this.viewmodel.comrade,
       name: this.name,
@@ -207,10 +209,11 @@ export default class UserDetailPage extends Vue {
       unit: this.unit,
       position: this.position,
       group: this.group,
+      email: this.email,
       user: _.get(this.viewmodel.comrade.user, 'id')
     }
 
-    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade)) {
+    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade, user)) {
       this.selectedAvatarFile = null
     }
   }

@@ -17,7 +17,7 @@ export class UserManagerViewModel {
     if (name) input = { ...input, name_contains: name }
     if (code) input = { ...input, code_contains: code }
     if (department) input = { ...input, department }
-    input = { ...input, 'user.blocked': blocked }
+    if (typeof blocked === 'boolean') input = { ...input, 'user.blocked': blocked }
     this._searchParams = input
     this.searchPage()
   }

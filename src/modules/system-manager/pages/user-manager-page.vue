@@ -101,7 +101,7 @@ export default class UserMangerPage extends Vue {
     { text: 'Ngày sinh', value: 'data.bod', sortable: true, defaultHide: true },
     { text: 'Tên truy cập', value: 'user.username', sortable: true },
     { text: 'Phòng ban', value: 'department.title', sortable: true },
-    { text: 'Chức vị', value: 'position.title', sortable: true },
+    { text: 'Chức vụ', value: 'data.title', sortable: true },
     { text: 'Email', value: 'user.email', sortable: false },
     {
       text: 'Số Điện Thoại',
