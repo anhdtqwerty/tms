@@ -14,12 +14,7 @@
             <v-col cols="12" class="pa-2">
               <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên đơn vị" />
               <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã đơn vị" />
-              <app-text-field
-                v-if="unit && unit.type === 'unit'"
-                value="BỘ GIAO THÔNG VẬN TẢI"
-                label="Đơn vị cha"
-                disabled
-              />
+              <app-text-field v-if="unit && unit.type === 'unit'" v-model="ministry" label="Đơn vị cha" disabled />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
               <app-textarea v-model="description" label="Mô tả" counter="5000" />
@@ -58,14 +53,16 @@ export default class UnitEditDialog extends Vue {
   email = ''
   phone = ''
   description = ''
+  ministry = ''
 
-  @Watch('unit', { immediate: true }) onUnitChanged(val: UnitModel) {
+  @Watch('value', { immediate: true }) onValueChanged(val: string) {
     if (val) {
-      this.title = val.title
-      this.code = val.code
-      this.email = val.email
-      this.phone = val.phone
-      this.description = val.description
+      this.title = this.unit.title
+      this.code = this.unit.code
+      this.email = this.unit.email
+      this.phone = this.unit.phone
+      this.description = this.unit.description
+      this.ministry = 'BỘ GIAO THÔNG VẬN TẢI'
     }
   }
 

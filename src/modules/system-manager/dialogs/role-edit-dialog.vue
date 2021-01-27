@@ -271,11 +271,11 @@ export default class RoleEditDialog extends Vue {
     { text: 'Xem', value: 'config.read', sortable: false, class: 'grey lighten-4 px-2', align: 'center', width: '90' }
   ]
 
-  @Watch('role') onUnitChanged(val: PositionModel) {
+  @Watch('value', { immediate: true }) onValueChanged(val: string) {
     if (val) {
-      this.name = val.title
-      this.description = val.description
-      this.configs = generatePermissionConfigs(val.config)
+      this.name = this.role.title
+      this.description = this.role.description
+      this.configs = generatePermissionConfigs(this.role.config)
     }
   }
 
