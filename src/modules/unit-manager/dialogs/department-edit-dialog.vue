@@ -64,15 +64,15 @@ export default class UnitEditDialog extends Vue {
   description = ''
   address = ''
 
-  @Watch('department', { immediate: true }) onUnitChanged(val: DepartmentModel) {
-    if (val) {
-      this.title = val.title
-      this.selectedUnitId = (val.unit as UnitModel).id
-      this.code = val.code
-      this.email = val.email
-      this.phone = val.phone
-      this.description = val.description
-      this.address = val.data?.address ?? ''
+  @Watch('value', { immediate: true }) onValueChanged(val: string) {
+    if (val && this.department) {
+      this.title = this.department.title
+      this.selectedUnitId = (this.department.unit as UnitModel).id
+      this.code = this.department.code
+      this.email = this.department.email
+      this.phone = this.department.phone
+      this.description = this.department.description
+      this.address = this.department.data?.address ?? ''
     }
   }
 
@@ -84,7 +84,6 @@ export default class UnitEditDialog extends Vue {
   async save() {
     if (this.form.validate()) {
       let department: DepartmentModel = {
-        ...this.department,
         unit: this.unit?.id ?? this.selectedUnitId,
         title: this.title,
         code: this.code,

@@ -14,7 +14,7 @@
             <v-col cols="12" class="pa-2">
               <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên đơn vị" />
               <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã đơn vị" />
-              <app-text-field value="BỘ GIAO THÔNG VẬN TẢI" label="Đơn vị cha" disabled />
+              <app-text-field v-model="ministry" label="Đơn vị cha" disabled />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
               <app-text-field v-model="address" :rules="$appRules.unitAddress" label="Địa chỉ" />
@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
-import { Component, Inject, PropSync, Ref, Vue } from 'vue-property-decorator'
+import { Component, Inject, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component
 export default class UnitAddDialog extends Vue {
@@ -50,6 +50,11 @@ export default class UnitAddDialog extends Vue {
   phone = ''
   description = ''
   address = ''
+  ministry = ''
+
+  @Watch('value', { immediate: true }) onValueChanged(val: string) {
+    if (val) this.ministry = 'BỘ GIAO THÔNG VẬN TẢI'
+  }
 
   async save() {
     if (this.form.validate()) {

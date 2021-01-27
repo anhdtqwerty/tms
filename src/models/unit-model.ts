@@ -14,6 +14,6 @@ export interface UnitModel {
     address?: string
   }
   departments?: string[] | DepartmentModel[]
-  type: 'ministry' | 'unit'
+  type?: 'ministry' | 'unit'
   comrades?: (string | ComradeModel)[]
 }

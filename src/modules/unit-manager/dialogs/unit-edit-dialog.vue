@@ -14,12 +14,7 @@
             <v-col cols="12" class="pa-2">
               <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên đơn vị" />
               <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã đơn vị" />
-              <app-text-field
-                v-if="unit && unit.type === 'unit'"
-                value="BỘ GIAO THÔNG VẬN TẢI"
-                label="Đơn vị cha"
-                disabled
-              />
+              <app-text-field v-if="unit && unit.type === 'unit'" v-model="ministry" label="Đơn vị cha" disabled />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
               <app-text-field v-model="address" :rules="$appRules.unitAddress" label="Địa chỉ" />
@@ -59,16 +54,18 @@ export default class UnitEditDialog extends Vue {
   email = ''
   phone = ''
   description = ''
+  ministry = ''
   address = ''
 
-  @Watch('unit', { immediate: true }) onUnitChanged(val: UnitModel) {
-    if (val) {
-      this.title = val.title
-      this.code = val.code
-      this.email = val.email
-      this.phone = val.phone
-      this.description = val.description
-      this.address = val.data?.address ?? ''
+  @Watch('value', { immediate: true }) onValueChanged(val: string) {
+    if (val && this.unit) {
+      this.title = this.unit.title
+      this.code = this.unit.code
+      this.email = this.unit.email
+      this.phone = this.unit.phone
+      this.description = this.unit.description
+      this.address = this.unit.data?.address ?? ''
+      this.ministry = 'BỘ GIAO THÔNG VẬN TẢI'
     }
   }
 
@@ -80,7 +77,6 @@ export default class UnitEditDialog extends Vue {
   async save() {
     if (this.form.validate()) {
       let unit: UnitModel = {
-        ...this.unit,
         title: this.title,
         code: this.code,
         email: this.email,
