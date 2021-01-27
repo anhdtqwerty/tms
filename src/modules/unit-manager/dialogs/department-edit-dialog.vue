@@ -84,7 +84,6 @@ export default class UnitEditDialog extends Vue {
   async save() {
     if (this.form.validate()) {
       let department: DepartmentModel = {
-        ...this.department,
         unit: this.unit?.id ?? this.selectedUnitId,
         title: this.title,
         code: this.code,
