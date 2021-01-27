@@ -17,6 +17,7 @@
               <app-text-field v-if="unit && unit.type === 'unit'" v-model="ministry" label="Đơn vị cha" disabled />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
+              <app-text-field v-model="address" :rules="$appRules.unitAddress" label="Địa chỉ" />
               <app-textarea v-model="description" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
@@ -54,6 +55,7 @@ export default class UnitEditDialog extends Vue {
   phone = ''
   description = ''
   ministry = ''
+  address = ''
 
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
     if (val) {
@@ -62,6 +64,7 @@ export default class UnitEditDialog extends Vue {
       this.email = this.unit.email
       this.phone = this.unit.phone
       this.description = this.unit.description
+      this.address = this.unit.data?.address ?? ''
       this.ministry = 'BỘ GIAO THÔNG VẬN TẢI'
     }
   }
@@ -79,7 +82,8 @@ export default class UnitEditDialog extends Vue {
         code: this.code,
         email: this.email,
         phone: this.phone,
-        description: this.description
+        description: this.description,
+        data: { address: this.address }
       }
       unit = await this.providers.api.unit.update(unit.id, unit)
       this.$emit('success', unit)

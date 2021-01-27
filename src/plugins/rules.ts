@@ -42,6 +42,8 @@ export const appRules = {
   unitCode: [rules.required, rules.maxLength(20), rules.nospace],
   unitEmail: [rules.required, rules.email],
   unitPhone: [rules.phone],
+  unitAddress: [rules.maxLength(255)],
+
   comradeName: [rules.required, rules.maxLength(100)],
   comradeCode: [rules.required, rules.maxLength(20), rules.nospace],
   comradeSex: [rules.required],

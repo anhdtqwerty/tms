@@ -15,7 +15,7 @@ const routes: Array<RouteConfig> = [
         name: 'signIn',
         component: () => import('@/modules/auth/pages/signin-page.vue'),
         meta: {
-          title: 'Sign In',
+          title: 'Đăng nhập',
           auth: false
         }
       },
@@ -60,7 +60,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     meta: {
-      title: 'Dashboard'
+      title: 'Trang chủ'
     },
     component: () => import('@/modules/containers/main-container.vue'),
     children: [
@@ -69,7 +69,7 @@ const routes: Array<RouteConfig> = [
         name: 'dashboard',
         component: () => import('@/modules/dashboard/dashboard-page.vue'),
         meta: {
-          title: 'dashboard',
+          title: 'Trang chủ',
           auth: true
         }
       },
@@ -87,7 +87,7 @@ const routes: Array<RouteConfig> = [
         name: 'users',
         component: () => import('@/modules/system-manager/pages/user-manager-page.vue'),
         meta: {
-          title: 'users',
+          title: 'Người dùng',
           auth: true,
           permission: 'system.user.read'
         }
@@ -97,7 +97,7 @@ const routes: Array<RouteConfig> = [
         name: 'user',
         component: () => import('@/modules/system-manager/pages/user-detail-page.vue'),
         meta: {
-          title: 'user',
+          title: 'Người dùng',
           auth: true,
           permission: 'system.user.edit'
         }
@@ -126,7 +126,7 @@ const routes: Array<RouteConfig> = [
         name: 'logs',
         component: () => import('@/modules/system-manager/pages/log-manager-page.vue'),
         meta: {
-          title: 'logs',
+          title: 'Tra cứu log',
           auth: true
         }
       },
@@ -162,7 +162,7 @@ const routes: Array<RouteConfig> = [
         name: 'departments',
         component: () => import('@/modules/unit-manager/pages/department-manager-page.vue'),
         meta: {
-          title: 'departments',
+          title: 'Phòng ban',
           auth: true,
           permission: 'system.unit.read'
         }
@@ -172,7 +172,7 @@ const routes: Array<RouteConfig> = [
         name: 'department',
         component: () => import('@/modules/unit-manager/pages/department-detail-page.vue'),
         meta: {
-          title: 'department',
+          title: 'Phòng ban',
           auth: true,
           permission: 'system.unit.read'
         }
@@ -182,7 +182,7 @@ const routes: Array<RouteConfig> = [
         name: 'ministries',
         component: () => import('@/modules/unit-manager/pages/ministry-manager-page.vue'),
         meta: {
-          title: 'ministries',
+          title: 'Bộ',
           auth: true,
           permission: 'system.unit.read'
         }
@@ -192,17 +192,17 @@ const routes: Array<RouteConfig> = [
         name: 'units',
         component: () => import('@/modules/unit-manager/pages/unit-manager-page.vue'),
         meta: {
-          title: 'units',
+          title: 'Đơn vị',
           auth: true,
           permission: 'system.unit.read'
         }
       },
       {
         path: 'unit/:unitid',
-        name: 'unit',
+        name: 'Đơn vị',
         component: () => import('@/modules/unit-manager/pages/unit-detail-page.vue'),
         meta: {
-          title: 'unit',
+          title: 'Đơn vị',
           auth: true,
           permission: 'system.unit.read'
         }
@@ -212,7 +212,7 @@ const routes: Array<RouteConfig> = [
         name: 'tasks',
         component: () => import('@/modules/task-manager/pages/task-manager-page.vue'),
         meta: {
-          title: 'task',
+          title: 'Quản lý nhiệm vụ',
           auth: true
         }
       },
@@ -221,7 +221,7 @@ const routes: Array<RouteConfig> = [
         name: 'task',
         component: () => import('@/modules/task-manager/pages/task-detail-page.vue'),
         meta: {
-          title: 'task',
+          title: 'Nhiệm vụ',
           auth: true
         }
       }

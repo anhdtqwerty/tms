@@ -2,7 +2,7 @@
   <v-container fluid px-5 py-2>
     <v-row>
       <v-col cols="12" class="pa-2">
-        <div class="text-h6">Cài đặt vai trò</div>
+        <div class="text-h6">Bộ</div>
         <breadcrumbs />
       </v-col>
     </v-row>
@@ -28,6 +28,7 @@
                   <!-- <div>Địa chỉ: 80 Trần Hưng Đạo, quận Hoàn Kiếm, Hà Nội</div> -->
                   <div>Mã đơn vị: {{ viewmodel.ministry.code }}</div>
                   <div>Điện thoại: {{ viewmodel.ministry.phone }}</div>
+                  <div>Địa chỉ: {{ viewmodel.ministry | _get('data.address') }}</div>
                   <div>Email: {{ viewmodel.ministry.email }}</div>
                 </div>
                 <div class="mt-2 d-flex flex-column pa-4" style="border: 1px solid #1E88E5">
@@ -59,7 +60,7 @@
               <v-container fluid class="px-5 py-2">
                 <v-row>
                   <v-col cols="12" class="pa-2 d-flex justify-space-between">
-                    <div class="text-subtitle-1 font-weight-medium">Danh sách cán đơn vị trực thuộc</div>
+                    <div class="text-subtitle-1 font-weight-medium">Danh sách đơn vị trực thuộc</div>
                     <v-btn v-if="$permission('system.unit.add')" color="primary" small @click="showAddUnit = true">
                       <v-icon left>add</v-icon>Thêm
                     </v-btn>
@@ -118,6 +119,7 @@ export default class MinistryManagerPage extends Vue {
     { text: 'Mã đơn vị', value: 'code', sortable: false },
     { text: 'Email đơn vị', value: 'email', sortable: true },
     { text: 'SĐT đơn vị', value: 'phone', sortable: false },
+    { text: 'Địa chỉ', value: 'data.address', sortable: false },
     { text: 'Mô tả', value: 'description', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]

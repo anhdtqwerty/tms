@@ -2,7 +2,7 @@
   <v-container fluid px-5 py-2>
     <v-row>
       <v-col cols="12" class="pa-2">
-        <div class="text-h6">Dashboard</div>
+        <div class="text-h6">Trang chủ</div>
       </v-col>
     </v-row>
     <v-row>

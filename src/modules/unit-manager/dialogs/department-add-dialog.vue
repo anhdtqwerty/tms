@@ -18,6 +18,7 @@
               <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã phòng ban" />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email phòng ban" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại phòng ban" />
+              <app-text-field v-model="address" :rules="$appRules.unitAddress" label="Địa chỉ" />
               <app-textarea v-model="description" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2" align="end">
@@ -56,6 +57,7 @@ export default class DepartmentAddDialog extends Vue {
   email = ''
   phone = ''
   description = ''
+  address = ''
 
   async save() {
     if (this.form.validate()) {
@@ -65,7 +67,8 @@ export default class DepartmentAddDialog extends Vue {
         description: this.description,
         code: this.code,
         email: this.email,
-        phone: this.phone
+        phone: this.phone,
+        data: { address: this.address }
       })
       this.$emit('success', department)
       this.syncedValue = false

@@ -12,4 +12,7 @@ export interface DepartmentModel {
   unit?: string | UnitModel
   config?: {}
   metadata?: {}
+  data?: {
+    address?: string
+  }
 }

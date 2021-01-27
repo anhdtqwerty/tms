@@ -21,6 +21,7 @@
                 <div class="font-weight-medium">
                   <div>Mã đơn vị: {{ viewmodel.department.code }}</div>
                   <div>Điện thoại: {{ viewmodel.department.phone }}</div>
+                  <div>Địa chỉ: {{ viewmodel.department | _get('data.address') }}</div>
                   <div>Email: {{ viewmodel.department.email }}</div>
                 </div>
               </v-col>
@@ -89,9 +90,11 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { Observer } from 'mobx-vue'
 import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
 import { DepartmentDetailViewModel } from '../viewmodels/department-detail-viewmodel'
 
+@Observer
 @Component({
   components: {
     UserAddDialog: () => import('../dialogs/user-add-dialog.vue'),

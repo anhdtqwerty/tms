@@ -17,6 +17,7 @@
               <app-text-field v-model="ministry" label="Đơn vị cha" disabled />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
+              <app-text-field v-model="address" :rules="$appRules.unitAddress" label="Địa chỉ" />
               <app-textarea v-model="description" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2" align="end">
@@ -48,6 +49,7 @@ export default class UnitAddDialog extends Vue {
   email = ''
   phone = ''
   description = ''
+  address = ''
   ministry = ''
 
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
@@ -62,7 +64,8 @@ export default class UnitAddDialog extends Vue {
         code: this.code,
         email: this.email,
         phone: this.phone,
-        type: 'unit'
+        type: 'unit',
+        data: { address: this.address }
       })
       this.$emit('success', unit)
       this.syncedValue = false
