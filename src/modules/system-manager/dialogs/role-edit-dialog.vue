@@ -272,10 +272,10 @@ export default class RoleEditDialog extends Vue {
   ]
 
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
-    if (val) {
-      this.name = this.role?.title
-      this.description = this.role?.description
-      this.configs = generatePermissionConfigs(this.role?.config)
+    if (val && this.role) {
+      this.name = this.role.title
+      this.description = this.role.description
+      this.configs = generatePermissionConfigs(this.role.config)
     }
   }
 
