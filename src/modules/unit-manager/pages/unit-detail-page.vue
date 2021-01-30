@@ -44,6 +44,8 @@
             item-key="id"
             :headers="departmentHeaders"
             :footer-props="{ itemsPerPageOptions: [25] }"
+            :server-items-length="viewmodel.departmentCount"
+            @update:page="viewmodel.getDepartmentPage($event)"
             mobile-breakpoint="0"
           >
             <template v-slot:top>
@@ -80,6 +82,54 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-row>
+      <v-col cols="12" class="pa-2">
+        <v-card>
+          <v-data-table
+            :items="viewmodel.comrades"
+            item-key="id"
+            :headers="userHeaders"
+            :footer-props="{ itemsPerPageOptions: [25] }"
+            :server-items-length="viewmodel.comradeCount"
+            @update:page="viewmodel.getComradePage($event)"
+            mobile-breakpoint="0"
+          >
+            <template v-slot:top>
+              <v-container fluid class="px-5 py-2">
+                <v-row>
+                  <v-col cols="12" class="pa-2 d-flex justify-space-between">
+                    <div class="text-subtitle-1 font-weight-medium">Danh sách cán bộ công nhân viên</div>
+                    <v-btn
+                      v-if="$permission('system.unit.edit')"
+                      color="primary"
+                      small
+                      @click="showAddUserDialog = true"
+                      ><v-icon left>add</v-icon>Thêm</v-btn
+                    >
+                  </v-col>
+                </v-row>
+              </v-container>
+            </template>
+            <template v-slot:[`item.name`]="{ item }">
+              <text-link :to="`/user/${item.id}`">
+                {{ item.name }}
+              </text-link>
+            </template>
+            <template v-slot:[`item.user.blocked`]="{ item }">
+              <v-chip v-if="item.user" :color="item.user.blocked ? 'red' : 'green'" text-color="white">
+                {{ item.user.blocked ? 'Blocked' : 'Hoạt động' }}
+              </v-chip>
+            </template>
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-icon v-if="$permission('system.unit.edit')" small @click="viewmodel.deleteComrade(item)">
+                mdi-delete
+              </v-icon>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
     <unit-edit-dialog :value.sync="showEditUnit" :unit="viewmodel.unit" @success="viewmodel.unitUpdated" />
     <department-add-dialog
       :value.sync="showAddDepartment"
@@ -92,6 +142,7 @@
       :unit="viewmodel.unit"
       @success="viewmodel.departmentUpdated"
     />
+    <user-add-dialog :value.sync="showAddUserDialog" :unit="viewmodel.unit" @success="viewmodel.comradeAdded" />
   </v-container>
 </template>
 
@@ -103,6 +154,7 @@ import { UnitDetailViewModel } from '../viewmodels/unit-detail-viewmodel'
 
 @Component({
   components: {
+    UserAddDialog: () => import('../dialogs/user-add-dialog.vue'),
     UnitEditDialog: () => import('../dialogs/unit-edit-dialog.vue'),
     DepartmentAddDialog: () => import('../dialogs/department-add-dialog.vue'),
     DepartmentEditDialog: () => import('../dialogs/department-edit-dialog.vue')
@@ -116,6 +168,7 @@ export default class UnitDetailPage extends Vue {
   showAddDepartment = false
   showEditDepartment = false
   edtingDepartment: DepartmentModel = null
+  showAddUserDialog = false
 
   departmentHeaders = [
     { text: 'Tên phòng ban', value: 'title', sortable: false },
@@ -127,16 +180,15 @@ export default class UnitDetailPage extends Vue {
     { value: 'actions', sortable: false, align: 'right' }
   ]
 
-  // userHeaders = [
-  //   { text: 'Họ và Tên', value: 'name', sortable: false },
-  //   { text: 'Mã cán bộ', value: 'id', sortable: false },
-  //   { text: 'Tên truy cập', value: 'username', sortable: true },
-  //   { text: 'Trạng Thái', value: 'status', sortable: false },
-  //   { text: 'Phòng ban', value: 'department', sortable: true },
-  //   { text: 'Chức vụ', value: 'position', sortable: true },
-  //   { text: 'Email', value: 'email', sortable: false },
-  //   { text: 'Xóa', value: 'actions', sortable: false }
-  // ]
+  userHeaders = [
+    { text: 'Họ và Tên', value: 'name', sortable: false },
+    { text: 'Mã cán bộ', value: 'code', sortable: false },
+    { text: 'Tên truy cập', value: 'user.username', sortable: false },
+    { text: 'Trạng Thái', value: 'user.blocked', sortable: false },
+    { text: 'Chức vụ', value: 'data.title', sortable: true },
+    { text: 'Email', value: 'user.email', sortable: false },
+    { text: 'Xóa', value: 'actions', sortable: false }
+  ]
 
   // users = [{ name: 'unit 1', id: 'unit1', email: 'unit1@unit.com', phone: '091231231' }]
 

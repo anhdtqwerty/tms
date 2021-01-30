@@ -31,9 +31,9 @@
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
-                    <app-text-field class="mr-4" hide-details dv-model="searchName" label="Tên đơn vị" />
+                    <app-text-field class="mr-4" hide-details v-model="searchName" label="Tên phòng ban" />
                     <app-text-field class="mr-4" hide-details v-model="searchUnitCode" label="Đơn vị cha" />
-                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã đơn vị" />
+                    <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã phòng ban" />
                     <v-btn depressed color="primary" medium @click="search">
                       <span class="d-none d-md-flex">Tìm kiếm</span>
                       <v-icon dark>search</v-icon>
@@ -99,7 +99,7 @@ export default class DepartmentManagerPage extends Vue {
 
   headers = [
     { text: 'Tên phòng ban', value: 'title', sortable: false },
-    { text: 'Đơn vị cha', value: 'unit.code', sortable: false },
+    { text: 'Đơn vị cha', value: 'unit.title', sortable: false },
     { text: 'Mã phòng', value: 'code', sortable: false },
     { text: 'Email phòng', value: 'email', sortable: true },
     { text: 'SĐT phỏng', value: 'phone', sortable: false },

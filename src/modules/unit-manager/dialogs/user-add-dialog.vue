@@ -76,6 +76,7 @@ import { AppProvider } from '@/app-provider'
 import { ComradeSex } from '@/models/comrade-model'
 import { DepartmentModel } from '@/models/department-model'
 import { UnitModel } from '@/models/unit-model'
+import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
@@ -91,6 +92,7 @@ export default class UserAddDialog extends Vue {
 
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Prop() department: DepartmentModel
+  @Prop() unit: UnitModel
 
   @Ref('form') form: any
 
@@ -138,8 +140,8 @@ export default class UserAddDialog extends Vue {
               sex: this.sex,
               title: this.title
             },
-            department: this.department.id,
-            unit: (this.department.unit as UnitModel).id,
+            department: _.get(this.department, 'id'),
+            unit: _.get(this.department, 'unit.id') || _.get(this.unit, 'id'),
             position: this.position,
             group: this.group,
             user: user.id

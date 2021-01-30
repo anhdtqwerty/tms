@@ -34,6 +34,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { UnitModel } from '@/models/unit-model'
 import { Component, Inject, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component
@@ -58,18 +59,27 @@ export default class UnitAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const unit = await this.providers.api.unit.create({
-        title: this.title,
-        description: this.description,
-        code: this.code,
-        email: this.email,
-        phone: this.phone,
-        type: 'unit',
-        data: { address: this.address }
-      })
-      this.$emit('success', unit)
-      this.syncedValue = false
-      this.form.reset()
+      try {
+        const hasUnit = await this.providers.api.unit.find<UnitModel>({ code: this.code, _limit: 1 })
+        if (!hasUnit.length) {
+          const unit = await this.providers.api.unit.create({
+            title: this.title,
+            description: this.description,
+            code: this.code,
+            email: this.email,
+            phone: this.phone,
+            type: 'unit',
+            data: { address: this.address }
+          })
+          this.$emit('success', unit)
+          this.syncedValue = false
+          this.form.reset()
+        } else {
+          this.providers.snackbar.error('Mã đơn vị này đã được sử dụng')
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
+      }
     }
   }
 }

@@ -12,10 +12,11 @@ export class UserManagerViewModel {
     this.search()
   }
 
-  search(code: string = null, name: string = null, department: string = null, blocked = false) {
+  search(code: string = null, name: string = null, unit: string = null, department: string = null, blocked = false) {
     let input: any = {}
-    if (name) input = { ...input, name_contains: name }
-    if (code) input = { ...input, code_contains: code }
+    if (name) input = { ...input, name_contains: name.trim() }
+    if (code) input = { ...input, code_contains: code.trim() }
+    if (unit) input = { ...input, unit }
     if (department) input = { ...input, department }
     if (typeof blocked === 'boolean') input = { ...input, 'user.blocked': blocked }
     this._searchParams = input
