@@ -20,9 +20,9 @@ export class UnitManagerViewModel {
 
   @asyncAction *search(title: string = null, code: string = null, email: string = null) {
     let input: any = { type: 'unit' }
-    if (title) input = { ...input, title_contains: title }
-    if (code) input = { ...input, code_contains: code }
-    if (email) input = { ...input, email_contains: email }
+    if (title) input = { ...input, title_contains: title.trim() }
+    if (code) input = { ...input, code_contains: code.trim() }
+    if (email) input = { ...input, email_contains: email.trim() }
     this._searchParams = input
     const api = this.provider.api
     const results = yield Promise.all([

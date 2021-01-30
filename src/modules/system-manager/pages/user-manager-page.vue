@@ -33,6 +33,7 @@
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
                     <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã cán bộ" />
                     <app-text-field class="mr-4" hide-details v-model="searchName" label="Họ và tên" />
+                    <unit-autocomplete class="mr-4" hide-details :value.sync="searchUnit" label="Đơn vị" />
                     <department-autocomplete
                       class="mr-4"
                       hide-details
@@ -79,7 +80,8 @@ import { UserManagerViewModel } from '../viewmodels/user-manager-viewmodel'
   components: {
     UserAddDialog: () => import('../dialogs/user-add-dialog.vue'),
     UserstatusSelect: () => import('@/components/autocomplete/userstatus-select.vue'),
-    DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue')
+    DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue'),
+    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue')
   }
 })
 export default class UserMangerPage extends Vue {
@@ -88,6 +90,7 @@ export default class UserMangerPage extends Vue {
 
   searchName = ''
   searchCode = ''
+  searchUnit: string = null
   searchDepartment: string = null
   searchStatus = false
 
@@ -100,6 +103,7 @@ export default class UserMangerPage extends Vue {
     { text: 'Trạng Thái', value: 'user.blocked', sortable: false },
     { text: 'Ngày sinh', value: 'data.bod', sortable: true, defaultHide: true },
     { text: 'Tên truy cập', value: 'user.username', sortable: true },
+    { text: 'Đơn vị', value: 'unit.title', sortable: true },
     { text: 'Phòng ban', value: 'department.title', sortable: true },
     { text: 'Chức vụ', value: 'data.title', sortable: true },
     { text: 'Email', value: 'user.email', sortable: false },
@@ -113,7 +117,7 @@ export default class UserMangerPage extends Vue {
   ]
 
   search() {
-    this.viewmodel.search(this.searchCode, this.searchName, this.searchDepartment, this.searchStatus)
+    this.viewmodel.search(this.searchCode, this.searchName, this.searchUnit, this.searchDepartment, this.searchStatus)
   }
 }
 </script>

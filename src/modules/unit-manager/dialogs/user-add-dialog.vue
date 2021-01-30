@@ -91,6 +91,7 @@ export default class UserAddDialog extends Vue {
 
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Prop() department: DepartmentModel
+  @Prop() unit: UnitModel
 
   @Ref('form') form: any
 
@@ -128,6 +129,17 @@ export default class UserAddDialog extends Vue {
           blocked: !this.active
         })
         try {
+          // check unit or department
+          let unit
+          let department
+          if (this.unit) {
+            unit = this.unit.id
+            department = undefined
+          } else {
+            department = this.department.id
+            unit = (this.department.unit as UnitModel).id
+          }
+
           const comrade = await api.comarde.create({
             name: this.name,
             code: this.code,
@@ -138,8 +150,8 @@ export default class UserAddDialog extends Vue {
               sex: this.sex,
               title: this.title
             },
-            department: this.department.id,
-            unit: (this.department.unit as UnitModel).id,
+            department: department,
+            unit: unit,
             position: this.position,
             group: this.group,
             user: user.id

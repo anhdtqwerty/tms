@@ -180,8 +180,8 @@ export default class TaskSearchComponent extends Vue {
     console.log('search', this.advanceSearch)
     if (this.advanceSearch) {
       const params: TaskModel = {}
-      if (this.searchCode) _.set(params, 'code_contains', this.searchCode)
-      if (this.searchTitle) _.set(params, 'title_contains', this.searchTitle)
+      if (this.searchCode) _.set(params, 'code_contains', this.searchCode.trim())
+      if (this.searchTitle) _.set(params, 'title_contains', this.searchTitle.trim())
       if (this.searchPriority) params.priority = this.searchPriority
       if (this.searchState) params.state = this.searchState
       if (this.searchExecuteUnit) params.executedUnit = this.searchExecuteUnit

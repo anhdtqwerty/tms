@@ -1,4 +1,5 @@
 import { AppProvider } from '@/app-provider'
+import { ComradeModel } from '@/models/comrade-model'
 import { DepartmentModel } from '@/models/department-model'
 import { UnitModel } from '@/models/unit-model'
 import { action, observable } from 'mobx'
@@ -8,6 +9,7 @@ export class UnitDetailViewModel {
   @observable unit: UnitModel = null
 
   @observable departments: DepartmentModel[] = []
+  @observable comrades: ComradeModel[] = []
 
   constructor(private provider: AppProvider) {
     this.loadData()
@@ -36,5 +38,9 @@ export class UnitDetailViewModel {
     if (yield this.provider.api.deleteDepartment(department)) {
       this.departments = this.departments.filter(d => d.id !== department.id)
     }
+  }
+
+  @action.bound comradeAdded(comrade: ComradeModel) {
+    this.comrades = [comrade, ...this.comrades]
   }
 }

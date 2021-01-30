@@ -15,9 +15,9 @@ export class DepartmentManagerViewModel {
   @asyncAction *search(title: string = null, unitCode: string = null, code: string = null) {
     const api = this.provider.api
     let input: any = {}
-    if (title) input = { ...input, title_contains: title }
-    if (unitCode) input = { ...input, 'unit.code_contains': unitCode }
-    if (code) input = { ...input, code_contains: code }
+    if (title) input = { ...input, title_contains: title.trim() }
+    if (unitCode) input = { ...input, 'unit.code_contains': unitCode.trim() }
+    if (code) input = { ...input, code_contains: code.trim() }
     this._searchParams = input
     const results = yield Promise.all([
       api.department.count(this._searchParams),

@@ -76,17 +76,26 @@ export default class UnitEditDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      let unit: UnitModel = {
-        title: this.title,
-        code: this.code,
-        email: this.email,
-        phone: this.phone,
-        description: this.description,
-        data: { address: this.address }
+      try {
+        const hasUnit = await this.providers.api.unit.count({ code: this.code }).then(count => count > 0)
+        if (!hasUnit) {
+          let unit: UnitModel = {
+            title: this.title,
+            code: this.code,
+            email: this.email,
+            phone: this.phone,
+            description: this.description,
+            data: { address: this.address }
+          }
+          unit = await this.providers.api.unit.update(unit.id, unit)
+          this.$emit('success', unit)
+          this.syncedValue = false
+        } else {
+          this.providers.snackbar.error('Mã đơn vị này đã được sử dụng')
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      unit = await this.providers.api.unit.update(unit.id, unit)
-      this.$emit('success', unit)
-      this.syncedValue = false
     }
   }
 }

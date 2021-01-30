@@ -58,18 +58,27 @@ export default class UnitAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const unit = await this.providers.api.unit.create({
-        title: this.title,
-        description: this.description,
-        code: this.code,
-        email: this.email,
-        phone: this.phone,
-        type: 'unit',
-        data: { address: this.address }
-      })
-      this.$emit('success', unit)
-      this.syncedValue = false
-      this.form.reset()
+      try {
+        const hasUnit = await this.providers.api.unit.count({ code: this.code }).then(count => count > 0)
+        if (!hasUnit) {
+          const unit = await this.providers.api.unit.create({
+            title: this.title,
+            description: this.description,
+            code: this.code,
+            email: this.email,
+            phone: this.phone,
+            type: 'unit',
+            data: { address: this.address }
+          })
+          this.$emit('success', unit)
+          this.syncedValue = false
+          this.form.reset()
+        } else {
+          this.providers.snackbar.error('Mã đơn vị này đã được sử dụng')
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
+      }
     }
   }
 }
