@@ -184,6 +184,7 @@ export default class UnitDetailPage extends Vue {
     { text: 'Họ và Tên', value: 'name', sortable: false },
     { text: 'Mã cán bộ', value: 'code', sortable: false },
     { text: 'Tên truy cập', value: 'user.username', sortable: false },
+    { text: 'Phòng ban', value: 'department.title', sortable: true },
     { text: 'Trạng Thái', value: 'user.blocked', sortable: false },
     { text: 'Chức vụ', value: 'data.title', sortable: true },
     { text: 'Email', value: 'user.email', sortable: false },

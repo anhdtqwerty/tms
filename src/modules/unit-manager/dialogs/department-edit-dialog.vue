@@ -83,18 +83,31 @@ export default class UnitEditDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      let department: DepartmentModel = {
-        unit: this.unit?.id ?? this.selectedUnitId,
-        title: this.title,
-        code: this.code,
-        email: this.email,
-        phone: this.phone,
-        description: this.description,
-        data: { address: this.address }
+      try {
+        let validCode = this.code === this.department.code
+        if (!validCode) {
+          const departments = await this.providers.api.department.find<DepartmentModel>({ code: this.code, _limit: 1 })
+          validCode = departments.length === 0
+        }
+        if (validCode) {
+          let department: DepartmentModel = {
+            unit: this.unit?.id ?? this.selectedUnitId,
+            title: this.title,
+            code: this.code,
+            email: this.email,
+            phone: this.phone,
+            description: this.description,
+            data: { address: this.address }
+          }
+          department = await this.providers.api.department.update(department.id, department)
+          this.$emit('success', department)
+          this.syncedValue = false
+        } else {
+          this.providers.snackbar.error('Mã phòng ban này đã được sử dụng')
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
       }
-      department = await this.providers.api.department.update(department.id, department)
-      this.$emit('success', department)
-      this.syncedValue = false
     }
   }
 }
