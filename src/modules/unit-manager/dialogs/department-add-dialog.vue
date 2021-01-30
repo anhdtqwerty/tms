@@ -35,6 +35,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { DepartmentModel } from '@/models/department-model'
 import { UnitModel } from '@/models/unit-model'
 import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decorator'
 
@@ -61,18 +62,27 @@ export default class DepartmentAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const department = await this.providers.api.department.create({
-        title: this.title,
-        unit: this.unit?.id ?? this.selectedUnitId,
-        description: this.description,
-        code: this.code,
-        email: this.email,
-        phone: this.phone,
-        data: { address: this.address }
-      })
-      this.$emit('success', department)
-      this.syncedValue = false
-      this.form.reset()
+      try {
+        const departments = await this.providers.api.department.find<DepartmentModel>({ code: this.code, _limit: 1 })
+        if (!departments.length) {
+          const department = await this.providers.api.department.create({
+            title: this.title,
+            unit: this.unit?.id ?? this.selectedUnitId,
+            description: this.description,
+            code: this.code,
+            email: this.email,
+            phone: this.phone,
+            data: { address: this.address }
+          })
+          this.$emit('success', department)
+          this.syncedValue = false
+          this.form.reset()
+        } else {
+          this.providers.snackbar.error('Mã phòng ban này đã được sử dụng')
+        }
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
+      }
     }
   }
 }
