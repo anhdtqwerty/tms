@@ -76,6 +76,7 @@ import { AppProvider } from '@/app-provider'
 import { ComradeSex } from '@/models/comrade-model'
 import { DepartmentModel } from '@/models/department-model'
 import { UnitModel } from '@/models/unit-model'
+import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
@@ -129,17 +130,6 @@ export default class UserAddDialog extends Vue {
           blocked: !this.active
         })
         try {
-          // check unit or department
-          let unit
-          let department
-          if (this.unit) {
-            unit = this.unit.id
-            department = undefined
-          } else {
-            department = this.department.id
-            unit = (this.department.unit as UnitModel).id
-          }
-
           const comrade = await api.comarde.create({
             name: this.name,
             code: this.code,
@@ -150,8 +140,8 @@ export default class UserAddDialog extends Vue {
               sex: this.sex,
               title: this.title
             },
-            department: department,
-            unit: unit,
+            department: _.get(this.department, 'id'),
+            unit: _.get(this.department, 'unit.id') || _.get(this.unit, 'id'),
             position: this.position,
             group: this.group,
             user: user.id

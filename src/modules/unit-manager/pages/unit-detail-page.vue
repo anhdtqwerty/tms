@@ -44,6 +44,8 @@
             item-key="id"
             :headers="departmentHeaders"
             :footer-props="{ itemsPerPageOptions: [25] }"
+            :server-items-length="viewmodel.departmentCount"
+            @update:page="viewmodel.getDepartmentPage($event)"
             mobile-breakpoint="0"
           >
             <template v-slot:top>
@@ -77,9 +79,22 @@
               </v-icon>
             </template>
           </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
 
-          <!-- list comrades -->
-          <v-data-table :items="viewmodel.comrades" item-key="id" :headers="userHeaders" mobile-breakpoint="0">
+    <v-row>
+      <v-col cols="12" class="pa-2">
+        <v-card>
+          <v-data-table
+            :items="viewmodel.comrades"
+            item-key="id"
+            :headers="userHeaders"
+            :footer-props="{ itemsPerPageOptions: [25] }"
+            :server-items-length="viewmodel.comradeCount"
+            @update:page="viewmodel.getComradePage($event)"
+            mobile-breakpoint="0"
+          >
             <template v-slot:top>
               <v-container fluid class="px-5 py-2">
                 <v-row>

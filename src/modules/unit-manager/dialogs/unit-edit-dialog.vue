@@ -77,8 +77,8 @@ export default class UnitEditDialog extends Vue {
   async save() {
     if (this.form.validate()) {
       try {
-        const hasUnit = await this.providers.api.unit.count({ code: this.code }).then(count => count > 0)
-        if (!hasUnit) {
+        const hasUnit = await this.providers.api.unit.find<UnitModel>({ code: this.code, _limit: 1 })
+        if (!hasUnit.length) {
           let unit: UnitModel = {
             title: this.title,
             code: this.code,

@@ -34,6 +34,7 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { UnitModel } from '@/models/unit-model'
 import { Component, Inject, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component
@@ -59,8 +60,8 @@ export default class UnitAddDialog extends Vue {
   async save() {
     if (this.form.validate()) {
       try {
-        const hasUnit = await this.providers.api.unit.count({ code: this.code }).then(count => count > 0)
-        if (!hasUnit) {
+        const hasUnit = await this.providers.api.unit.find<UnitModel>({ code: this.code, _limit: 1 })
+        if (!hasUnit.length) {
           const unit = await this.providers.api.unit.create({
             title: this.title,
             description: this.description,
