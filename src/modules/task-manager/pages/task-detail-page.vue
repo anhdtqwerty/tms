@@ -354,7 +354,6 @@ import { TaskActionType, TaskModel } from '@/models/task-model'
     TaskStateComponent: () => import('../components/task-state-component.vue'),
     TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
     TaskFilesComponent: () => import('@/components/files/task-files-component.vue'),
-    TruncateTextComponent: () => import('@/components/truncate-text-component.vue'),
     ReadMoreDialog: () => import('../dialogs/read-more-dialog.vue'),
     VClamp: () => import('vue-clamp')
   }
