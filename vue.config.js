@@ -1,5 +1,5 @@
 module.exports = {
-  transpileDependencies: ['vuetify'],
+  transpileDependencies: ['vuetify', 'vue-clamp', 'resize-detector'],
   pwa: {
     name: 'TMS',
     manifestOptions: {

@@ -36,7 +36,21 @@
                 <div>Trích yếu</div>
               </v-col>
               <v-col cols="6" class="pa-2">
-                <div class="font-weight-bold">{{ vm.task.title }}</div>
+                <div>
+                  <v-clamp class="font-weight-bold" autoresize :max-lines="3">
+                    {{ vm.task.title }}
+                    <template v-slot:after="{ clamped }">
+                      <span
+                        v-if="clamped"
+                        class="blue--text caption"
+                        style="cursor: pointer"
+                        @click="showReadMore(vm.task.title)"
+                      >
+                        Xem thêm
+                      </span>
+                    </template>
+                  </v-clamp>
+                </div>
               </v-col>
               <v-col cols="6" class="pa-2">
                 <div>Mức độ</div>
@@ -64,7 +78,7 @@
               <v-col cols="6" class="pa-2">
                 <v-menu :close-on-content-click="true" transition="scale-transition" left>
                   <template v-slot:activator="{ on }">
-                    <div class="blue--text" v-on="on">Xem</div>
+                    <div class="blue--text" style="cursor: pointer" v-on="on">Xem</div>
                   </template>
                   <task-files-component :container="vm.task" />
                 </v-menu>
@@ -73,7 +87,7 @@
                 <div>Văn bản đến</div>
               </v-col>
               <v-col cols="6" class="pa-2">
-                <div class="blue--text" @click="showDocsInfo">Xem</div>
+                <div class="blue--text" style="cursor: pointer" @click="showDocsInfo">Xem</div>
               </v-col>
               <v-col cols="6" class="pa-2">
                 <div>Thời hạn xử lý</div>
@@ -87,7 +101,21 @@
                 <div>Nội dung nhiệm vụ</div>
               </v-col>
               <v-col cols="12" class="pa-2">
-                <div class="font-weight-bold">{{ vm.task.description }}</div>
+                <div>
+                  <v-clamp class="font-weight-bold" autoresize :max-lines="3">
+                    {{ vm.task.description }}
+                    <template v-slot:after="{ clamped }">
+                      <span
+                        v-if="clamped"
+                        class="blue--text caption"
+                        style="cursor: pointer"
+                        @click="showReadMore(vm.task.description)"
+                      >
+                        Xem thêm
+                      </span>
+                    </template>
+                  </v-clamp>
+                </div>
               </v-col>
             </v-row>
           </div>
@@ -324,7 +352,8 @@ import { TaskActionType, TaskModel } from '@/models/task-model'
     AppAvatar: () => import('@/components/images/app-avatar.vue'),
     TaskStateComponent: () => import('../components/task-state-component.vue'),
     TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
-    TaskFilesComponent: () => import('@/components/files/task-files-component.vue')
+    TaskFilesComponent: () => import('@/components/files/task-files-component.vue'),
+    VClamp: () => import('vue-clamp')
   }
 })
 export default class TaskDetailPage extends Vue {
@@ -353,6 +382,10 @@ export default class TaskDetailPage extends Vue {
     if (val) {
       this.vm.loadData(val)
     }
+  }
+
+  async showReadMore(text: string) {
+    await this.providers.alert.info('Chi tiết', text)
   }
 
   subTaskAction(typeAction: TaskActionType, task: TaskModel) {
