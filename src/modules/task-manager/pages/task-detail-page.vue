@@ -36,7 +36,21 @@
                 <div>Trích yếu</div>
               </v-col>
               <v-col cols="6" class="pa-2">
-                <div class="font-weight-bold">{{ vm.task.title }}</div>
+                <div>
+                  <v-clamp class="font-weight-bold" autoresize :max-lines="3">
+                    {{ vm.task.title }}
+                    <template v-slot:after="{ clamped }">
+                      <span
+                        v-if="clamped"
+                        class="blue--text"
+                        style="cursor: pointer"
+                        @click="showReadMore(vm.task.title)"
+                      >
+                        Xem thêm
+                      </span>
+                    </template>
+                  </v-clamp>
+                </div>
               </v-col>
               <v-col cols="6" class="pa-2">
                 <div>Mức độ</div>
@@ -87,7 +101,21 @@
                 <div>Nội dung nhiệm vụ</div>
               </v-col>
               <v-col cols="12" class="pa-2">
-                <div class="font-weight-bold">{{ vm.task.description }}</div>
+                <div>
+                  <v-clamp class="font-weight-bold" autoresize :max-lines="3">
+                    {{ vm.task.description }}
+                    <template v-slot:after="{ clamped }">
+                      <span
+                        v-if="clamped"
+                        class="blue--text"
+                        style="cursor: pointer"
+                        @click="showReadMore(vm.task.description)"
+                      >
+                        Xem thêm
+                      </span>
+                    </template>
+                  </v-clamp>
+                </div>
               </v-col>
             </v-row>
           </div>
@@ -296,6 +324,7 @@
     />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-delete-dialog :value.sync="showDeletingDialog" :task="deletingTask" @success="vm.taskDeleted" />
+    <read-more-dialog :value.sync="showReadMoreDialog" :text="detail" />
   </v-container>
 </template>
 
@@ -324,7 +353,10 @@ import { TaskActionType, TaskModel } from '@/models/task-model'
     AppAvatar: () => import('@/components/images/app-avatar.vue'),
     TaskStateComponent: () => import('../components/task-state-component.vue'),
     TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
-    TaskFilesComponent: () => import('@/components/files/task-files-component.vue')
+    TaskFilesComponent: () => import('@/components/files/task-files-component.vue'),
+    TruncateTextComponent: () => import('@/components/truncate-text-component.vue'),
+    ReadMoreDialog: () => import('../dialogs/read-more-dialog.vue'),
+    VClamp: () => import('vue-clamp')
   }
 })
 export default class TaskDetailPage extends Vue {
@@ -344,6 +376,9 @@ export default class TaskDetailPage extends Vue {
   showEditStateDialog = false
   showReopenDialog = false
 
+  showReadMoreDialog = false
+  detail: string = null
+
   deletingTask: TaskModel = null
   editingTask: TaskModel = null
 
@@ -353,6 +388,11 @@ export default class TaskDetailPage extends Vue {
     if (val) {
       this.vm.loadData(val)
     }
+  }
+
+  showReadMore(text: string) {
+    this.detail = text
+    this.showReadMoreDialog = true
   }
 
   subTaskAction(typeAction: TaskActionType, task: TaskModel) {

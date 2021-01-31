@@ -23,6 +23,7 @@
     "rxjs": "^6.6.3",
     "vue": "^2.6.11",
     "vue-apexcharts": "^1.6.0",
+    "vue-clamp": "^0.3.1",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",
     "vue-router": "^3.2.0",
