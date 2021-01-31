@@ -42,7 +42,7 @@
                     <template v-slot:after="{ clamped }">
                       <span
                         v-if="clamped"
-                        class="blue--text"
+                        class="blue--text caption"
                         style="cursor: pointer"
                         @click="showReadMore(vm.task.title)"
                       >
@@ -107,7 +107,7 @@
                     <template v-slot:after="{ clamped }">
                       <span
                         v-if="clamped"
-                        class="blue--text"
+                        class="blue--text caption"
                         style="cursor: pointer"
                         @click="showReadMore(vm.task.description)"
                       >
