@@ -78,7 +78,7 @@
               <v-col cols="6" class="pa-2">
                 <v-menu :close-on-content-click="true" transition="scale-transition" left>
                   <template v-slot:activator="{ on }">
-                    <div class="blue--text" v-on="on">Xem</div>
+                    <div class="blue--text" style="cursor: pointer" v-on="on">Xem</div>
                   </template>
                   <task-files-component :container="vm.task" />
                 </v-menu>
@@ -87,7 +87,7 @@
                 <div>Văn bản đến</div>
               </v-col>
               <v-col cols="6" class="pa-2">
-                <div class="blue--text" @click="showDocsInfo">Xem</div>
+                <div class="blue--text" style="cursor: pointer" @click="showDocsInfo">Xem</div>
               </v-col>
               <v-col cols="6" class="pa-2">
                 <div>Thời hạn xử lý</div>
@@ -324,7 +324,6 @@
     />
     <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-delete-dialog :value.sync="showDeletingDialog" :task="deletingTask" @success="vm.taskDeleted" />
-    <read-more-dialog :value.sync="showReadMoreDialog" :text="detail" />
   </v-container>
 </template>
 
@@ -354,7 +353,6 @@ import { TaskActionType, TaskModel } from '@/models/task-model'
     TaskStateComponent: () => import('../components/task-state-component.vue'),
     TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
     TaskFilesComponent: () => import('@/components/files/task-files-component.vue'),
-    ReadMoreDialog: () => import('../dialogs/read-more-dialog.vue'),
     VClamp: () => import('vue-clamp')
   }
 })
@@ -375,9 +373,6 @@ export default class TaskDetailPage extends Vue {
   showEditStateDialog = false
   showReopenDialog = false
 
-  showReadMoreDialog = false
-  detail: string = null
-
   deletingTask: TaskModel = null
   editingTask: TaskModel = null
 
@@ -389,9 +384,8 @@ export default class TaskDetailPage extends Vue {
     }
   }
 
-  showReadMore(text: string) {
-    this.detail = text
-    this.showReadMoreDialog = true
+  async showReadMore(text: string) {
+    await this.providers.alert.info('Chi tiết', text)
   }
 
   subTaskAction(typeAction: TaskActionType, task: TaskModel) {
