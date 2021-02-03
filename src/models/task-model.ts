@@ -289,7 +289,7 @@ export const actionConfigs: TaskActionConfig[] = [
     type: 'return',
     icon: 'replay',
     title: 'Trả lại nhiệm vụ',
-    checkEnable: task => task.state === 'waiting'
+    checkEnable: task => task.state === 'waiting' && (task.createdBy as ComradeModel).id !== authStore.comrade.id
   },
   {
     permission: 'assign',

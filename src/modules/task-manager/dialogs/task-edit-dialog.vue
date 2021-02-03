@@ -17,11 +17,7 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="code" disabled label="Số/ký hiệu" />
-              <date-picker-input
-                :value.sync="publishedDate"
-                :rules="$appRules.taskPublishedDate"
-                label="Ngày ban hành"
-              />
+              <date-picker-input :value.sync="publishedDate" label="Ngày ban hành" />
               <app-text-field v-model="title" label="Trích yếu" />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
@@ -33,7 +29,7 @@
 
           <v-row>
             <v-col cols="12" class="pa-2">
-              <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
+              <div class="text-subtitle-2">Thông tin nhiệm vụ</div>
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="description" :rules="$appRules.taskDescription" label="Nội dung nhiệm vụ" />
