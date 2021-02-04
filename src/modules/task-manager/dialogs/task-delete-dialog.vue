@@ -13,7 +13,7 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12">
-              <div>Bạn có chắc chắn muốn xóa kết quả thực hiện này không?</div>
+              <div>Bạn có chắc chắn muốn xóa nhiệm vụ này không?</div>
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">

@@ -24,7 +24,7 @@
         :hide-details="hideDetails"
         :outlined="outlined"
         clearable
-        @click:clear="selectedRange = []"
+        @click:clear="clearDate"
       />
     </template>
     <v-date-picker locale="vi" v-model="selectedRange" range>
@@ -41,7 +41,7 @@ import moment from 'moment'
 import { Component, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 
 @Component
-export default class DatePickerInput extends Vue {
+export default class DateRangePickerInput extends Vue {
   @PropSync('value', { type: Array, default: [] }) syncedValue!: string[]
   @Prop() width: number
   @Prop({ default: 'Chọn ngày' }) label: string
@@ -55,6 +55,11 @@ export default class DatePickerInput extends Vue {
 
   @Watch('value', { immediate: true }) onValueChanged(val: string[]) {
     this.selectedRange = (val ?? []).map(d => moment(d).format('YYYY-MM-DD'))
+  }
+
+  clearDate() {
+    this.selectedRange = []
+    this.syncedValue = []
   }
 
   cancel() {

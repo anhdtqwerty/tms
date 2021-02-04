@@ -24,7 +24,7 @@
         :hide-details="hideDetails"
         :disabled="disabled"
         clearable
-        @click:clear="selectedDate = null"
+        @click:clear="clearDate"
       />
     </template>
     <v-date-picker locale="vi" :value="selectedDate" @input="selectDate" :type="type"></v-date-picker>
@@ -50,6 +50,11 @@ export default class DatePickerInput extends Vue {
 
   selectedDate: string = null
   show = false
+
+  clearDate() {
+    this.selectedDate = null
+    this.syncedValue = null
+  }
 
   selectDate(date: string) {
     if (this.type === 'date') {
