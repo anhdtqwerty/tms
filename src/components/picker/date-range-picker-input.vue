@@ -64,8 +64,6 @@ export default class DateRangePickerInput extends Vue {
 
   cancel() {
     this.show = false
-    this.selectedRange = []
-    this.syncedValue = []
   }
 
   ok() {
