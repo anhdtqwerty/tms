@@ -73,19 +73,29 @@
                   label="Cá nhân theo dõi"
                 />
               </v-col>
-              <v-col cols="12" md="4" lg="3" class="pa-2">
-                <date-picker-input
+              <v-col cols="12" md="4" lg="3" class="pa-2 no-calender">
+                <app-text-field
                   hide-details
-                  :value.sync="searchPushlishedDate"
-                  :attach="true"
+                  :value.sync="publishedDateDisplay"
+                  @click="showPublishedDateDialog = true"
+                  append-icon="expand_more"
+                  @click:append="showPublishedDateDialog = true"
+                  readonly
+                  clearable
+                  @click:clear="clearPublishedDate"
                   label="Ngày ban hành"
                 />
               </v-col>
               <v-col cols="12" md="4" lg="3" class="pa-2">
-                <date-range-picker-input
+                <app-text-field
                   hide-details
-                  :value.sync="searchRangeDate"
-                  :attach="true"
+                  :value.sync="expiredDateDisplay"
+                  @click="showExpiredDateDialog = true"
+                  append-icon="expand_more"
+                  @click:append="showExpiredDateDialog = true"
+                  readonly
+                  clearable
+                  @click:clear="clearExpiredDate"
                   label="Thời hạn xử lý"
                 />
               </v-col>
@@ -125,6 +135,9 @@
         </v-btn>
       </v-col>
     </v-row>
+
+    <date-range-dialog :value.sync="showPublishedDateDialog" @ok="handlePublishedDate" />
+    <date-range-dialog :value.sync="showExpiredDateDialog" @ok="handleExpiredDate" />
   </v-container>
 </template>
 
@@ -151,7 +164,8 @@ import { AppProvider } from '@/app-provider'
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
     TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
-    DateRangePickerInput: () => import('@/components/picker/date-range-picker-input.vue')
+    DateRangePickerInput: () => import('@/components/picker/date-range-picker-input.vue'),
+    DateRangeDialog: () => import('../dialogs/date-range-dialog.vue')
   }
 })
 export default class TaskSearchComponent extends Vue {
@@ -173,11 +187,34 @@ export default class TaskSearchComponent extends Vue {
 
   searchSupervisorUnit = ''
   searchSupervisor = ''
-  searchPushlishedDate: string = null
-  searchRangeDate: string[] = []
+  publishedDateDisplay: string = null
+  searchPublishedDate: string[] = []
+  expiredDateDisplay: string = null
+  searchExpiredDate: string[] = []
+  showPublishedDateDialog = false
+  showExpiredDateDialog = false
+
+  handlePublishedDate(dateRange: string[]) {
+    this.searchPublishedDate = dateRange
+    this.publishedDateDisplay = dateRange.map(d => moment(d).format('DD/MM/YYYY')).join(' - ')
+  }
+
+  clearPublishedDate() {
+    this.searchPublishedDate = []
+    this.publishedDateDisplay = null
+  }
+
+  handleExpiredDate(dateRange: string[]) {
+    this.searchExpiredDate = dateRange
+    this.expiredDateDisplay = dateRange.map(d => moment(d).format('DD/MM/YYYY')).join(' - ')
+  }
+
+  clearExpiredDate() {
+    this.searchExpiredDate = []
+    this.expiredDateDisplay = null
+  }
 
   async search() {
-    console.log('search', this.advanceSearch)
     if (this.advanceSearch) {
       const params: TaskModel = {}
       if (this.searchCode) _.set(params, 'code_contains', this.searchCode.trim())
@@ -209,11 +246,14 @@ export default class TaskSearchComponent extends Vue {
       }
       if (this.searchSupervisorUnit) params.supervisorUnit = this.searchSupervisorUnit
       if (this.searchSupervisor) _.set(params, 'supervisors_contains', this.searchSupervisor)
-      if (this.searchPushlishedDate) params.publishedDate = this.searchPushlishedDate
-      if (this.searchRangeDate.length === 2) {
+      if (this.searchPublishedDate.length === 2) {
+        _.set(params, 'publishedDate_gte', this.searchPublishedDate[0])
+        _.set(params, 'publishedDate_lte', this.searchPublishedDate[1])
+      }
+      if (this.searchExpiredDate.length === 2) {
         params.type = 'hasDeadline'
-        _.set(params, 'expiredDate_gt', this.searchRangeDate[0])
-        _.set(params, 'expiredDate_lt', this.searchRangeDate[1])
+        _.set(params, 'expiredDate_gte', this.searchExpiredDate[0])
+        _.set(params, 'expiredDate_lte', this.searchExpiredDate[1])
       }
       this.$emit('advance-search', params)
     } else {
