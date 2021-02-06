@@ -176,6 +176,9 @@ export class ApiService {
       },
       err => {
         appProvider.loading.decreaseRequest()
+        if (_.get(err, 'response.status') === 401) {
+          appProvider.onLogout()
+        }
         throw err
       }
     )

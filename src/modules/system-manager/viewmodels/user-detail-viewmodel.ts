@@ -19,10 +19,19 @@ export class UserDetailViewModel {
     this.comrade = yield this.provider.api.comarde.findOne(comradeId)
   }
 
-  @asyncAction *updateComrade(avatarFile: File, comrade: ComradeModel, blocked: boolean) {
+  @asyncAction *updateComrade(
+    avatarFile: File,
+    comrade: ComradeModel,
+    options: { blocked: boolean; email?: string; password?: string }
+  ) {
     const api = this.provider.api
+    const { blocked, email, password } = options
     try {
-      this.comrade.user = yield api.user.update((this.comrade.user as UserModel).id, { blocked: blocked })
+      this.comrade.user = yield api.user.update((this.comrade.user as UserModel).id, {
+        blocked,
+        email,
+        password
+      })
 
       const oldAvatarId = _.get(this.comrade.avatar, 'id')
       let newAvatarId
@@ -33,7 +42,8 @@ export class UserDetailViewModel {
       this.comrade = yield api.comarde.update(this.comrade.id, {
         ...this.comrade,
         ...comrade,
-        avatar: newAvatarId
+        avatar: newAvatarId,
+        email
       })
 
       if (newAvatarId && oldAvatarId) {

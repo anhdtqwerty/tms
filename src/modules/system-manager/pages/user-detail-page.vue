@@ -49,7 +49,16 @@
                   :outlined="false"
                   class="mb-4"
                 />
-                <app-text-field outlined disabled v-model="email" label="Email" autocomplete="new-password" />
+                <app-text-field
+                  outlined
+                  :readonly="!allowEditEmail"
+                  @click:append="toggleEditEmail()"
+                  :rules="allowEditEmail ? $appRules.comradeEmail : []"
+                  v-model="email"
+                  label="Email"
+                  autocomplete="new-password"
+                  :append-icon="allowEditEmail ? 'close' : 'edit'"
+                />
                 <app-text-field outlined v-model="phone" label="Số điện thoại" :rules="$appRules.comradePhone" />
                 <div class="d-flex">
                   <div class="text-body-2">Người dùng hoạt động</div>
@@ -63,7 +72,10 @@
                   outlined
                   label="Mật khẩu"
                   v-model="password"
-                  disabled
+                  :readonly="!allowEditPassword"
+                  :append-icon="allowEditPassword ? 'close' : 'edit'"
+                  :rules="allowEditPassword ? $appRules.comradePassword : []"
+                  @click:append="toggleEditPassword()"
                   autocomplete="new-password"
                   :type="'password'"
                 />
@@ -143,6 +155,9 @@ export default class UserDetailPage extends Vue {
   @Ref('form') form: any
   @Ref('fileInput') fileInput: any
 
+  allowEditEmail = false
+  allowEditPassword = false
+
   name = ''
   code = ''
   sex: ComradeSex = 'male'
@@ -171,6 +186,16 @@ export default class UserDetailPage extends Vue {
         this.change(comrade)
       }
     )
+  }
+
+  toggleEditEmail() {
+    this.allowEditEmail = !this.allowEditEmail
+    if (!this.allowEditEmail) this.email = this.viewmodel.comrade?.email
+  }
+  toggleEditPassword() {
+    this.allowEditPassword = !this.allowEditPassword
+    if (!this.allowEditPassword) this.password = 'password'
+    else this.password = ''
   }
 
   change(comrade: ComradeModel) {
@@ -209,8 +234,13 @@ export default class UserDetailPage extends Vue {
       group: this.group,
       user: _.get(this.viewmodel.comrade.user, 'id')
     }
+    const options = {
+      blocked: !this.active,
+      email: this.allowEditEmail ? this.email : undefined,
+      password: this.allowEditPassword ? this.password : undefined
+    }
 
-    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade, !this.active)) {
+    if (await this.viewmodel.updateComrade(this.selectedAvatarFile, comrade, options)) {
       this.selectedAvatarFile = null
     }
   }
