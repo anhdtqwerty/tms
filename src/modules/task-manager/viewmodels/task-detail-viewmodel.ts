@@ -75,10 +75,12 @@ export class TaskDetailViewModel {
       this.subtasks = this.subtasks.map(t => (t.id === item.id ? item : t))
     }
 
-    if (this.requestHistories.find(x => x.id === request.id)) {
-      this.requestHistories = this.requestHistories.map(r => (r.id === request.id ? request : r))
-    } else {
-      this.requestHistories = [request, ...this.requestHistories]
+    if (request) {
+      if (this.requestHistories.find(x => x.id === request.id)) {
+        this.requestHistories = this.requestHistories.map(r => (r.id === request.id ? request : r))
+      } else {
+        this.requestHistories = [request, ...this.requestHistories]
+      }
     }
   }
 

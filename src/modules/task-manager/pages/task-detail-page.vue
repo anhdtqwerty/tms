@@ -178,7 +178,7 @@
           >
             <template v-slot:top>
               <task-search-component
-                title="Danh sách các nhiệm vụ chi nhỏ"
+                title="Danh sách các nhiệm vụ chia nhỏ"
                 @advance-search="vm.advanceSearch($event)"
                 @simple-search="vm.simpleSearch($event)"
               >
