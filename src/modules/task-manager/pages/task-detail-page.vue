@@ -1,6 +1,6 @@
 <template>
-  <v-container v-if="vm.task" fluid px-5 py-2>
-    <v-row>
+  <v-container fluid px-5 py-2>
+    <v-row v-if="vm.task">
       <v-col cols="12" align="right" class="pa-2">
         <v-menu attach :close-on-content-click="true" transition="scale-transition" left>
           <template v-slot:activator="{ on }">
@@ -15,7 +15,7 @@
     </v-row>
 
     <!-- task parent -->
-    <v-row>
+    <v-row v-if="vm.task">
       <v-col cols="12" md="6" lg="3" class="pa-2">
         <v-card height="100%" class="pa-4">
           <div>
