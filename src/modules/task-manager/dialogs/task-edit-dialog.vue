@@ -18,12 +18,12 @@
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="code" disabled label="Số/ký hiệu" />
               <date-picker-input :value.sync="publishedDate" label="Ngày ban hành" />
-              <app-text-field v-model="title" label="Trích yếu" />
+              <app-text-field v-model="title" :rules="$appRules.taskTitle" label="Trích yếu" />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <task-priority-select :value.sync="priority" :rules="$appRules.taskPriority" label="Mức độ quan trọng" />
               <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
-              <app-text-field v-model="docsInfo" label="Thông tin văn bản đến" />
+              <app-text-field v-model="docsInfo" :rules="$appRules.taskDocsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
 
