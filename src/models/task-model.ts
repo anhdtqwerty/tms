@@ -160,76 +160,79 @@ export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
     .join(' | ')
   return { ...changes, keywords }
 }
-export const taskTypeToFilterParams = (taskType: TaskRouteType) => {
+export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
   const unitPrams = authStore.unitParams
-  const leaderParams: any = {}
+
+  const leaderParams = { _or: [] as any[] }
   if (authStore.isLeader) {
     if (unitPrams.department) {
-      leaderParams.createdDepartment = unitPrams.department
+      leaderParams._or = [{ createdDepartment: unitPrams.department }]
     } else if (unitPrams.unit) {
-      leaderParams.createdUnit = unitPrams.unit
+      leaderParams._or = [{ createdUnit: unitPrams.unit }, { executedUnit: unitPrams.unit }]
     } else if (unitPrams.ministry) {
-      leaderParams.createdUnit = unitPrams.ministry
+      leaderParams._or = [{ createdUnit: unitPrams.ministry }]
     }
   }
 
-  let params: TaskModel = {}
+  let params: any[] = []
+  let taskParams: TaskModel = {}
+
   switch (taskType) {
     case 'task-created':
       if (authStore.isLeader) {
-        params = { ...params, ...leaderParams }
+        params = [leaderParams]
       } else {
-        params.createdBy = authStore.comrade.id
+        taskParams = { createdBy: authStore.comrade.id }
       }
       break
     case 'task-assigned':
-      params.executedComrade = authStore.comrade.id
+      taskParams.executedComrade = authStore.comrade.id
       break
     case 'task-following':
-      _.set(params, 'supervisors_contains', authStore.comrade.id)
+      _.set(taskParams, 'supervisors_contains', authStore.comrade.id)
       break
     case 'task-support':
-      _.set(params, 'supportedComrades_contains', authStore.comrade.id)
+      _.set(taskParams, 'supportedComrades_contains', authStore.comrade.id)
       break
     case 'task-expired':
-      params.type = 'hasDeadline'
-      _.set(params, 'expiredDate_lt', moment().toISOString())
+      taskParams.type = 'hasDeadline'
+      _.set(taskParams, 'expiredDate_lt', moment().toISOString())
       if (authStore.isLeader) {
-        params = { ...params, ...leaderParams }
+        params = [leaderParams]
       } else {
-        params.createdBy = authStore.comrade.id
+        taskParams.createdBy = authStore.comrade.id
       }
       break
     case 'task-approving':
-      params.state = 'done'
-      params.status = 'approving'
+      taskParams.state = 'done'
+      taskParams.status = 'approving'
       if (authStore.isLeader) {
-        params = { ...params, ...leaderParams }
+        params = [leaderParams]
       } else {
-        params.createdBy = authStore.comrade.id
+        taskParams.createdBy = authStore.comrade.id
       }
       break
     case 'task-done':
-      params.state = 'done'
+      taskParams.state = 'done'
       if (authStore.isLeader) {
-        params = { ...params, ...leaderParams }
+        params = [leaderParams]
       } else {
-        params.createdBy = authStore.comrade.id
+        taskParams.createdBy = authStore.comrade.id
       }
       break
     case 'task-unfinished':
-      _.set(params, 'state_ne', 'done')
+      _.set(taskParams, 'state_ne', 'done')
       if (authStore.isLeader) {
-        params = { ...params, ...leaderParams }
+        params = [leaderParams]
       } else {
-        params.createdBy = authStore.comrade.id
+        taskParams.createdBy = authStore.comrade.id
       }
       break
     default:
       console.error(`not support ${taskType}`)
       break
   }
-  return params
+  return _.isEmpty(taskParams) ? params : [...params, taskParams]
 }
 
 export const getLastRequest = (task: TaskModel) => {

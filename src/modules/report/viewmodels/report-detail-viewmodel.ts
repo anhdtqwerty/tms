@@ -11,7 +11,7 @@ export class ReportDetailViewModel {
   @observable tasks: TaskModel[] = []
   @observable totalTask = 0
 
-  private _taskTypeParams: any = {}
+  private _taskTypeParams: any[] = []
   private _advanceParams: any = {}
   private _simpleParams: any = {}
 
@@ -21,8 +21,7 @@ export class ReportDetailViewModel {
 
   async exportExcel() {
     const tasks = await this.provider.api.task.find({
-      ...this._simpleParams,
-      ...this._advanceParams,
+      _where: [{ ...this._simpleParams, ...this._advanceParams }, ...this._taskTypeParams],
       _limit: -1
     })
     excelHelper.task(tasks)
@@ -46,9 +45,7 @@ export class ReportDetailViewModel {
 
   @asyncAction *search(page = 1) {
     const params = {
-      ...this._simpleParams,
-      ...this._advanceParams,
-      ...this._taskTypeParams,
+      _where: [{ ...this._simpleParams, ...this._advanceParams }, ...this._taskTypeParams],
       _start: (page - 1) * 25
     }
     const results = yield Promise.all([this.provider.api.task.find(params), this.provider.api.task.count(params)])

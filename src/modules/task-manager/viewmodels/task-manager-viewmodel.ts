@@ -8,35 +8,15 @@ export class TaskManagerViewModel {
   @observable totalCount = 0
   @observable tasks: TaskModel[] = []
 
-  private _taskTypeParams: any = {}
+  private _taskTypeParams: any[] = []
   private _advanceParams: any = {}
   private _simpleParams: any = {}
 
   constructor(private provider: AppProvider) {}
 
-  // @asyncAction *loadData(val: TaskRouteType) {
-  //   const params: any = {}
-  //   switch (val) {
-  //     case 'task-created':
-  //       params['createdBy'] = authStore.comrade.id
-  //       break
-  //     case 'task-assigned':
-  //       params['executedComrade'] = authStore.comrade.id
-  //       break
-
-  //     default:
-  //       break
-  //   }
-
-  //   const results = yield Promise.all([this.provider.api.task.count(), this.provider.api.task.find<TaskModel>(params)])
-  //   this.totalCount = results[0]
-  //   this.tasks = results[1]
-  // }
-
   async exportExcel() {
     const tasks = await this.provider.api.task.find({
-      ...this._simpleParams,
-      ...this._advanceParams,
+      _where: [{ ...this._simpleParams, ...this._advanceParams }, ...this._taskTypeParams],
       _limit: -1
     })
     excelHelper.task(tasks)
@@ -60,9 +40,7 @@ export class TaskManagerViewModel {
 
   @asyncAction *search(page = 1) {
     const params = {
-      ...this._simpleParams,
-      ...this._advanceParams,
-      ...this._taskTypeParams,
+      _where: [{ ...this._simpleParams, ...this._advanceParams }, ...this._taskTypeParams],
       _start: (page - 1) * 25
     }
     const results = yield Promise.all([this.provider.api.task.find(params), this.provider.api.task.count(params)])
