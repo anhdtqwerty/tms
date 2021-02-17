@@ -49,7 +49,11 @@
                     </v-icon>
                   </v-btn>
                 </template>
-                <task-action-component @task-action="taskActionCommon($event, item)" :task="item" />
+                <task-action-component
+                  @task-action="taskActionCommon($event, item)"
+                  :task="item"
+                  :task-route="$route.params.tasktype"
+                />
               </v-menu>
             </template>
 

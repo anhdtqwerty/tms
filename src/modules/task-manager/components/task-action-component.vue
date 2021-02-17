@@ -10,7 +10,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { permissionHelper } from '@/helpers/permission-helper'
-import { actionConfigs, TaskActionType, TaskModel } from '@/models/task-model'
+import { actionConfigs, TaskActionType, TaskModel, TaskRouteType } from '@/models/task-model'
 import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 
 interface TaskActionDisplay {
@@ -27,6 +27,7 @@ export default class TaskActionDialog extends Vue {
   @Inject() providers!: AppProvider
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Prop() task: TaskModel
+  @Prop() taskRoute: TaskRouteType
 
   items: TaskActionDisplay[] = []
 
@@ -39,8 +40,15 @@ export default class TaskActionDialog extends Vue {
     const taskType = val.parent ? 'sub' : 'main'
     this.items = actionConfigs
       .filter(t => permissionHelper.check(`task.${taskType}.${t.permission}`))
+      .filter(t => {
+        if (this.taskRoute === 'task-assigned') {
+          const hideActions: TaskActionType[] = ['edit', 'revoke', 'extend']
+          return !hideActions.includes(t.type)
+        }
+        return true
+      })
       .map(({ icon, type, title, checkEnable }) => {
-        return { icon, type, title, enable: checkEnable(val) }
+        return { icon, type, title, enable: checkEnable(val, this.taskRoute) }
       })
   }
 }
