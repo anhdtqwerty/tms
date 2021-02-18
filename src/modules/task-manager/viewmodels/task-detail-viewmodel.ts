@@ -93,6 +93,10 @@ export class TaskDetailViewModel {
     this.loadData(this.task.id)
   }
 
+  @action.bound taskReturned() {
+    this.provider.router.back()
+  }
+
   @action.bound taskDeleted(id: string) {
     if (id === this.task.id) {
       // task parent

@@ -64,4 +64,8 @@ export class TaskManagerViewModel {
   @action.bound taskRecovered(item: TaskModel) {
     this.search()
   }
+
+  @action.bound taskReturned(item: TaskModel) {
+    this.tasks = this.tasks.filter(t => t.id !== item.id)
+  }
 }

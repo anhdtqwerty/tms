@@ -73,7 +73,7 @@ export default class TaskUpdateStateDialog extends Vue {
   state: TaskStateType = null
   explain = ''
   startedDate: string = null
-  taskStateIncludes: TaskStateType[] = ['todo', 'doing', 'waiting', 'done']
+  taskStateIncludes: TaskStateType[] = ['todo', 'doing', 'done']
   request: RequestModel = null
   selectedFiles: File[] = []
 
