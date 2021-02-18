@@ -309,7 +309,7 @@
     <task-extend-dialog :value.sync="showExtendDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
     <task-approve-dialog :value.sync="showApproveDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskUpdated" />
+    <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskReturned" />
     <task-update-state-dialog
       :value.sync="showEditStateDialog"
       :isUpdateTask="true"
