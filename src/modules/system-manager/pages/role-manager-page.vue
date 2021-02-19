@@ -22,9 +22,7 @@
               </text-link>
             </template>
             <template v-slot:[`item.description`]="{ item }">
-              <v-clamp autoresize :max-lines="3">
-                {{ item.description }}
-              </v-clamp>
+              <read-more-component :text="item.description" />
             </template>
             <template v-slot:[`item.actions`]="{ item }">
               <v-icon v-if="$permission('system.role.edit')" small class="mr-2" @click="edit(item)">
@@ -53,7 +51,7 @@ import { RoleManagerViewModel } from '../viewmodels/role-manager-viewmodel'
   components: {
     RoleAddDialog: () => import('../dialogs/role-add-dialog.vue'),
     RoleEditDialog: () => import('../dialogs/role-edit-dialog.vue'),
-    VClamp: () => import('vue-clamp')
+    ReadMoreComponent: () => import('@/components/read-more/read-more-component.vue')
   }
 })
 export default class RoleManagerPage extends Vue {
