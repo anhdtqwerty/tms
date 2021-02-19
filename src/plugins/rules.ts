@@ -65,5 +65,9 @@ export const appRules = {
   taskExtendDate: [rules.required],
   taskStartedDate: [rules.required],
   taskExplain: [rules.required, rules.maxLength(1000)],
-  taskDocsInfo: [rules.maxLength(1000)]
+  taskDocsInfo: [rules.maxLength(1000)],
+
+  //role
+  roleName: [rules.required],
+  roleDescription: [rules.maxLength(5000)]
 }

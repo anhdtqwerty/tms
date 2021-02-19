@@ -21,6 +21,9 @@
                 {{ item.title }}
               </text-link>
             </template>
+            <template v-slot:[`item.description`]="{ item }">
+              <read-more-component :text="item.description" />
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <v-icon v-if="$permission('system.role.edit')" small class="mr-2" @click="edit(item)">
                 mdi-pencil
@@ -47,7 +50,8 @@ import { RoleManagerViewModel } from '../viewmodels/role-manager-viewmodel'
 @Component({
   components: {
     RoleAddDialog: () => import('../dialogs/role-add-dialog.vue'),
-    RoleEditDialog: () => import('../dialogs/role-edit-dialog.vue')
+    RoleEditDialog: () => import('../dialogs/role-edit-dialog.vue'),
+    ReadMoreComponent: () => import('@/components/read-more/read-more-component.vue')
   }
 })
 export default class RoleManagerPage extends Vue {

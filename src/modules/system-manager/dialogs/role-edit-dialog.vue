@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="1264" scrollable v-model="syncedValue">
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0" fixed>
-        <v-toolbar-title>EDIT</v-toolbar-title>
+        <v-toolbar-title>CẬP NHẬT VAI TRÒ</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -13,8 +13,8 @@
           <v-row>
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2 pb-4">Thông tin vai trò</div>
-              <app-text-field v-model="name" label="Tên vai trò" />
-              <app-textarea v-model="description" label="Mô tả" counter="5000" />
+              <app-text-field v-model="name" :rules="$appRules.roleName" label="Tên vai trò" />
+              <app-textarea v-model="description" :rules="$appRules.roleDescription" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2 pb-4">Hiển thị phân quyền</div>
@@ -286,15 +286,20 @@ export default class RoleEditDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const position = await this.providers.api.position.update(this.role.id, {
-        title: this.name,
-        description: this.description,
-        type: this.type,
-        config: toPositionConfig(this.configs)
-      })
-      this.$emit('success', position)
-      this.syncedValue = false
-      this.form.reset()
+      try {
+        const position = await this.providers.api.position.update(this.role.id, {
+          title: this.name,
+          description: this.description,
+          type: this.type,
+          config: toPositionConfig(this.configs)
+        })
+        this.$emit('success', position)
+        this.syncedValue = false
+        this.form.reset()
+        this.providers.snackbar.updateSuccess()
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
+      }
     }
   }
 }

@@ -37,19 +37,7 @@
               </v-col>
               <v-col cols="6" class="pa-2">
                 <div>
-                  <v-clamp class="font-weight-bold" autoresize :max-lines="3">
-                    {{ vm.task.title }}
-                    <template v-slot:after="{ clamped }">
-                      <span
-                        v-if="clamped"
-                        class="blue--text caption"
-                        style="cursor: pointer"
-                        @click="showReadMore(vm.task.title)"
-                      >
-                        Xem thêm
-                      </span>
-                    </template>
-                  </v-clamp>
+                  <read-more-component :text="vm.task.title" :isBold="true" />
                 </div>
               </v-col>
               <v-col cols="6" class="pa-2">
@@ -102,19 +90,7 @@
               </v-col>
               <v-col cols="12" class="pa-2">
                 <div>
-                  <v-clamp class="font-weight-bold" autoresize :max-lines="3">
-                    {{ vm.task.description }}
-                    <template v-slot:after="{ clamped }">
-                      <span
-                        v-if="clamped"
-                        class="blue--text caption"
-                        style="cursor: pointer"
-                        @click="showReadMore(vm.task.description)"
-                      >
-                        Xem thêm
-                      </span>
-                    </template>
-                  </v-clamp>
+                  <read-more-component :text="vm.task.description" :isBold="true" />
                 </div>
               </v-col>
             </v-row>
@@ -353,7 +329,7 @@ import { TaskActionType, TaskModel } from '@/models/task-model'
     TaskStateComponent: () => import('../components/task-state-component.vue'),
     TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
     TaskFilesComponent: () => import('@/components/files/task-files-component.vue'),
-    VClamp: () => import('vue-clamp')
+    ReadMoreComponent: () => import('@/components/read-more/read-more-component.vue')
   }
 })
 export default class TaskDetailPage extends Vue {
