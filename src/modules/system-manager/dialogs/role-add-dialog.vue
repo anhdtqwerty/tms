@@ -13,8 +13,8 @@
           <v-row>
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2 pb-4">Thông tin vai trò</div>
-              <app-text-field v-model="name" label="Tên vai trò" />
-              <app-textarea v-model="description" label="Mô tả" counter="5000" />
+              <app-text-field v-model="name" :rules="$appRules.roleName" label="Tên vai trò" />
+              <app-textarea v-model="description" :rules="$appRules.roleDescription" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2 pb-4">Hiển thị phân quyền</div>
@@ -269,16 +269,21 @@ export default class RoleAddDialog extends Vue {
 
   async save() {
     if (this.form.validate()) {
-      const position = await this.providers.api.position.create({
-        title: this.name,
-        description: this.description,
-        type: this.type,
-        config: toPositionConfig(this.configs)
-      })
-      this.$emit('success', position)
-      this.syncedValue = false
-      this.form.reset()
-      this.configs = generatePermissionConfigs()
+      try {
+        const position = await this.providers.api.position.create({
+          title: this.name,
+          description: this.description,
+          type: this.type,
+          config: toPositionConfig(this.configs)
+        })
+        this.$emit('success', position)
+        this.syncedValue = false
+        this.form.reset()
+        this.configs = generatePermissionConfigs()
+        this.providers.snackbar.addSuccess()
+      } catch (error) {
+        this.providers.snackbar.commonError(error)
+      }
     }
   }
 }
