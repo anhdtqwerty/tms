@@ -23,7 +23,7 @@ export default class ReadMoreComponent extends Vue {
   @Prop({ default: 3 }) maxLines: number
   @Prop() text: string
   @Prop({ default: false }) isBold: boolean
-  @Prop({ default: true }) autoresize: boolean
+  @Prop({ default: false }) autoresize: boolean
 
   async showReadMore() {
     await this.providers.alert.info('Chi tiết', this.text)

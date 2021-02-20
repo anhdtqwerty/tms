@@ -160,7 +160,7 @@
               >
                 <div>
                   <v-btn
-                    v-if="$permission('task.sub.add')"
+                    v-if="$permission('task.sub.add') && vm.task && !vm.task.createdDepartment"
                     small
                     color="success"
                     class="mr-2"
@@ -177,6 +177,15 @@
               </task-search-component>
             </template>
 
+            <template v-slot:[`item.description`]="{ item }">
+              <max-length-text :text="item.description" />
+            </template>
+            <template v-slot:[`item.explainState`]="{ item }">
+              <max-length-text :text="item.explainState" />
+            </template>
+            <template v-slot:[`item.state`]="{ item }">
+              <task-state-component :state="item.state" />
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <task-sub-action-menu :task="item" @task-action="subTaskAction($event, item)" />
             </template>
@@ -204,6 +213,9 @@
                   </v-col>
                 </v-row>
               </v-container>
+            </template>
+            <template v-slot:[`item.task.description`]="{ item }">
+              <max-length-text :text="item.task.description" />
             </template>
             <template v-slot:[`item.type`]="{ item }">
               <task-state-component :state="item.type" />
@@ -247,6 +259,12 @@
                 </v-row>
               </v-container>
             </template>
+            <template v-slot:[`item.task.description`]="{ item }">
+              <max-length-text :text="item.task.description" />
+            </template>
+            <template v-slot:[`item.description`]="{ item }">
+              <max-length-text :text="item.description" />
+            </template>
             <template v-slot:[`item.created_at`]="{ item }">
               {{ item.created_at | ddmmyyyy }}
             </template>
@@ -275,6 +293,12 @@
                 </v-row>
               </v-container>
             </template>
+            <template v-slot:[`item.task.description`]="{ item }">
+              <max-length-text :text="item.task.description" />
+            </template>
+            <template v-slot:[`item.description`]="{ item }">
+              <max-length-text :text="item.description" />
+            </template>
             <template v-slot:[`item.created_at`]="{ item }">
               {{ item.created_at | ddmmyyyy }}
             </template>
@@ -291,25 +315,25 @@
 
     <task-add-dialog :value.sync="showAddSubtask" :taskParent="vm.task" @success="vm.taskAdded" />
     <task-edit-dialog :value.sync="showEditDialog" :task="editingTask" @success="vm.taskUpdated" />
-    <task-recover-dialog :value.sync="showRetriveDialog" :task="vm.task" @success="vm.taskRecovered" />
-    <task-extend-dialog :value.sync="showExtendDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-approve-dialog :value.sync="showApproveDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskReturned" />
+    <task-recover-dialog :value.sync="showRetriveDialog" :task="editingTask" @success="vm.taskRecovered" />
+    <task-extend-dialog :value.sync="showExtendDialog" :task="editingTask" @success="vm.taskUpdated" />
+    <task-assign-dialog :value.sync="showAssignDialog" :task="editingTask" @success="vm.taskUpdated" />
+    <task-approve-dialog :value.sync="showApproveDialog" :task="editingTask" @success="vm.taskUpdated" />
+    <task-return-dialog :value.sync="showReturnDialog" :task="editingTask" @success="vm.taskReturned" />
     <task-update-state-dialog
       :value.sync="showEditStateDialog"
       :isUpdateTask="true"
-      :task="vm.task"
+      :task="editingTask"
       @success="vm.taskUpdated"
     />
     <task-update-state-dialog
       :value.sync="showModifyRequest"
-      :task="vm.task"
+      :task="editingTask"
       :isUpdateTask="false"
       @success="vm.taskUpdated"
     />
-    <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-delete-dialog :value.sync="showDeletingDialog" :task="deletingTask" @success="vm.taskDeleted" />
+    <task-reopen-dialog :value.sync="showReopenDialog" :task="editingTask" @success="vm.taskUpdated" />
+    <task-delete-dialog :value.sync="showDeletingDialog" :task="editingTask" @success="vm.taskDeleted" />
   </v-container>
 </template>
 
@@ -339,7 +363,8 @@ import { TaskActionType, TaskModel } from '@/models/task-model'
     TaskStateComponent: () => import('../components/task-state-component.vue'),
     TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
     TaskFilesComponent: () => import('@/components/files/task-files-component.vue'),
-    ReadMoreComponent: () => import('@/components/read-more/read-more-component.vue')
+    ReadMoreComponent: () => import('@/components/read-more/read-more-component.vue'),
+    MaxLengthText: () => import('@/components/read-more/max-length-text.vue')
   }
 })
 export default class TaskDetailPage extends Vue {
@@ -359,7 +384,6 @@ export default class TaskDetailPage extends Vue {
   showEditStateDialog = false
   showReopenDialog = false
 
-  deletingTask: TaskModel = null
   editingTask: TaskModel = null
 
   showModifyRequest = false
@@ -375,29 +399,13 @@ export default class TaskDetailPage extends Vue {
   }
 
   subTaskAction(typeAction: TaskActionType, task: TaskModel) {
+    this.editingTask = task
     switch (typeAction) {
-      case 'edit':
-        this.editingTask = task
-        this.showEditDialog = true
-        break
-      case 'delete':
-        this.deletingTask = task
-        this.showDeletingDialog = true
-        break
       case 'read':
         this.$router.push({ path: '/task/' + task.id })
         break
-      default:
-        console.warn('subTaskAction doesnt handle', typeAction)
-        break
-    }
-  }
-
-  taskActionCommon(typeAction: TaskActionType) {
-    switch (typeAction) {
       case 'edit':
         this.showEditDialog = true
-        this.editingTask = this.vm.task
         break
       case 'revoke':
         this.showRetriveDialog = true
@@ -425,7 +433,45 @@ export default class TaskDetailPage extends Vue {
         break
       case 'delete':
         this.showDeletingDialog = true
-        this.deletingTask = this.vm.task
+        break
+      default:
+        console.warn('subTaskAction doesnt handle', typeAction)
+        break
+    }
+  }
+
+  taskActionCommon(typeAction: TaskActionType) {
+    this.editingTask = this.vm.task
+    switch (typeAction) {
+      case 'edit':
+        this.showEditDialog = true
+        break
+      case 'revoke':
+        this.showRetriveDialog = true
+        break
+      case 'extend':
+        this.showExtendDialog = true
+        break
+      case 'return':
+        this.showReturnDialog = true
+        break
+      case 'assign':
+        this.showAssignDialog = true
+        break
+      case 'approve':
+        this.showApproveDialog = true
+        break
+      case 'update':
+        this.showEditStateDialog = true
+        break
+      case 'modify-update':
+        this.showModifyRequest = true
+        break
+      case 'reopen':
+        this.showReopenDialog = true
+        break
+      case 'delete':
+        this.showDeletingDialog = true
         break
       default:
         console.warn('taskActionCommon not handle', typeAction)
@@ -441,8 +487,8 @@ export default class TaskDetailPage extends Vue {
   subtaskHeaders = [
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
-    { text: 'ĐV thực hiện', value: 'supervisorUnit.title', sortable: true },
-    { text: 'CV thực hiện', value: 'executedComrade.title', sortable: false },
+    { text: 'ĐV thực hiện', value: 'executedUnit.title', sortable: true },
+    { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
     { text: 'Tình hình thực hiện', value: 'explainState', sortable: false },
     { text: 'Số/ký hiệu', value: 'code', sortable: false, defaultHide: true },
@@ -465,7 +511,7 @@ export default class TaskDetailPage extends Vue {
     { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
     { text: 'Ngày trả lại', value: 'created_at', sortable: false },
     { text: 'Lý do trả lại', value: 'description', sortable: false },
-    { text: 'Đơn vị gửi trả', value: 'requestor.unit.title', sortable: false },
+    { text: 'Đơn vị gửi trả', value: 'metadata.unitTitle', sortable: false },
     { text: 'Người gửi trả', value: 'requestor.name', sortable: false }
   ]
 

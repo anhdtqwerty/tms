@@ -34,7 +34,9 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { mailBuilder } from '@/helpers/mail-helper'
+import { DepartmentModel } from '@/models/department-model'
 import { createTaskBody, TaskModel } from '@/models/task-model'
+import { UnitModel } from '@/models/unit-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
@@ -67,7 +69,13 @@ export default class TaskRecoverDialog extends Vue {
           description: this.reasonRecover,
           type: 'recovered',
           requestor: authStore.comrade.id,
-          task: this.task.id
+          task: this.task.id,
+          metadata: {
+            unitId: _.get(authStore.comrade.unit, 'id'),
+            unitTitle: _.get(authStore.comrade.unit, 'title'),
+            departmentId: _.get(authStore.comrade.department, 'id'),
+            departmentTitle: _.get(authStore.comrade.department, 'title')
+          }
         })
 
         if (this.selectedFiles.length) {

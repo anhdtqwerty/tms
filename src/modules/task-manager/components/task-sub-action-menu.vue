@@ -8,9 +8,14 @@
       </v-btn>
     </template>
     <v-list>
-      <v-list-item v-for="item in items" :key="item.type" @click.stop="$emit('task-action', item.type)">
-        <v-icon color="blue" left>{{ item.icon }}</v-icon>
-        <span class="blue--text">{{ item.title }}</span>
+      <v-list-item
+        v-for="item in items"
+        :key="item.type"
+        @click.stop="$emit('task-action', item.type)"
+        :disabled="!item.enable"
+      >
+        <v-icon :color="item.enable ? 'blue' : null" left>{{ item.icon }}</v-icon>
+        <span :class="item.enable && 'blue--text'">{{ item.title }}</span>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -22,6 +27,13 @@ import { permissionHelper } from '@/helpers/permission-helper'
 import { actionConfigs, TaskActionType, TaskModel } from '@/models/task-model'
 import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-decorator'
 
+interface TaskActionDisplay {
+  icon: string
+  type: TaskActionType
+  title: string
+  enable: boolean
+}
+
 @Component({
   components: {}
 })
@@ -30,17 +42,18 @@ export default class TaskSubActionMenu extends Vue {
   @PropSync('value', { type: Boolean, default: false }) syncedValue!: boolean
   @Prop() task: TaskModel
 
-  items: { icon: string; type: TaskActionType; title: string }[] = []
+  items: TaskActionDisplay[] = []
 
   @Watch('task', { immediate: true }) onTaskChanged(task: TaskModel) {
     if (!task) return
+    const displayActions: TaskActionType[] = ['edit', 'delete', 'revoke', 'assign', 'extend', 'approve', 'reopen']
     this.items = [
-      { icon: 'visibility', type: 'read', title: 'Xem nhiệm vụ' },
+      { icon: 'visibility', type: 'read', title: 'Xem nhiệm vụ', enable: true },
       ...actionConfigs
-        .filter(t => t.type === 'edit' || t.type === 'delete')
+        .filter(t => displayActions.includes(t.type))
         .filter(t => permissionHelper.check(`task.sub.${t.permission}`, t.requiredLeader))
-        .map(({ icon, type, title }) => {
-          return { icon, type, title }
+        .map(({ icon, type, title, checkEnable }) => {
+          return { icon, type, title, enable: checkEnable(task, undefined) }
         })
     ]
   }
