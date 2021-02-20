@@ -16,6 +16,7 @@
       <v-col cols="12" class="pa-2">
         <v-card>
           <v-data-table
+            class="row-pointer"
             :items="viewmodel.tasks"
             item-key="id"
             @click:row="showDetail"
@@ -215,4 +216,8 @@ export default class TaskManagerPage extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.row-pointer >>> tbody tr :hover {
+  cursor: pointer;
+}
+</style>
