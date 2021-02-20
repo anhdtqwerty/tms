@@ -33,7 +33,9 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { mailBuilder } from '@/helpers/mail-helper'
+import { DepartmentModel } from '@/models/department-model'
 import { createTaskBody, TaskModel } from '@/models/task-model'
+import { UnitModel } from '@/models/unit-model'
 import { authStore } from '@/stores/auth-store'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
@@ -63,7 +65,13 @@ export default class TaskReturnDialog extends Vue {
           description: this.reasonReturn,
           type: 'returned',
           requestor: authStore.comrade.id,
-          task: this.task.id
+          task: this.task.id,
+          metadata: {
+            unitId: (authStore.comrade.unit as UnitModel).id,
+            unitTitle: (authStore.comrade.unit as UnitModel).title,
+            departmentId: (authStore.comrade.department as DepartmentModel)?.id || null,
+            departmentTitle: (authStore.comrade.department as DepartmentModel)?.title || null
+          }
         })
         try {
           const modifyTask = await api.task.update(

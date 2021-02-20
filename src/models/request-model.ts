@@ -13,7 +13,12 @@ export interface RequestModel {
   approver?: string | ComradeModel
   files?: string
   config?: {}
-  metadata?: {}
+  metadata?: {
+    unitId: any
+    unitTitle: string
+    departmentId: any
+    departmentTitle: string
+  }
   updated_at?: string
   created_at?: string
   data?: {

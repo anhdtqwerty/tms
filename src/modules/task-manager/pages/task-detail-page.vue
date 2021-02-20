@@ -177,6 +177,15 @@
               </task-search-component>
             </template>
 
+            <template v-slot:[`item.description`]="{ item }">
+              <max-length-text :text="item.description" />
+            </template>
+            <template v-slot:[`item.explainState`]="{ item }">
+              <max-length-text :text="item.explainState" />
+            </template>
+            <template v-slot:[`item.state`]="{ item }">
+              <task-state-component :state="item.state" />
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <task-sub-action-menu :task="item" @task-action="subTaskAction($event, item)" />
             </template>
@@ -204,6 +213,9 @@
                   </v-col>
                 </v-row>
               </v-container>
+            </template>
+            <template v-slot:[`item.task.description`]="{ item }">
+              <max-length-text :text="item.task.description" />
             </template>
             <template v-slot:[`item.type`]="{ item }">
               <task-state-component :state="item.type" />
@@ -247,6 +259,12 @@
                 </v-row>
               </v-container>
             </template>
+            <template v-slot:[`item.task.description`]="{ item }">
+              <max-length-text :text="item.task.description" />
+            </template>
+            <template v-slot:[`item.description`]="{ item }">
+              <max-length-text :text="item.description" />
+            </template>
             <template v-slot:[`item.created_at`]="{ item }">
               {{ item.created_at | ddmmyyyy }}
             </template>
@@ -274,6 +292,12 @@
                   </v-col>
                 </v-row>
               </v-container>
+            </template>
+            <template v-slot:[`item.task.description`]="{ item }">
+              <max-length-text :text="item.task.description" />
+            </template>
+            <template v-slot:[`item.description`]="{ item }">
+              <max-length-text :text="item.description" />
             </template>
             <template v-slot:[`item.created_at`]="{ item }">
               {{ item.created_at | ddmmyyyy }}
@@ -339,7 +363,8 @@ import { TaskActionType, TaskModel } from '@/models/task-model'
     TaskStateComponent: () => import('../components/task-state-component.vue'),
     TaskDeleteDialog: () => import('../dialogs/task-delete-dialog.vue'),
     TaskFilesComponent: () => import('@/components/files/task-files-component.vue'),
-    ReadMoreComponent: () => import('@/components/read-more/read-more-component.vue')
+    ReadMoreComponent: () => import('@/components/read-more/read-more-component.vue'),
+    MaxLengthText: () => import('@/components/read-more/max-length-text.vue')
   }
 })
 export default class TaskDetailPage extends Vue {
@@ -441,8 +466,8 @@ export default class TaskDetailPage extends Vue {
   subtaskHeaders = [
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
-    { text: 'ĐV thực hiện', value: 'supervisorUnit.title', sortable: true },
-    { text: 'CV thực hiện', value: 'executedComrade.title', sortable: false },
+    { text: 'ĐV thực hiện', value: 'executedUnit.title', sortable: true },
+    { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
     { text: 'Tình hình thực hiện', value: 'explainState', sortable: false },
     { text: 'Số/ký hiệu', value: 'code', sortable: false, defaultHide: true },
@@ -465,7 +490,7 @@ export default class TaskDetailPage extends Vue {
     { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
     { text: 'Ngày trả lại', value: 'created_at', sortable: false },
     { text: 'Lý do trả lại', value: 'description', sortable: false },
-    { text: 'Đơn vị gửi trả', value: 'requestor.unit.title', sortable: false },
+    { text: 'Đơn vị gửi trả', value: 'metadata.unitTitle', sortable: false },
     { text: 'Người gửi trả', value: 'requestor.name', sortable: false }
   ]
 
