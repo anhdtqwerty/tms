@@ -160,7 +160,7 @@
               >
                 <div>
                   <v-btn
-                    v-if="$permission('task.sub.add')"
+                    v-if="$permission('task.sub.add') && vm.task && !vm.task.createdDepartment"
                     small
                     color="success"
                     class="mr-2"
