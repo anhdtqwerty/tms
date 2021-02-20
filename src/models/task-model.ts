@@ -260,6 +260,7 @@ export type TaskActionType =
 export interface TaskActionConfig {
   icon: string
   type: TaskActionType
+  requiredLeader?: boolean
   title: string
   permission: keyof TaskPermissionConfig
   checkEnable: (task: TaskModel, route: TaskRouteType) => boolean
@@ -299,7 +300,7 @@ export const actionConfigs: TaskActionConfig[] = [
     type: 'assign',
     icon: 'pan_tool',
     title: 'Giao thực hiện',
-    checkEnable: (task, route) => _.isEmpty(task.executedComrade) || (route === 'task-assigned' && authStore.isLeader)
+    checkEnable: () => true
   },
   {
     permission: 'approve',

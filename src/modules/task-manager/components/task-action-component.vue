@@ -39,7 +39,7 @@ export default class TaskActionDialog extends Vue {
     if (!val) return
     const taskType = val.parent ? 'sub' : 'main'
     this.items = actionConfigs
-      .filter(t => permissionHelper.check(`task.${taskType}.${t.permission}`))
+      .filter(t => permissionHelper.check(`task.${taskType}.${t.permission}`, t.requiredLeader))
       .filter(t => {
         if (this.taskRoute === 'task-assigned') {
           const hideActions: TaskActionType[] = ['edit', 'revoke', 'extend']

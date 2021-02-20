@@ -19,8 +19,9 @@ const checkRole = (r: string, position: PositionModel) => {
 }
 
 export const permissionHelper = {
-  check: (required: string | string[]) => {
+  check: (required: string | string[], requiredLeader = false) => {
     if (!required) return true
+    if (authStore.isLeader === requiredLeader) return true
 
     const position = authStore.comrade?.position as PositionModel
     if (!position) {
