@@ -399,48 +399,39 @@ export default class TaskDetailPage extends Vue {
   }
 
   subTaskAction(typeAction: TaskActionType, task: TaskModel) {
+    this.editingTask = task
     switch (typeAction) {
       case 'read':
         this.$router.push({ path: '/task/' + task.id })
         break
       case 'edit':
-        this.editingTask = task
         this.showEditDialog = true
         break
       case 'revoke':
-        this.editingTask = task
         this.showRetriveDialog = true
         break
       case 'extend':
-        this.editingTask = task
         this.showExtendDialog = true
         break
       case 'return':
-        this.editingTask = task
         this.showReturnDialog = true
         break
       case 'assign':
-        this.editingTask = task
         this.showAssignDialog = true
         break
       case 'approve':
-        this.editingTask = task
         this.showApproveDialog = true
         break
       case 'update':
-        this.editingTask = task
         this.showEditStateDialog = true
         break
       case 'modify-update':
-        this.editingTask = task
         this.showModifyRequest = true
         break
       case 'reopen':
-        this.editingTask = task
         this.showReopenDialog = true
         break
       case 'delete':
-        this.editingTask = task
         this.showDeletingDialog = true
         break
       default:
@@ -450,45 +441,36 @@ export default class TaskDetailPage extends Vue {
   }
 
   taskActionCommon(typeAction: TaskActionType) {
+    this.editingTask = this.vm.task
     switch (typeAction) {
       case 'edit':
         this.showEditDialog = true
-        this.editingTask = this.vm.task
         break
       case 'revoke':
-        this.editingTask = this.vm.task
         this.showRetriveDialog = true
         break
       case 'extend':
-        this.editingTask = this.vm.task
         this.showExtendDialog = true
         break
       case 'return':
-        this.editingTask = this.vm.task
         this.showReturnDialog = true
         break
       case 'assign':
-        this.editingTask = this.vm.task
         this.showAssignDialog = true
         break
       case 'approve':
-        this.editingTask = this.vm.task
         this.showApproveDialog = true
         break
       case 'update':
-        this.editingTask = this.vm.task
         this.showEditStateDialog = true
         break
       case 'modify-update':
-        this.editingTask = this.vm.task
         this.showModifyRequest = true
         break
       case 'reopen':
-        this.editingTask = this.vm.task
         this.showReopenDialog = true
         break
       case 'delete':
-        this.editingTask = this.vm.task
         this.showDeletingDialog = true
         break
       default:

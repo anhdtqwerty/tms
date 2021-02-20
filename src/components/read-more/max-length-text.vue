@@ -1,7 +1,12 @@
 <template>
-  <span v-if="text">
-    {{ textDisplay }}
-    <span v-if="text.length > maxLength" class="blue--text caption" style="cursor: pointer" @click="showReadMore">
+  <span>
+    {{ text && textDisplay }}
+    <span
+      v-if="text && text.length > maxLength"
+      class="blue--text caption"
+      style="cursor: pointer"
+      @click="showReadMore"
+    >
       Xem thêm
     </span>
   </span>
@@ -28,6 +33,8 @@ export default class MaxLengthText extends Vue {
       } else {
         this.textDisplay = val
       }
+    } else {
+      this.textDisplay = val
     }
   }
   async showReadMore() {

@@ -16,8 +16,8 @@ export interface RequestModel {
   metadata?: {
     unitId: any
     unitTitle: string
-    departmentId: any
-    departmentTitle: string
+    departmentId?: any
+    departmentTitle?: string
   }
   updated_at?: string
   created_at?: string

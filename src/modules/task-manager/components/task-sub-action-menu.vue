@@ -46,13 +46,12 @@ export default class TaskSubActionMenu extends Vue {
 
   @Watch('task', { immediate: true }) onTaskChanged(task: TaskModel) {
     if (!task) return
-    const taskType = task.parent ? 'sub' : 'main'
     const displayActions: TaskActionType[] = ['edit', 'delete', 'revoke', 'assign', 'extend', 'approve', 'reopen']
     this.items = [
       { icon: 'visibility', type: 'read', title: 'Xem nhiệm vụ', enable: true },
       ...actionConfigs
         .filter(t => displayActions.includes(t.type))
-        .filter(t => permissionHelper.check(`task.${taskType}.${t.permission}`, t.requiredLeader))
+        .filter(t => permissionHelper.check(`task.sub.${t.permission}`, t.requiredLeader))
         .map(({ icon, type, title, checkEnable }) => {
           return { icon, type, title, enable: checkEnable(task, undefined) }
         })
