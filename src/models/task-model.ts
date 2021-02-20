@@ -327,7 +327,7 @@ export const actionConfigs: TaskActionConfig[] = [
   {
     permission: 'update',
     type: 'delete-update',
-    icon: 'edit',
+    icon: 'delete',
     title: 'Xóa cập nhật',
     checkEnable: task =>
       _.get(task.executedComrade, 'id') === authStore.comrade.id && canChangeRequest(getLastRequest(task))
@@ -335,7 +335,7 @@ export const actionConfigs: TaskActionConfig[] = [
   {
     permission: 'reopen',
     type: 'reopen',
-    icon: 'delete',
+    icon: 'lock_open',
     title: 'Mở lại nhiệm vụ',
     checkEnable: task => task.state === 'done' && task.status === 'approved'
   },

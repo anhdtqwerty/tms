@@ -315,25 +315,25 @@
 
     <task-add-dialog :value.sync="showAddSubtask" :taskParent="vm.task" @success="vm.taskAdded" />
     <task-edit-dialog :value.sync="showEditDialog" :task="editingTask" @success="vm.taskUpdated" />
-    <task-recover-dialog :value.sync="showRetriveDialog" :task="vm.task" @success="vm.taskRecovered" />
-    <task-extend-dialog :value.sync="showExtendDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-assign-dialog :value.sync="showAssignDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-approve-dialog :value.sync="showApproveDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-return-dialog :value.sync="showReturnDialog" :task="vm.task" @success="vm.taskReturned" />
+    <task-recover-dialog :value.sync="showRetriveDialog" :task="editingTask" @success="vm.taskRecovered" />
+    <task-extend-dialog :value.sync="showExtendDialog" :task="editingTask" @success="vm.taskUpdated" />
+    <task-assign-dialog :value.sync="showAssignDialog" :task="editingTask" @success="vm.taskUpdated" />
+    <task-approve-dialog :value.sync="showApproveDialog" :task="editingTask" @success="vm.taskUpdated" />
+    <task-return-dialog :value.sync="showReturnDialog" :task="editingTask" @success="vm.taskReturned" />
     <task-update-state-dialog
       :value.sync="showEditStateDialog"
       :isUpdateTask="true"
-      :task="vm.task"
+      :task="editingTask"
       @success="vm.taskUpdated"
     />
     <task-update-state-dialog
       :value.sync="showModifyRequest"
-      :task="vm.task"
+      :task="editingTask"
       :isUpdateTask="false"
       @success="vm.taskUpdated"
     />
-    <task-reopen-dialog :value.sync="showReopenDialog" :task="vm.task" @success="vm.taskUpdated" />
-    <task-delete-dialog :value.sync="showDeletingDialog" :task="deletingTask" @success="vm.taskDeleted" />
+    <task-reopen-dialog :value.sync="showReopenDialog" :task="editingTask" @success="vm.taskUpdated" />
+    <task-delete-dialog :value.sync="showDeletingDialog" :task="editingTask" @success="vm.taskDeleted" />
   </v-container>
 </template>
 
@@ -384,7 +384,6 @@ export default class TaskDetailPage extends Vue {
   showEditStateDialog = false
   showReopenDialog = false
 
-  deletingTask: TaskModel = null
   editingTask: TaskModel = null
 
   showModifyRequest = false
@@ -401,16 +400,48 @@ export default class TaskDetailPage extends Vue {
 
   subTaskAction(typeAction: TaskActionType, task: TaskModel) {
     switch (typeAction) {
+      case 'read':
+        this.$router.push({ path: '/task/' + task.id })
+        break
       case 'edit':
         this.editingTask = task
         this.showEditDialog = true
         break
-      case 'delete':
-        this.deletingTask = task
-        this.showDeletingDialog = true
+      case 'revoke':
+        this.editingTask = task
+        this.showRetriveDialog = true
         break
-      case 'read':
-        this.$router.push({ path: '/task/' + task.id })
+      case 'extend':
+        this.editingTask = task
+        this.showExtendDialog = true
+        break
+      case 'return':
+        this.editingTask = task
+        this.showReturnDialog = true
+        break
+      case 'assign':
+        this.editingTask = task
+        this.showAssignDialog = true
+        break
+      case 'approve':
+        this.editingTask = task
+        this.showApproveDialog = true
+        break
+      case 'update':
+        this.editingTask = task
+        this.showEditStateDialog = true
+        break
+      case 'modify-update':
+        this.editingTask = task
+        this.showModifyRequest = true
+        break
+      case 'reopen':
+        this.editingTask = task
+        this.showReopenDialog = true
+        break
+      case 'delete':
+        this.editingTask = task
+        this.showDeletingDialog = true
         break
       default:
         console.warn('subTaskAction doesnt handle', typeAction)
@@ -425,32 +456,40 @@ export default class TaskDetailPage extends Vue {
         this.editingTask = this.vm.task
         break
       case 'revoke':
+        this.editingTask = this.vm.task
         this.showRetriveDialog = true
         break
       case 'extend':
+        this.editingTask = this.vm.task
         this.showExtendDialog = true
         break
       case 'return':
+        this.editingTask = this.vm.task
         this.showReturnDialog = true
         break
       case 'assign':
+        this.editingTask = this.vm.task
         this.showAssignDialog = true
         break
       case 'approve':
+        this.editingTask = this.vm.task
         this.showApproveDialog = true
         break
       case 'update':
+        this.editingTask = this.vm.task
         this.showEditStateDialog = true
         break
       case 'modify-update':
+        this.editingTask = this.vm.task
         this.showModifyRequest = true
         break
       case 'reopen':
+        this.editingTask = this.vm.task
         this.showReopenDialog = true
         break
       case 'delete':
+        this.editingTask = this.vm.task
         this.showDeletingDialog = true
-        this.deletingTask = this.vm.task
         break
       default:
         console.warn('taskActionCommon not handle', typeAction)
