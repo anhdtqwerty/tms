@@ -159,6 +159,16 @@
                 @simple-search="vm.simpleSearch($event)"
               >
                 <div>
+                  <v-btn
+                    v-if="$permission('task.main.add')"
+                    medium
+                    color="success"
+                    class="mr-8"
+                    @click="showAddSubtask = true"
+                  >
+                    <v-icon left>add</v-icon>
+                    <span>Thêm</span>
+                  </v-btn>
                   <table-header-setting :headers="subtaskHeaders" @change="selectedHeaders = $event" />
                   <v-btn icon small @click="vm.exportExcel()">
                     <v-icon>more_horiz</v-icon>
