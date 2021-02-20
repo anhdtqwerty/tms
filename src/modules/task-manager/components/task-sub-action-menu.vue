@@ -38,7 +38,7 @@ export default class TaskSubActionMenu extends Vue {
       { icon: 'visibility', type: 'read', title: 'Xem nhiệm vụ' },
       ...actionConfigs
         .filter(t => t.type === 'edit' || t.type === 'delete')
-        .filter(t => permissionHelper.check(`task.sub.${t.permission}`))
+        .filter(t => permissionHelper.check(`task.sub.${t.permission}`, t.requiredLeader))
         .map(({ icon, type, title }) => {
           return { icon, type, title }
         })

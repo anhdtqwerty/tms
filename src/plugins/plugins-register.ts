@@ -8,7 +8,7 @@ export const pluginsRegister = () => {
     install: (Vue: any) => {
       Vue.prototype.$rules = rules
       Vue.prototype.$appRules = appRules
-      Vue.prototype.$permission = (role: string) => permissionHelper.check(role)
+      Vue.prototype.$permission = (role: string, requiredLeader = false) => permissionHelper.check(role, requiredLeader)
       Vue.prototype.$_empty = (any: any) => {
         return !_.isNumber(any) && (!any || _.isEmpty(any))
       }
