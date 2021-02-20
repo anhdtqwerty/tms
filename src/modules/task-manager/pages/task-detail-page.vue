@@ -160,10 +160,10 @@
               >
                 <div>
                   <v-btn
-                    v-if="$permission('task.main.add')"
-                    medium
+                    v-if="$permission('task.sub.add')"
+                    small
                     color="success"
-                    class="mr-8"
+                    class="mr-2"
                     @click="showAddSubtask = true"
                   >
                     <v-icon left>add</v-icon>
