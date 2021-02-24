@@ -53,7 +53,7 @@ export class UnitDetailViewModel {
     this.departments = this.departments.map(d => (d.id === department.id ? department : d))
   }
 
-  @action.bound *deleteDepartment(department: DepartmentModel) {
+  @asyncAction *deleteDepartment(department: DepartmentModel) {
     if (yield this.provider.api.deleteDepartment(department)) {
       this.departments = this.departments.filter(d => d.id !== department.id)
     }
@@ -61,5 +61,11 @@ export class UnitDetailViewModel {
 
   @action.bound comradeAdded(comrade: ComradeModel) {
     this.comrades = [comrade, ...this.comrades]
+  }
+
+  @asyncAction *deleteComrade(comrade: ComradeModel) {
+    if (yield this.provider.api.deleteComrade(comrade)) {
+      this.comrades = this.comrades.filter(c => c.id !== comrade.id)
+    }
   }
 }

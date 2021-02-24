@@ -13,13 +13,13 @@
           <v-row>
             <v-col cols="12" class="pa-2">
               <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên phòng ban" />
-              <app-text-field v-if="unit" :value="unit.title" disabled label="Đơn vị cha" />
+              <app-text-field v-if="unit" v-model="unitParent" disabled label="Đơn vị cha" />
               <unit-autocomplete v-else :value.sync="selectedUnitId" label="Đơn vị cha" />
               <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã phòng ban" />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email phòng ban" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại phòng ban" />
               <app-text-field v-model="address" :rules="$appRules.unitAddress" label="Địa chỉ" />
-              <app-textarea v-model="description" label="Mô tả" counter="5000" />
+              <app-textarea v-model="description" :rules="$appRules.unitDescription" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2" align="end">
               <v-btn depressed color="primary" medium @click="save">
@@ -37,7 +37,7 @@
 import { AppProvider } from '@/app-provider'
 import { DepartmentModel } from '@/models/department-model'
 import { UnitModel } from '@/models/unit-model'
-import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decorator'
+import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
@@ -59,6 +59,11 @@ export default class DepartmentAddDialog extends Vue {
   phone = ''
   description = ''
   address = ''
+  unitParent = ''
+
+  @Watch('value', { immediate: true }) onValueChanged(val: string) {
+    if (val) this.unitParent = this.unit.title
+  }
 
   async save() {
     if (this.form.validate()) {
@@ -77,6 +82,7 @@ export default class DepartmentAddDialog extends Vue {
           this.$emit('success', department)
           this.syncedValue = false
           this.form.reset()
+          this.providers.snackbar.addSuccess()
         } else {
           this.providers.snackbar.error('Mã phòng ban này đã được sử dụng')
         }

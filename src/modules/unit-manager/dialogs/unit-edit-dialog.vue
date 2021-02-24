@@ -18,7 +18,7 @@
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email đơn vị" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại đơn vị" />
               <app-text-field v-model="address" :rules="$appRules.unitAddress" label="Địa chỉ" />
-              <app-textarea v-model="description" label="Mô tả" counter="5000" />
+              <app-textarea v-model="description" :rules="$appRules.unitDescription" label="Mô tả" counter="5000" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed class="mr-4" medium @click="cancel">
@@ -95,6 +95,7 @@ export default class UnitEditDialog extends Vue {
           unit = await this.providers.api.unit.update(this.unit.id, unit)
           this.$emit('success', unit)
           this.syncedValue = false
+          this.providers.snackbar.updateSuccess()
         } else {
           this.providers.snackbar.error('Mã đơn vị này đã được sử dụng')
         }

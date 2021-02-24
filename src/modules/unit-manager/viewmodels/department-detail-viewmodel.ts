@@ -31,7 +31,7 @@ export class DepartmentDetailViewModel {
 
   @asyncAction *deleteComrade(comrade: ComradeModel) {
     if (yield this.provider.api.deleteComrade(comrade)) {
-      this.comrades = this.comrades.filter(c => c.id !== c.id)
+      this.comrades = this.comrades.filter(c => c.id !== comrade.id)
     }
   }
 
