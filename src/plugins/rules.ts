@@ -44,6 +44,7 @@ export const appRules = {
   unitPhone: [rules.phone],
   unitAddress: [rules.maxLength(255)],
   unitDescription: [rules.maxLength(5000)],
+  parentUnit: [rules.required],
 
   comradeName: [rules.required, rules.maxLength(100)],
   comradeCode: [rules.required, rules.maxLength(20), rules.nospace],
@@ -69,6 +70,6 @@ export const appRules = {
   taskDocsInfo: [rules.maxLength(1000)],
 
   //role
-  roleName: [rules.required],
+  roleName: [rules.required, rules.maxLength(256)],
   roleDescription: [rules.maxLength(5000)]
 }

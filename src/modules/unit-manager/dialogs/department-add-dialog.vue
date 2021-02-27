@@ -13,8 +13,8 @@
           <v-row>
             <v-col cols="12" class="pa-2">
               <app-text-field v-model="title" :rules="$appRules.unitName" label="Tên phòng ban" />
-              <app-text-field v-if="unit" v-model="unitParent" disabled label="Đơn vị cha" />
-              <unit-autocomplete v-else :value.sync="selectedUnitId" label="Đơn vị cha" />
+              <app-text-field v-if="unit" v-model="parentUnit" disabled label="Đơn vị cha" />
+              <unit-autocomplete v-else :value.sync="selectedUnitId" :rules="$appRules.parentUnit" label="Đơn vị cha" />
               <app-text-field v-model="code" :rules="$appRules.unitCode" @keydown.space.prevent label="Mã phòng ban" />
               <app-text-field v-model="email" :rules="$appRules.unitEmail" label="Email phòng ban" />
               <app-text-field v-model="phone" :rules="$appRules.unitPhone" label="Số điện thoại phòng ban" />
@@ -59,10 +59,10 @@ export default class DepartmentAddDialog extends Vue {
   phone = ''
   description = ''
   address = ''
-  unitParent = ''
+  parentUnit = ''
 
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
-    if (val) this.unitParent = this.unit.title
+    if (val) this.parentUnit = this.unit.title
   }
 
   async save() {

@@ -12,11 +12,11 @@ export class DepartmentManagerViewModel {
     this.search()
   }
 
-  @asyncAction *search(title: string = null, unitCode: string = null, code: string = null) {
+  @asyncAction *search(title: string = null, parentUnit: string = null, code: string = null) {
     const api = this.provider.api
     let input: any = {}
     if (title) input = { ...input, title_contains: title.trim() }
-    if (unitCode) input = { ...input, 'unit.code_contains': unitCode.trim() }
+    if (parentUnit) input = { ...input, 'unit.title_contains': parentUnit.trim() }
     if (code) input = { ...input, code_contains: code.trim() }
     this._searchParams = input
     const results = yield Promise.all([

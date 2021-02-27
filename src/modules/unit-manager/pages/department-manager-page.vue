@@ -32,7 +32,7 @@
                   </v-col>
                   <v-col cols="12" class="d-none d-sm-flex pa-2 align-center">
                     <app-text-field class="mr-4" hide-details v-model="searchName" label="Tên phòng ban" />
-                    <app-text-field class="mr-4" hide-details v-model="searchUnitCode" label="Đơn vị cha" />
+                    <app-text-field class="mr-4" hide-details v-model="searchParentUnit" label="Đơn vị cha" />
                     <app-text-field class="mr-4" hide-details v-model="searchCode" label="Mã phòng ban" />
                     <v-btn depressed color="primary" medium @click="search">
                       <span class="d-none d-md-flex">Tìm kiếm</span>
@@ -90,7 +90,7 @@ export default class DepartmentManagerPage extends Vue {
 
   searchName = ''
   searchCode = ''
-  searchUnitCode = ''
+  searchParentUnit = ''
 
   showAddUserDialog = false
   showAddDialog = false
@@ -114,7 +114,7 @@ export default class DepartmentManagerPage extends Vue {
   }
 
   search() {
-    this.viewmodel.search(this.searchName, this.searchUnitCode, this.searchCode)
+    this.viewmodel.search(this.searchName, this.searchParentUnit, this.searchCode)
   }
 }
 </script>
