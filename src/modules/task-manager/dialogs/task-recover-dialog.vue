@@ -106,13 +106,6 @@ export default class TaskRecoverDialog extends Vue {
                   {},
                   {
                     state: 'recovered',
-                    status: null,
-                    executedUnit: null,
-                    executedComrade: null,
-                    supportedUnits: null,
-                    supportedComrades: null,
-                    supervisorUnit: null,
-                    supervisors: null,
                     explainState: this.reasonRecover
                   }
                 )

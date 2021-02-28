@@ -113,7 +113,8 @@ export default class TaskApproveDialog extends Vue {
     if (this.form.validate()) {
       try {
         let task: TaskModel = {
-          status: this.approveStatusResult
+          status: this.approveStatusResult,
+          state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
         }
 
         await Promise.all(

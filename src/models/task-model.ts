@@ -161,44 +161,69 @@ export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
   return { ...changes, keywords }
 }
 export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
-  const unitPrams = authStore.unitParams
+  // const unitPrams = authStore.unitParams
+  const { department } = authStore.unitParams
+  const comradeUnitId = (authStore.comrade.unit as UnitModel)?.id
 
-  const leaderParams = { _or: [] as any[] }
+  let leaderOwnerParam = {}
+  let leaderAssignedParam = {}
+  let leaderSupervisosParam = {}
+  let leaderSupportParam = {}
   if (authStore.isLeader) {
-    if (unitPrams.department) {
-      leaderParams._or = [{ createdDepartment: unitPrams.department }]
-    } else if (unitPrams.unit) {
-      leaderParams._or = [{ createdUnit: unitPrams.unit }, { executedUnit: unitPrams.unit }]
-    } else if (unitPrams.ministry) {
-      leaderParams._or = [{ createdUnit: unitPrams.ministry }]
+    if (department) {
+      leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
+      leaderAssignedParam = { _or: [{ executedDepartment: department }, { executedComrade: authStore.comrade.id }] }
+      leaderSupervisosParam = { supervisors_contains: authStore.comrade.id }
+      leaderSupportParam = { supportedComrades_contains: authStore.comrade.id }
+    } else if (comradeUnitId) {
+      leaderOwnerParam = { _or: [{ createdUnit: comradeUnitId }, { createdBy: authStore.comrade.id }] }
+      leaderAssignedParam = { _or: [{ executedUnit: comradeUnitId }, { executedComrade: authStore.comrade.id }] }
+      leaderSupervisosParam = {
+        _or: [{ supervisorUnit: comradeUnitId }, { supervisors_contains: authStore.comrade.id }]
+      }
+      leaderSupportParam = {
+        _or: [{ supportedUnits_contains: comradeUnitId }, { supportedComrades_contains: authStore.comrade.id }]
+      }
     }
   }
 
-  let params: any[] = []
-  let taskParams: TaskModel = {}
+  let leaderPrams = {}
+  const taskParams: TaskModel = {}
 
   switch (taskType) {
     case 'task-created':
       if (authStore.isLeader) {
-        params = [leaderParams]
+        leaderPrams = leaderOwnerParam
       } else {
-        taskParams = { createdBy: authStore.comrade.id }
+        taskParams.createdBy = authStore.comrade.id
       }
       break
     case 'task-assigned':
-      taskParams.executedComrade = authStore.comrade.id
+      if (authStore.isLeader) {
+        leaderPrams = leaderAssignedParam
+      } else {
+        taskParams.executedComrade = authStore.comrade.id
+      }
       break
     case 'task-following':
-      _.set(taskParams, 'supervisors_contains', authStore.comrade.id)
+      if (authStore.isLeader) {
+        leaderPrams = leaderSupervisosParam
+      } else {
+        _.set(taskParams, 'supervisors_contains', authStore.comrade.id)
+      }
       break
     case 'task-support':
-      _.set(taskParams, 'supportedComrades_contains', authStore.comrade.id)
+      if (authStore.isLeader) {
+        leaderPrams = leaderSupportParam
+      } else {
+        _.set(taskParams, 'supportedComrades_contains', authStore.comrade.id)
+      }
       break
     case 'task-expired':
       taskParams.type = 'hasDeadline'
       _.set(taskParams, 'expiredDate_lt', moment().toISOString())
       if (authStore.isLeader) {
-        params = [leaderParams]
+        leaderPrams = leaderOwnerParam
       } else {
         taskParams.createdBy = authStore.comrade.id
       }
@@ -207,15 +232,16 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
       taskParams.state = 'done'
       taskParams.status = 'approving'
       if (authStore.isLeader) {
-        params = [leaderParams]
+        leaderPrams = leaderOwnerParam
       } else {
         taskParams.createdBy = authStore.comrade.id
       }
       break
     case 'task-done':
       taskParams.state = 'done'
+      taskParams.status = 'approved'
       if (authStore.isLeader) {
-        params = [leaderParams]
+        leaderPrams = leaderOwnerParam
       } else {
         taskParams.createdBy = authStore.comrade.id
       }
@@ -223,7 +249,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
     case 'task-unfinished':
       _.set(taskParams, 'state_ne', 'done')
       if (authStore.isLeader) {
-        params = [leaderParams]
+        leaderPrams = leaderOwnerParam
       } else {
         taskParams.createdBy = authStore.comrade.id
       }
@@ -232,15 +258,41 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
       console.error(`not support ${taskType}`)
       break
   }
-  return _.isEmpty(taskParams) ? params : [...params, taskParams]
+  return _.isEmpty(taskParams) ? [leaderPrams] : [leaderPrams, taskParams]
 }
 
 export const getLastRequest = (task: TaskModel) => {
   const updateTaskTypes: RequestType[] = ['doing', 'todo', 'waiting', 'done']
   const lastest = _.maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
 
-  if (lastest && updateTaskTypes.includes(_.get(lastest, 'type'))) return lastest
+  if (lastest && updateTaskTypes.includes(_.get(lastest, 'type')) && task.state === lastest.type) return lastest
   else return null
+}
+
+export const isAssignedTask = (task: TaskModel) => {
+  // self created
+  if ((task.executedComrade as ComradeModel)?.id === authStore.comrade.id) return true
+  if (!authStore.isLeader) return false
+
+  // leader
+  const { department, unit, ministry } = authStore.unitParams
+  if (department) return department === (task.executedDepartment as DepartmentModel)?.id
+  if (unit) return unit === (task.executedUnit as UnitModel)?.id
+  if (ministry) return ministry === (task.executedUnit as UnitModel)?.id
+  return false
+}
+
+export const isOwnerTask = (task: TaskModel) => {
+  // self created
+  if ((task.createdBy as ComradeModel)?.id === authStore.comrade.id) return true
+  if (!authStore.isLeader) return false
+
+  // leader
+  const { department, unit, ministry } = authStore.unitParams
+  if (department) return department === (task.createdDepartment as DepartmentModel)?.id
+  if (unit) return unit === (task.createdUnit as UnitModel)?.id
+  if (ministry) return ministry === (task.createdUnit as UnitModel)?.id
+  return false
 }
 
 export type TaskActionType =
@@ -272,81 +324,87 @@ export const actionConfigs: TaskActionConfig[] = [
     type: 'edit',
     icon: 'edit',
     title: 'Cập nhật thông tin',
-    checkEnable: task => task.state === 'waiting'
+    checkEnable: t => t.status !== 'approved' && isOwnerTask(t) && t.state === 'waiting'
   },
   {
     permission: 'revoke',
     type: 'revoke',
     icon: 'replay',
     title: 'Thu hồi nhiệm vụ',
-    checkEnable: task => task.state !== 'recovered'
+    checkEnable: t => t.status !== 'approved' && isOwnerTask(t) && t.state !== 'recovered'
   },
   {
     permission: 'extend',
     type: 'extend',
     icon: 'access_time',
     title: 'Gia hạn nhiệm vụ',
-    checkEnable: task => task.type === 'hasDeadline' && task.state !== 'done' && task.state !== 'recovered'
+    checkEnable: function(t) {
+      return (
+        t.status !== 'approved' &&
+        isAssignedTask(t) &&
+        t.type === 'hasDeadline' &&
+        !['done', 'recovered'].includes(t.state)
+      )
+    }
   },
   {
     permission: 'return',
     type: 'return',
     icon: 'replay',
     title: 'Trả lại nhiệm vụ',
-    checkEnable: task => task.state === 'waiting' && (task.createdBy as ComradeModel).id !== authStore.comrade.id
+    checkEnable: t => t.status !== 'approved' && isAssignedTask(t) && t.state === 'waiting'
   },
   {
     permission: 'assign',
     type: 'assign',
     icon: 'pan_tool',
     title: 'Giao thực hiện',
-    checkEnable: () => true
+    checkEnable: t => t.status !== 'approved' && t.state !== 'recovered' && (isOwnerTask(t) || authStore.isLeader)
   },
   {
     permission: 'approve',
     type: 'approve',
     icon: 'offline_pin',
     title: 'Phê duyệt nhiệm vụ',
-    checkEnable: t => t.state === 'done' && t.status === 'approving'
+    checkEnable: t => t.status === 'approving' && isOwnerTask(t) && t.state === 'done'
   },
   {
     permission: 'update',
     type: 'update',
     icon: 'account_box',
     title: 'Cập nhật tiến độ',
-    checkEnable: task => _.get(task.executedComrade, 'id') === authStore.comrade.id
+    checkEnable: t => t.status !== 'approved' && t.state !== 'recovered' && isAssignedTask(t)
   },
   {
     permission: 'update',
     type: 'modify-update',
     icon: 'edit',
     title: 'Sửa cập nhật',
-    checkEnable: task =>
-      _.get(task.executedComrade, 'id') === authStore.comrade.id && canChangeRequest(getLastRequest(task))
+    checkEnable: t =>
+      t.status !== 'approved' && t.state !== 'recovered' && isAssignedTask(t) && canChangeRequest(getLastRequest(t))
   },
   {
     permission: 'update',
     type: 'delete-update',
     icon: 'delete',
     title: 'Xóa cập nhật',
-    checkEnable: task =>
-      _.get(task.executedComrade, 'id') === authStore.comrade.id && canChangeRequest(getLastRequest(task))
+    checkEnable: t =>
+      t.status !== 'approved' && t.state !== 'recovered' && isAssignedTask(t) && canChangeRequest(getLastRequest(t))
   },
   {
     permission: 'reopen',
     type: 'reopen',
     icon: 'lock_open',
     title: 'Mở lại nhiệm vụ',
-    checkEnable: task => task.state === 'done' && task.status === 'approved'
+    checkEnable: t => t.status === 'approved' && isOwnerTask(t) && t.state === 'done'
   },
   {
     permission: 'delete',
     type: 'delete',
     icon: 'delete',
     title: 'Xóa nhiệm vụ',
-    checkEnable: task => _.isEmpty(task.executedUnit) && _.isEmpty(task.executedComrade)
+    checkEnable: task => _.isEmpty(task.executedUnit) && _.isEmpty(task.executedComrade) && task.status !== 'approved'
   }
 ]
-
 // HACK: mock allow all
 // actionConfigs.forEach(ac => (ac.checkEnable = () => true))

@@ -38,6 +38,7 @@
               <comrade-autocomplete
                 :value.sync="executedComradeId"
                 :unit="executedUnitId"
+                @departmentId="executedDepartmentId = $event"
                 label="Chuyên viên thực hiện"
               />
               <comrade-autocomplete
@@ -114,6 +115,7 @@ export default class TaskEditDialog extends Vue {
   executedUnitId = ''
   supportedUnitIds: string[] = []
   executedComradeId = ''
+  executedDepartmentId = ''
   supportedComradeIds: string[] = []
   deadlineType: TaskDeadlineType = null
   state: TaskStateType = null
@@ -179,6 +181,8 @@ export default class TaskEditDialog extends Vue {
 
           executedUnit: this.executedUnitId,
           executedComrade: this.executedComradeId,
+
+          executedDepartment: this.executedDepartmentId,
 
           supervisorUnit: this.supervisorUnitId,
           supervisors: this.supervisorId ? [this.supervisorId] : [],

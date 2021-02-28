@@ -21,6 +21,7 @@ import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-deco
 import { AppProvider } from '@/app-provider'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
+import { DepartmentModel } from '@/models/department-model'
 
 @Component
 export default class ComradeAutoComplete extends Vue {
@@ -68,6 +69,27 @@ export default class ComradeAutoComplete extends Vue {
       //
     }
     this.loading = false
+  }
+
+  @Watch('value')
+  onValueChanged(value: string | string[]) {
+    if (Array.isArray(value)) {
+      const deparmtents = _.reduce(
+        value,
+        (result, cur) => {
+          const deparmtent = this.items.find(i => i.id === cur)?.department as DepartmentModel
+          result[cur] = deparmtent.id
+          return result
+        },
+        {} as any
+      )
+      this.$emit('departmentIds', deparmtents)
+    } else if (value) {
+      const deparmtent = this.items.find(i => i.id === value)?.department as DepartmentModel
+      this.$emit('departmentId', deparmtent?.id)
+    } else {
+      this.$emit('departmentId', '')
+    }
   }
 }
 </script>

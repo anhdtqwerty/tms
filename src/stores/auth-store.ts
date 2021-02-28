@@ -77,11 +77,11 @@ class AuthStore {
     //   }
     // }
     const unit = this.comrade?.unit as UnitModel
-    const department = this.comrade?.department as DepartmentModel
+    const department = (this.comrade?.department as DepartmentModel)?.id
     return {
       ministry: unit?.type === 'ministry' ? unit?.id : undefined,
       unit: unit?.type === 'ministry' ? undefined : unit?.id,
-      department: department?.id
+      department: department
     }
   }
 

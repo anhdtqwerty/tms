@@ -21,6 +21,7 @@
                 hide-details
                 :unit="executedUnitId"
                 :value.sync="executedComradeId"
+                @departmentId="executedDepartmentId = $event"
                 label="Người xử lý"
               />
             </v-col>
@@ -62,6 +63,7 @@ export default class TaskAssignDialog extends Vue {
   code = ''
   executedUnitId = ''
   executedComradeId = ''
+  executedDepartmentId = ''
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -76,7 +78,8 @@ export default class TaskAssignDialog extends Vue {
       try {
         let task: TaskModel = {
           executedUnit: this.executedUnitId,
-          executedComrade: this.executedComradeId
+          executedComrade: this.executedComradeId,
+          executedDepartment: this.executedDepartmentId
         }
         task = await this.providers.api.task.update(this.task.id, task)
         this.providers.api.sendMail(mailBuilder.assignTask(task))

@@ -55,6 +55,7 @@ export class TaskManagerViewModel {
 
   @action.bound taskUpdated(task: TaskModel) {
     this.tasks = this.tasks.map(t => (t.id === task.id ? task : t))
+    this.search()
   }
 
   @action.bound taskDeleted(id: string) {
