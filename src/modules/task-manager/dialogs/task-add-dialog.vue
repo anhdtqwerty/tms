@@ -60,7 +60,8 @@
               <date-picker-input
                 class="mb-6"
                 :value.sync="expiredDate"
-                :disabled="deadlineType !== 'hasDeadline'"
+                v-if="deadlineType === 'hasDeadline'"
+                :rules="$appRules.taskExpiredDate"
                 label="Hạn xử lý"
               />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
