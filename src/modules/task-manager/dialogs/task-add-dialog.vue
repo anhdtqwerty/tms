@@ -26,25 +26,26 @@
               <app-text-field v-model="docsInfo" :rules="$appRules.taskDocsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
-
           <v-row>
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin nhiệm vụ</div>
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="description" :rules="$appRules.taskDescription" label="Nội dung nhiệm vụ" />
-              <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị thực hiện" />
-              <unit-autocomplete :value.sync="supportedUnitIds" multiple label="Đơn vị phối hợp" />
+              <unit-department-autocomplete :value.sync="executedUnit" label="Đơn vị thực hiện" />
+              <unit-department-autocomplete :value.sync="supportedUnits" multiple label="Đơn vị phối hợp" />
+
               <comrade-autocomplete
                 :value.sync="executedComradeId"
-                @departmentId="executedDepartmentId = $event"
-                :unit="executedUnitId"
+                :unit="executedUnit | _get('unit')"
+                :department="executedUnit | _get('department')"
                 label="Chuyên viên thực hiện"
               />
               <comrade-autocomplete
                 :value.sync="supportedComradeIds"
-                :unit="supportedUnitIds"
-                multiple
+                :unit="getSupportedUnits"
+                :department="getSupportedDepartments"
+                :multiple="true"
                 hide-details
                 label="Chuyên viên phối hợp"
               />
@@ -64,8 +65,13 @@
                 :rules="$appRules.taskExpiredDate"
                 label="Hạn xử lý"
               />
-              <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
-              <comrade-autocomplete :value.sync="supervisorId" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
+              <unit-department-autocomplete :value.sync="supervisorUnit" label="Đơn vị theo dõi" />
+              <comrade-autocomplete
+                :value.sync="supervisorId"
+                :unit="supervisorUnit | _get('unit')"
+                :department="supervisorUnit | _get('department')"
+                label="Chuyên viên theo dõi"
+              />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -93,7 +99,8 @@ import { Component, Inject, PropSync, Prop, Ref, Vue, Watch } from 'vue-property
 
 @Component({
   components: {
-    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
+    // UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
+    UnitDepartmentAutocomplete: () => import('@/components/autocomplete/unit-department-autocomplete.vue'),
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
@@ -115,16 +122,14 @@ export default class TaskAddDialog extends Vue {
   expiredDate: string = null
   priority: TaskPriorityType = null
 
-  executedUnitId = ''
-  supportedUnitIds: string[] = []
-  supervisorUnitId = ''
-
-  executedDepartmentId = ''
-
   executedComradeId = ''
   supportedComradeIds: string[] = []
   supervisorId = ''
   selectedFiles: File[] = []
+
+  executedUnit = {}
+  supportedUnits: { department: string; unit: string }[] = []
+  supervisorUnit = {}
 
   @Watch('deadlineType') onDeadlineTypeChange(val: TaskDeadlineType) {
     if (val !== 'hasDeadline') {
@@ -149,16 +154,17 @@ export default class TaskAddDialog extends Vue {
               expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
               parent: this.taskParent?.id ?? undefined,
 
-              executedUnit: this.executedUnitId,
+              executedUnit: _.get(this.executedUnit, 'unit'),
               executedComrade: this.executedComradeId,
+              executedDepartment: _.get(this.executedUnit, 'department'),
 
-              executedDepartment: this.executedDepartmentId,
-
-              supportedUnits: this.supportedUnitIds,
               supervisors: this.supervisorId ? [this.supervisorId] : [],
+              supervisorUnit: _.get(this.supervisorUnit, 'unit'),
+              supervisorDepartment: _.get(this.supervisorUnit, 'department'),
 
-              supervisorUnit: this.supervisorUnitId,
               supportedComrades: this.supportedComradeIds,
+              supportedUnits: this.getSupportedUnits,
+              supportedDepartments: this.getSupportedDepartments,
 
               createdBy: authStore.comrade.id,
               createdDepartment: _.get(authStore.comrade.department, 'id'),
@@ -186,6 +192,16 @@ export default class TaskAddDialog extends Vue {
         this.providers.snackbar.commonError(error)
       }
     }
+  }
+
+  get getSupportedUnits() {
+    if (this.supportedUnits.length) return this.supportedUnits.map(x => x.unit).filter((v, i, a) => a.indexOf(v) === i)
+    return null
+  }
+
+  get getSupportedDepartments() {
+    if (this.supportedUnits.length) return this.supportedUnits.map(x => x.department).filter(d => d !== undefined)
+    return null
   }
 }
 </script>
