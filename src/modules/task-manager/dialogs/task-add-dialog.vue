@@ -11,7 +11,7 @@
 
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
-          <v-row>
+          <v-row v-if="!taskParent">
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
@@ -139,12 +139,12 @@ export default class TaskAddDialog extends Vue {
           createTaskBody(
             {},
             {
-              code: this.code,
-              title: this.title,
+              code: _.get(this.taskParent, 'code') ?? this.code,
+              title: _.get(this.taskParent, 'title') ?? this.title,
               description: this.description,
-              priority: this.priority,
+              priority: this.taskParent ? this.taskParent.priority : this.priority,
               state: 'waiting',
-              publishedDate: this.publishedDate,
+              publishedDate: _.get(this.taskParent, 'publishedDate') ?? this.publishedDate,
               type: this.deadlineType,
               expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
               parent: this.taskParent?.id ?? undefined,
@@ -163,7 +163,7 @@ export default class TaskAddDialog extends Vue {
               createdBy: authStore.comrade.id,
               createdDepartment: _.get(authStore.comrade.department, 'id'),
               createdUnit: _.get(authStore.comrade.unit, 'id'),
-              documentInfo: this.docsInfo
+              documentInfo: _.get(this.taskParent, 'documentInfo') ?? this.docsInfo
             }
           )
         )

@@ -11,7 +11,7 @@
 
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
-          <v-row>
+          <v-row v-if="task && !task.parent">
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
