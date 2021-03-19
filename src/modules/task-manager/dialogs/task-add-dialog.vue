@@ -17,7 +17,17 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="code" :rules="$appRules.taskCode" label="Số/ký hiệu" />
-              <date-picker-input :value.sync="publishedDate" label="Ngày ban hành" />
+              <app-text-field
+                :value.sync="publishedDateDisplay"
+                @click="showPublishedDateInputDialog = true"
+                append-icon="expand_more"
+                @click:append="showPublishedDateInputDialog = true"
+                readonly
+                clearable
+                @click:clear="clearPublishedDate"
+                label="Ngày ban hành"
+              />
+              <date-input-dialog :value.sync="showPublishedDateInputDialog" @ok="handlePublishedDateInput" />
               <app-text-field v-model="title" :rules="$appRules.taskTitle" label="Trích yếu" />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
@@ -57,13 +67,21 @@
                 :rules="$appRules.taskDeadlineType"
                 label="Loại hạn xử lý"
               />
-              <date-picker-input
+              <app-text-field
                 class="mb-6"
-                :value.sync="expiredDate"
+                :value.sync="expiredDateDisplay"
                 v-if="deadlineType === 'hasDeadline'"
                 :rules="$appRules.taskExpiredDate"
+                @click="showExpiredDateInputDialog = true"
+                append-icon="expand_more"
+                @click:append="showExpiredDateInputDialog = true"
+                readonly
+                hide-details
+                clearable
+                @click:clear="clearExpiredDate"
                 label="Hạn xử lý"
               />
+              <date-input-dialog :value.sync="showExpiredDateInputDialog" @ok="handleExpiredDateInput" />
               <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
               <comrade-autocomplete :value.sync="supervisorId" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
             </v-col>
@@ -89,6 +107,7 @@ import { mailBuilder } from '@/helpers/mail-helper'
 import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
+import moment from 'moment'
 import { Component, Inject, PropSync, Prop, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -97,7 +116,8 @@ import { Component, Inject, PropSync, Prop, Ref, Vue, Watch } from 'vue-property
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
-    TaskDeadlineTypeSelect: () => import('@/components/autocomplete/task-deadline-type-select.vue')
+    TaskDeadlineTypeSelect: () => import('@/components/autocomplete/task-deadline-type-select.vue'),
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
   }
 })
 export default class TaskAddDialog extends Vue {
@@ -126,10 +146,34 @@ export default class TaskAddDialog extends Vue {
   supervisorId = ''
   selectedFiles: File[] = []
 
+  publishedDateDisplay: string = null
+  showPublishedDateInputDialog = false
+
+  expiredDateDisplay: string = null
+  showExpiredDateInputDialog = false
+
   @Watch('deadlineType') onDeadlineTypeChange(val: TaskDeadlineType) {
     if (val !== 'hasDeadline') {
       this.expiredDate = null
     }
+  }
+
+  handlePublishedDateInput(date: string) {
+    this.publishedDate = date
+    this.publishedDateDisplay = moment(date).format('DD/MM/YYYY')
+  }
+  clearPublishedDate() {
+    this.publishedDate = null
+    this.publishedDateDisplay = null
+  }
+
+  handleExpiredDateInput(date: string) {
+    this.expiredDate = date
+    this.expiredDateDisplay = moment(date).format('DD/MM/YYYY')
+  }
+  clearExpiredDate() {
+    this.expiredDate = null
+    this.expiredDateDisplay = null
   }
 
   async save() {

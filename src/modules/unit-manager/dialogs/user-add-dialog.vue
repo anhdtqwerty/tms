@@ -19,7 +19,19 @@
                 <v-radio label="Nam" value="male" />
                 <v-radio label="Nữ" value="female" />
               </v-radio-group>
-              <date-picker-input :value.sync="bod" label="Ngày sinh" :rules="$appRules.comradeBod" />
+              <app-text-field
+                :value.sync="dobDisplay"
+                @click="showDob = true"
+                append-icon="expand_more"
+                :rules="$appRules.comradeBod"
+                @click:append="showDob = true"
+                readonly
+                clearable
+                @click:clear="clearDob"
+                label="Ngày sinh"
+              />
+              <date-input-dialog :value.sync="showDob" @ok="handleDob" />
+
               <app-text-field
                 v-model="email"
                 label="Email"
@@ -77,6 +89,7 @@ import { ComradeSex } from '@/models/comrade-model'
 import { DepartmentModel } from '@/models/department-model'
 import { UnitModel } from '@/models/unit-model'
 import _ from 'lodash'
+import moment from 'moment'
 import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decorator'
 
 @Component({
@@ -84,7 +97,8 @@ import { Component, Inject, Prop, PropSync, Ref, Vue } from 'vue-property-decora
     UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
     DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue'),
     PositionAutocomplete: () => import('@/components/autocomplete/position-autocomplete.vue'),
-    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
   }
 })
 export default class UserAddDialog extends Vue {
@@ -112,6 +126,18 @@ export default class UserAddDialog extends Vue {
   showPassword = false
 
   submitErrors: string[] = []
+
+  dobDisplay: string = null
+  showDob = false
+
+  handleDob(date: string) {
+    this.bod = date
+    this.dobDisplay = moment(date).format('DD/MM/YYYY')
+  }
+  clearDob() {
+    this.bod = null
+    this.dobDisplay = null
+  }
 
   async save() {
     if (!this.form.validate()) return

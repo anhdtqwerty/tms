@@ -42,13 +42,6 @@
                   <v-radio label="Nam" value="male" />
                   <v-radio label="Nữ" value="female" />
                 </v-radio-group>
-                <!-- <date-picker-input
-                  :value.sync="bod"
-                  label="Ngày sinh"
-                  :rules="$appRules.comradeBod"
-                  :outlined="false"
-                  class="mb-4"
-                /> -->
                 <app-text-field
                   :value.sync="dobDisplay"
                   @click="showDob = true"
