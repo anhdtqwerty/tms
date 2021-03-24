@@ -11,13 +11,24 @@
 
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
-          <v-row>
+          <v-row v-if="task && !task.parent">
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="code" disabled label="Số/ký hiệu" />
-              <date-picker-input :value.sync="publishedDate" label="Ngày ban hành" />
+              <app-text-field
+                :value.sync="publishedDateDisplay"
+                @click="showPublishedDateInputDialog = true"
+                append-icon="expand_more"
+                @click:append="showPublishedDateInputDialog = true"
+                readonly
+                clearable
+                @click:clear="clearPublishedDate"
+                label="Ngày ban hành"
+              />
+              <date-input-dialog :value.sync="showPublishedDateInputDialog" @ok="handlePublishedDateInput" />
+
               <app-text-field v-model="title" :rules="$appRules.taskTitle" label="Trích yếu" />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
@@ -59,12 +70,22 @@
                 :rules="$appRules.taskDeadlineType"
                 label="Loại hạn xử lý"
               />
-              <date-picker-input
-                :value.sync="expiredDate"
+              <app-text-field
+                class="mb-6"
+                :value.sync="expiredDateDisplay"
                 v-if="deadlineType === 'hasDeadline'"
                 :rules="$appRules.taskExpiredDate"
+                @click="showExpiredDateInputDialog = true"
+                append-icon="expand_more"
+                @click:append="showExpiredDateInputDialog = true"
+                readonly
+                hide-details
+                clearable
+                @click:clear="clearExpiredDate"
                 label="Hạn xử lý"
               />
+              <date-input-dialog :value.sync="showExpiredDateInputDialog" @ok="handleExpiredDateInput" />
+
               <unit-department-autocomplete :value.sync="supervisorUnitDep" label="Đơn vị theo dõi" />
               <comrade-autocomplete
                 :value.sync="supervisorId"
@@ -97,6 +118,7 @@ import { DepartmentModel } from '@/models/department-model'
 import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType, TaskStateType } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
 import _ from 'lodash'
+import moment from 'moment'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
@@ -106,7 +128,8 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
-    TaskDeadlineTypeSelect: () => import('@/components/autocomplete/task-deadline-type-select.vue')
+    TaskDeadlineTypeSelect: () => import('@/components/autocomplete/task-deadline-type-select.vue'),
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
   }
 })
 export default class TaskEditDialog extends Vue {
@@ -141,13 +164,21 @@ export default class TaskEditDialog extends Vue {
   supportedUnitDeps: { department?: string; unit?: string }[] = []
   supervisorUnitDep = {}
 
+  publishedDateDisplay: string = null
+  showPublishedDateInputDialog = false
+
+  expiredDateDisplay: string = null
+  showExpiredDateInputDialog = false
+
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.description = val.description
       this.publishedDate = val.publishedDate
+      this.publishedDateDisplay = moment(val.publishedDate).format('DD/MM/YYYY')
       this.deadlineType = val.type
       this.expiredDate = val.expiredDate
+      this.expiredDateDisplay = moment(val.expiredDate).format('DD/MM/YYYY')
       this.title = val.title
       this.state = val.state
       this.priority = val.priority
@@ -182,6 +213,24 @@ export default class TaskEditDialog extends Vue {
     if (val !== 'hasDeadline') {
       this.expiredDate = null
     }
+  }
+
+  handlePublishedDateInput(date: string) {
+    this.publishedDate = date
+    this.publishedDateDisplay = moment(date).format('DD/MM/YYYY')
+  }
+  clearPublishedDate() {
+    this.publishedDate = null
+    this.publishedDateDisplay = null
+  }
+
+  handleExpiredDateInput(date: string) {
+    this.expiredDate = date
+    this.expiredDateDisplay = moment(date).format('DD/MM/YYYY')
+  }
+  clearExpiredDate() {
+    this.expiredDate = null
+    this.expiredDateDisplay = null
   }
 
   async save() {

@@ -15,7 +15,21 @@
             <v-col cols="12" class="pa-2">
               <app-text-field disabled v-model="code" label="Số/ký hiệu" />
               <date-picker-input disabled :value="expireDateOld" label="Hạn xử lý" />
-              <date-picker-input :value.sync="expireDateNew" :rules="$appRules.taskExtendDate" label="Hạn xử lý mới" />
+              <app-text-field
+                class="mb-6"
+                :value.sync="newExpiredDateDisplay"
+                :rules="$appRules.taskExtendDate"
+                @click="showExpiredDateInputDialog = true"
+                append-icon="expand_more"
+                @click:append="showExpiredDateInputDialog = true"
+                readonly
+                hide-details
+                clearable
+                @click:clear="clearNewExpiredDate"
+                label="Hạn xử lý mới"
+              />
+              <date-input-dialog :value.sync="showExpiredDateInputDialog" @ok="handleNewExpiredDateInput" />
+
               <app-textarea v-model="description" rows="2" disabled label="Nội dung nhiệm vụ" />
               <app-text-field v-model="reasonExtend" :rules="$appRules.taskExplain" label="Lý do gia hạn" />
               <app-file-input hide-details :value.sync="selectedFiles" label="File đính kèm" />
@@ -43,11 +57,13 @@ import { createTaskBody, TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
+import moment from 'moment'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
-    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
   }
 })
 export default class TaskExtendDialog extends Vue {
@@ -63,12 +79,24 @@ export default class TaskExtendDialog extends Vue {
   expireDateNew: string = null
   selectedFiles: File[] = []
 
+  newExpiredDateDisplay: string = null
+  showExpiredDateInputDialog = false
+
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
       this.code = val.code
       this.expireDateOld = val.expiredDate
       this.description = val.description
     }
+  }
+
+  handleNewExpiredDateInput(date: string) {
+    this.expireDateNew = date
+    this.newExpiredDateDisplay = moment(date).format('DD/MM/YYYY')
+  }
+  clearNewExpiredDate() {
+    this.expireDateNew = null
+    this.newExpiredDateDisplay = null
   }
 
   async save() {

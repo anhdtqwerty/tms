@@ -224,6 +224,9 @@
                 </v-row>
               </v-container>
             </template>
+            <template v-slot:[`item.description`]="{ item }">
+              <max-length-text :text="item.description" />
+            </template>
             <template v-slot:[`item.task.description`]="{ item }">
               <max-length-text :text="item.task.description" />
             </template>
@@ -516,6 +519,7 @@ export default class TaskDetailPage extends Vue {
     { text: 'Ngày cập nhật', value: 'updated_at', sortable: false },
     { text: 'Ngày thực hiện', value: 'startedDate', sortable: false },
     { text: 'Trạng thái', value: 'type', sortable: true },
+    { text: 'Diễn giải trạng thái', value: 'description', sortable: false },
     { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
     { text: 'Người cập nhật', value: 'requestor.name', sortable: false },
     { text: 'File đính kèm', value: 'attachFile', sortable: false }

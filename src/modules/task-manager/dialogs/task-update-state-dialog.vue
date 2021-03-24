@@ -16,7 +16,21 @@
           <v-row>
             <v-col cols="12" class="pa-2">
               <task-state-select :includes="taskStateIncludes" :value.sync="state" label="Trạng thái" />
-              <date-picker-input :value.sync="startedDate" :rules="$appRules.taskStartedDate" label="Ngày thực hiện" />
+              <app-text-field
+                class="mb-6"
+                :value.sync="startedDateDisplay"
+                :rules="$appRules.taskStartedDate"
+                @click="showDateInputDialog = true"
+                append-icon="expand_more"
+                @click:append="showDateInputDialog = true"
+                readonly
+                hide-details
+                clearable
+                @click:clear="clearStartedDate"
+                label="Ngày thực hiện"
+              />
+              <date-input-dialog :value.sync="showDateInputDialog" @ok="handleStartedDateInput" />
+
               <app-text-field v-model="explain" :rules="$appRules.taskExplain" label="Diễn giải trạng thái" />
               <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
               <div class="d-flex">
@@ -62,7 +76,8 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
   components: {
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
-    TaskFilesComponent: () => import('@/components/files/task-files-component.vue')
+    TaskFilesComponent: () => import('@/components/files/task-files-component.vue'),
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
   }
 })
 export default class TaskUpdateStateDialog extends Vue {
@@ -79,6 +94,9 @@ export default class TaskUpdateStateDialog extends Vue {
   taskStateIncludes: TaskStateType[] = ['todo', 'doing', 'done']
   request: RequestModel = null
   selectedFiles: File[] = []
+
+  startedDateDisplay: string = null
+  showDateInputDialog = false
 
   @Watch('value', { immediate: true }) onValueChanged(val: string) {
     if (val) {
@@ -97,6 +115,15 @@ export default class TaskUpdateStateDialog extends Vue {
         }
       }
     }
+  }
+
+  handleStartedDateInput(date: string) {
+    this.startedDate = date
+    this.startedDateDisplay = moment(date).format('DD/MM/YYYY')
+  }
+  clearStartedDate() {
+    this.startedDate = null
+    this.startedDateDisplay = null
   }
 
   async save() {

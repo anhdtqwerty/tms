@@ -42,12 +42,17 @@
                   <v-radio label="Nam" value="male" />
                   <v-radio label="Nữ" value="female" />
                 </v-radio-group>
-                <date-picker-input
-                  :value.sync="bod"
-                  label="Ngày sinh"
+                <app-text-field
+                  :value.sync="dobDisplay"
+                  @click="showDob = true"
+                  append-icon="expand_more"
                   :rules="$appRules.comradeBod"
+                  @click:append="showDob = true"
+                  readonly
+                  clearable
                   :outlined="false"
-                  class="mb-4"
+                  @click:clear="clearDob"
+                  label="Ngày sinh"
                 />
                 <app-text-field
                   outlined
@@ -122,6 +127,8 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <date-input-dialog :value.sync="showDob" @ok="handleDob" />
   </v-container>
 </template>
 
@@ -137,6 +144,7 @@ import { Observer } from 'mobx-vue'
 import { Component, Inject, Provide, Ref, Vue, Watch } from 'vue-property-decorator'
 import { UserDetailViewModel } from '../viewmodels/user-detail-viewmodel'
 import _ from 'lodash'
+import moment from 'moment'
 
 @Observer
 @Component({
@@ -145,7 +153,8 @@ import _ from 'lodash'
     DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue'),
     PositionAutocomplete: () => import('@/components/autocomplete/position-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
-    AppAvatar: () => import('@/components/images/app-avatar.vue')
+    AppAvatar: () => import('@/components/images/app-avatar.vue'),
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
   }
 })
 export default class UserDetailPage extends Vue {
@@ -178,6 +187,9 @@ export default class UserDetailPage extends Vue {
 
   submitErrors: string[] = []
 
+  dobDisplay: string = null
+  showDob = false
+
   constructor() {
     super()
     reaction(
@@ -186,6 +198,18 @@ export default class UserDetailPage extends Vue {
         this.change(comrade)
       }
     )
+  }
+
+  handleDob(date: string) {
+    if (date) {
+      this.bod = date
+      this.dobDisplay = moment(date).format('DD/MM/YYYY')
+    }
+  }
+
+  clearDob() {
+    this.bod = null
+    this.dobDisplay = null
   }
 
   toggleEditEmail() {
@@ -204,6 +228,7 @@ export default class UserDetailPage extends Vue {
     this.code = comrade.code
     this.sex = comrade.data.sex
     this.bod = comrade.data.bod ?? ''
+    this.dobDisplay = moment(comrade.data.bod).format('DD/MM/YYYY') ?? ''
     this.email = user.email
     this.phone = comrade.phone
     this.active = !user.blocked

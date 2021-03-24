@@ -2,7 +2,7 @@
   <v-dialog :fullscreen="$vuetify.breakpoint.xs" width="884" v-model="syncedValue" scrollable>
     <v-card>
       <v-toolbar color="primary" dark dense class="elevation-0">
-        <v-toolbar-title>THÊM MỚI USER</v-toolbar-title>
+        <v-toolbar-title>THÊM MỚI NGƯỜI DÙNG</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="syncedValue = false">
           <v-icon class="white--text">close</v-icon>
@@ -20,7 +20,17 @@
                 <v-radio label="Nam" value="male" />
                 <v-radio label="Nữ" value="female" />
               </v-radio-group>
-              <date-picker-input :value.sync="bod" label="Ngày sinh" :rules="$appRules.comradeBod" />
+              <app-text-field
+                :value.sync="dobDisplay"
+                @click="showDob = true"
+                append-icon="expand_more"
+                :rules="$appRules.comradeBod"
+                @click:append="showDob = true"
+                readonly
+                clearable
+                @click:clear="clearDob"
+                label="Ngày sinh"
+              />
               <app-text-field
                 v-model="email"
                 label="Email"
@@ -77,6 +87,8 @@
               </v-btn>
             </v-col>
           </v-row>
+
+          <date-input-dialog :value.sync="showDob" @ok="handleDob" />
         </v-container>
       </v-form>
     </v-card>
@@ -87,13 +99,15 @@
 import { AppProvider } from '@/app-provider'
 import { Component, Inject, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 import { ComradeSex } from '@/models/comrade-model'
+import moment from 'moment'
 
 @Component({
   components: {
     UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
     DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue'),
     PositionAutocomplete: () => import('@/components/autocomplete/position-autocomplete.vue'),
-    DatePickerInput: () => import('@/components/picker/date-picker-input.vue')
+    DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
   }
 })
 export default class UserAddDialog extends Vue {
@@ -120,7 +134,20 @@ export default class UserAddDialog extends Vue {
   position: string = null
   showPassword = false
 
+  dobDisplay: string = null
+  showDob = false
+
   submitErrors: string[] = []
+
+  handleDob(date: string) {
+    this.bod = date
+    this.dobDisplay = moment(date).format('DD/MM/YYYY')
+  }
+
+  clearDob() {
+    this.bod = null
+    this.dobDisplay = null
+  }
 
   async save() {
     if (!this.form.validate()) return
