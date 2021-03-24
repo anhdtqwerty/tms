@@ -104,7 +104,12 @@
               <div>Theo dõi</div>
             </v-col>
             <v-col cols="12">
-              <div class="font-weight-bold">{{ vm.task | _get('supervisorUnit.title') }}</div>
+              <div v-if="userUnit && userUnit.type !== 'ministry'" class="font-weight-bold">
+                {{ vm.task | _get('supervisorDepartment.title') }}
+              </div>
+              <div v-else class="font-weight-bold">
+                {{ vm.task | _get('supervisorUnit.title') }}
+              </div>
             </v-col>
             <v-col cols="12">
               <div>Chuyên viên</div>
@@ -125,7 +130,12 @@
               <div>Thực hiện</div>
             </v-col>
             <v-col cols="12">
-              <div class="font-weight-bold">{{ vm.task | _get('executedUnit.title') }}</div>
+              <div v-if="userUnit && userUnit.type !== 'ministry'" class="font-weight-bold">
+                {{ vm.task | _get('executedDepartment.title') }}
+              </div>
+              <div v-else class="font-weight-bold">
+                {{ vm.task | _get('executedUnit.title') }}
+              </div>
             </v-col>
             <v-col cols="12">
               <div>Chuyên viên</div>
@@ -343,6 +353,8 @@ import { Observer } from 'mobx-vue'
 import { Component, PropSync, Vue, Provide, Inject, Watch } from 'vue-property-decorator'
 import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
 import { TaskActionType, TaskModel } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
+import { UnitModel } from '@/models/unit-model'
 
 @Observer
 @Component({
@@ -387,6 +399,8 @@ export default class TaskDetailPage extends Vue {
   editingTask: TaskModel = null
 
   showModifyRequest = false
+
+  userUnit: UnitModel = authStore.comrade.unit as UnitModel
 
   @Watch('$route.params.taskid', { immediate: true }) onTaskParamChange(val: any) {
     if (val) {

@@ -36,8 +36,14 @@ export default class ComradeAutoComplete extends Vue {
   items: ComradeModel[] = []
   loading = false
 
-  @Watch('department', { immediate: true }) async onDepartmentChanged(val: any) {
-    if (this.unitRequired && !this.department && _.isEmpty(val)) {
+  @Watch('unit', { immediate: true }) async onUnitChanged(val: any) {
+    if (this.unitRequired && (this.unit as string) && !this.unit && _.isEmpty(val)) {
+      this.items = []
+      this.syncedValue = null
+      return
+    }
+
+    if (this.unitRequired && (this.unit as string[]) && !this.unit.length && _.isEmpty(val)) {
       this.items = []
       this.syncedValue = null
       return
@@ -46,20 +52,33 @@ export default class ComradeAutoComplete extends Vue {
     await this.getComrade()
   }
 
-  @Watch('unit', { immediate: true })
-  async onUnitChanged(val: any) {
-    if (this.unitRequired && !this.unit && _.isEmpty(val)) {
+  @Watch('department', { immediate: true }) async onDepartmentChanged(val: any) {
+    if (this.unitRequired && (this.department as string) && !this.department && _.isEmpty(val)) {
+      this.items = []
+      this.syncedValue = null
+      return
+    }
+
+    if (this.unitRequired && (this.department as string[]) && !this.department.length && _.isEmpty(val)) {
       this.items = []
       this.syncedValue = null
       return
     }
 
     await this.getComrade()
+  }
+
+  @Watch('value', { immediate: true }) onValueChanged(val: any) {
+    if (val) {
+      this.syncedValue = val
+    }
   }
 
   async getComrade() {
     this.loading = true
     try {
+      if (!this.multiple) this.syncedValue = null
+
       const params: any = {}
       if (this.unit.length && this.multiple) {
         if (Array.isArray(this.unit) && this.unit.length > 0) {
@@ -86,6 +105,7 @@ export default class ComradeAutoComplete extends Vue {
       }
 
       this.items = await this.providers.api.comarde.find<ComradeModel>(params)
+
       if (this.autoselect && this.items.length > 0 && !this.syncedValue) {
         this.syncedValue = this.items[0].id
       }

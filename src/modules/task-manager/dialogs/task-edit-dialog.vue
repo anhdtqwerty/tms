@@ -33,18 +33,20 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="description" :rules="$appRules.taskDescription" label="Nội dung nhiệm vụ" />
-              <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị thực hiện" />
-              <unit-autocomplete :value.sync="supportedUnitIds" multiple label="Đơn vị phối hợp" />
+              <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" />
+              <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" />
+
               <comrade-autocomplete
                 :value.sync="executedComradeId"
-                :unit="executedUnitId"
-                @departmentId="executedDepartmentId = $event"
+                :unit="executedUnitDep | _get('unit')"
+                :department="executedUnitDep | _get('department')"
                 label="Chuyên viên thực hiện"
               />
               <comrade-autocomplete
                 :value.sync="supportedComradeIds"
-                :unit="supportedUnitIds"
-                multiple
+                :unit="getSupportedUnits"
+                :department="getSupportedDepartments"
+                :multiple="true"
                 hide-details
                 label="Chuyên viên phối hợp"
               />
@@ -63,8 +65,13 @@
                 :rules="$appRules.taskExpiredDate"
                 label="Hạn xử lý"
               />
-              <unit-autocomplete :value.sync="supervisorUnitId" label="Đơn vị theo dõi" />
-              <comrade-autocomplete :value.sync="supervisorId" :unit="supervisorUnitId" label="Chuyên viên theo dõi" />
+              <unit-department-autocomplete :value.sync="supervisorUnitDep" label="Đơn vị theo dõi" />
+              <comrade-autocomplete
+                :value.sync="supervisorId"
+                :unit="supervisorUnitDep | _get('unit')"
+                :department="supervisorUnitDep | _get('department')"
+                label="Chuyên viên theo dõi"
+              />
               <task-state-select :value.sync="state" disabled hide-details label="Trạng thái" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
@@ -86,13 +93,15 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { ComradeModel } from '@/models/comrade-model'
+import { DepartmentModel } from '@/models/department-model'
 import { createTaskBody, TaskDeadlineType, TaskModel, TaskPriorityType, TaskStateType } from '@/models/task-model'
+import { UnitModel } from '@/models/unit-model'
 import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
-    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
+    UnitDepartmentAutocomplete: () => import('@/components/autocomplete/unit-department-autocomplete.vue'),
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
@@ -115,6 +124,8 @@ export default class TaskEditDialog extends Vue {
   description = ''
   executedUnitId = ''
   supportedUnitIds: string[] = []
+  supportedDepartmentIds: string[] = []
+
   executedComradeId = ''
   executedDepartmentId = ''
   supportedComradeIds: string[] = []
@@ -122,8 +133,13 @@ export default class TaskEditDialog extends Vue {
   state: TaskStateType = null
   supervisorId = ''
   supervisorUnitId = ''
+  supervisorDepartmentId = ''
   expiredDate: string = null
   selectedFiles: File[] = []
+
+  executedUnitDep = {}
+  supportedUnitDeps: { department?: string; unit?: string }[] = []
+  supervisorUnitDep = {}
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -137,13 +153,26 @@ export default class TaskEditDialog extends Vue {
       this.priority = val.priority
 
       this.executedUnitId = _.get(val.executedUnit, 'id')
+      this.executedDepartmentId = _.get(val.executedDepartment, 'id')
       this.executedComradeId = _.get(val.executedComrade, 'id')
+      this.executedUnitDep = { unit: this.executedUnitId, department: this.executedDepartmentId }
 
       this.supervisorUnitId = _.get(val.supervisorUnit, 'id')
+      this.supervisorDepartmentId = _.get(val.supervisorDepartment, 'id')
       this.supervisorId = _.first(val.supervisors as ComradeModel[])?.id
+      this.supervisorUnitDep = { unit: this.supervisorUnitId, department: this.executedDepartmentId }
 
       this.supportedUnitIds = _.map(val.supportedUnits, 'id')
+      this.supportedDepartmentIds = _.map(val.supportedDepartments, 'id')
       this.supportedComradeIds = _.map(val.supportedComrades, 'id')
+      if (val.supportedDepartments.length) {
+        this.supportedUnitDeps = val.supportedDepartments.map(d => ({
+          department: (d as DepartmentModel).id,
+          unit: _.get(d, 'unit')
+        }))
+      } else {
+        this.supportedUnitDeps = val.supportedUnits.map(u => ({ department: undefined, unit: (u as UnitModel).id }))
+      }
 
       this.docsInfo = val.documentInfo
     }
@@ -180,16 +209,17 @@ export default class TaskEditDialog extends Vue {
           state: this.state,
           priority: this.priority,
 
-          executedUnit: this.executedUnitId,
+          executedUnit: _.get(this.executedUnitDep, 'unit'),
           executedComrade: this.executedComradeId,
+          executedDepartment: _.get(this.executedUnitDep, 'department'),
 
-          executedDepartment: this.executedDepartmentId,
-
-          supervisorUnit: this.supervisorUnitId,
           supervisors: this.supervisorId ? [this.supervisorId] : [],
+          supervisorUnit: _.get(this.supervisorUnitDep, 'unit'),
+          supervisorDepartment: _.get(this.supervisorUnitDep, 'department'),
 
-          supportedUnits: this.supportedUnitIds,
           supportedComrades: this.supportedComradeIds,
+          supportedUnits: this.getSupportedUnits,
+          supportedDepartments: this.getSupportedDepartments,
 
           documentInfo: this.docsInfo
         }
@@ -202,6 +232,14 @@ export default class TaskEditDialog extends Vue {
         this.providers.snackbar.commonError(error)
       }
     }
+  }
+
+  get getSupportedUnits() {
+    return _.uniq(this.supportedUnitDeps.map(u => u.unit))
+  }
+
+  get getSupportedDepartments() {
+    return _.uniq(this.supportedUnitDeps.map(d => d.department))
   }
 }
 </script>

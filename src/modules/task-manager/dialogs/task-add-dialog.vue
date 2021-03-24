@@ -32,13 +32,13 @@
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field v-model="description" :rules="$appRules.taskDescription" label="Nội dung nhiệm vụ" />
-              <unit-department-autocomplete :value.sync="executedUnit" label="Đơn vị thực hiện" />
-              <unit-department-autocomplete :value.sync="supportedUnits" multiple label="Đơn vị phối hợp" />
+              <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" />
+              <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" />
 
               <comrade-autocomplete
                 :value.sync="executedComradeId"
-                :unit="executedUnit | _get('unit')"
-                :department="executedUnit | _get('department')"
+                :unit="executedUnitDep | _get('unit')"
+                :department="executedUnitDep | _get('department')"
                 label="Chuyên viên thực hiện"
               />
               <comrade-autocomplete
@@ -65,11 +65,11 @@
                 :rules="$appRules.taskExpiredDate"
                 label="Hạn xử lý"
               />
-              <unit-department-autocomplete :value.sync="supervisorUnit" label="Đơn vị theo dõi" />
+              <unit-department-autocomplete :value.sync="supervisorUnitDep" label="Đơn vị theo dõi" />
               <comrade-autocomplete
                 :value.sync="supervisorId"
-                :unit="supervisorUnit | _get('unit')"
-                :department="supervisorUnit | _get('department')"
+                :unit="supervisorUnitDep | _get('unit')"
+                :department="supervisorUnitDep | _get('department')"
                 label="Chuyên viên theo dõi"
               />
             </v-col>
@@ -99,7 +99,6 @@ import { Component, Inject, PropSync, Prop, Ref, Vue, Watch } from 'vue-property
 
 @Component({
   components: {
-    // UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
     UnitDepartmentAutocomplete: () => import('@/components/autocomplete/unit-department-autocomplete.vue'),
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
@@ -127,9 +126,9 @@ export default class TaskAddDialog extends Vue {
   supervisorId = ''
   selectedFiles: File[] = []
 
-  executedUnit = {}
-  supportedUnits: { department: string; unit: string }[] = []
-  supervisorUnit = {}
+  executedUnitDep = {}
+  supportedUnitDeps: { department: string; unit: string }[] = []
+  supervisorUnitDep = {}
 
   @Watch('deadlineType') onDeadlineTypeChange(val: TaskDeadlineType) {
     if (val !== 'hasDeadline') {
@@ -154,13 +153,13 @@ export default class TaskAddDialog extends Vue {
               expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
               parent: this.taskParent?.id ?? undefined,
 
-              executedUnit: _.get(this.executedUnit, 'unit'),
+              executedUnit: _.get(this.executedUnitDep, 'unit'),
               executedComrade: this.executedComradeId,
-              executedDepartment: _.get(this.executedUnit, 'department'),
+              executedDepartment: _.get(this.executedUnitDep, 'department'),
 
               supervisors: this.supervisorId ? [this.supervisorId] : [],
-              supervisorUnit: _.get(this.supervisorUnit, 'unit'),
-              supervisorDepartment: _.get(this.supervisorUnit, 'department'),
+              supervisorUnit: _.get(this.supervisorUnitDep, 'unit'),
+              supervisorDepartment: _.get(this.supervisorUnitDep, 'department'),
 
               supportedComrades: this.supportedComradeIds,
               supportedUnits: this.getSupportedUnits,
@@ -195,13 +194,11 @@ export default class TaskAddDialog extends Vue {
   }
 
   get getSupportedUnits() {
-    if (this.supportedUnits.length) return this.supportedUnits.map(x => x.unit).filter((v, i, a) => a.indexOf(v) === i)
-    return null
+    return _.uniq(this.supportedUnitDeps.map(u => u.unit))
   }
 
   get getSupportedDepartments() {
-    if (this.supportedUnits.length) return this.supportedUnits.map(x => x.department).filter(d => d !== undefined)
-    return null
+    return _.uniq(this.supportedUnitDeps.map(d => d.department))
   }
 }
 </script>
