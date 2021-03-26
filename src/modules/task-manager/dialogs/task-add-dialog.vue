@@ -47,14 +47,12 @@
 
               <comrade-autocomplete
                 :value.sync="executedComradeId"
-                :unit="executedUnitDep | _get('unit')"
-                :department="executedUnitDep | _get('department')"
+                :unitDep="executedUnitDep"
                 label="Chuyên viên thực hiện"
               />
               <comrade-autocomplete
                 :value.sync="supportedComradeIds"
-                :unit="getSupportedUnits"
-                :department="getSupportedDepartments"
+                :unitDep="supportedUnitDeps"
                 :multiple="true"
                 hide-details
                 label="Chuyên viên phối hợp"
@@ -87,8 +85,7 @@
               <unit-department-autocomplete :value.sync="supervisorUnitDep" label="Đơn vị theo dõi" />
               <comrade-autocomplete
                 :value.sync="supervisorId"
-                :unit="supervisorUnitDep | _get('unit')"
-                :department="supervisorUnitDep | _get('department')"
+                :unitDep="supervisorUnitDep"
                 label="Chuyên viên theo dõi"
               />
             </v-col>
@@ -207,8 +204,8 @@ export default class TaskAddDialog extends Vue {
               supervisorDepartment: _.get(this.supervisorUnitDep, 'department'),
 
               supportedComrades: this.supportedComradeIds,
-              supportedUnits: this.getSupportedUnits,
-              supportedDepartments: this.getSupportedDepartments,
+              supportedUnits: this.supportedUnitDeps.map(u => u.unit),
+              supportedDepartments: this.supportedUnitDeps.map(d => d.department),
 
               createdBy: authStore.comrade.id,
               createdDepartment: _.get(authStore.comrade.department, 'id'),
@@ -236,14 +233,6 @@ export default class TaskAddDialog extends Vue {
         this.providers.snackbar.commonError(error)
       }
     }
-  }
-
-  get getSupportedUnits() {
-    return _.uniq(this.supportedUnitDeps.map(u => u.unit))
-  }
-
-  get getSupportedDepartments() {
-    return _.uniq(this.supportedUnitDeps.map(d => d.department))
   }
 }
 </script>

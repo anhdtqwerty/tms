@@ -19,8 +19,7 @@
               <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị xử lý" />
               <comrade-autocomplete
                 :value.sync="executedComradeId"
-                :unit="executedUnitDep | _get('unit')"
-                :department="executedUnitDep | _get('department')"
+                :unitDep="executedUnitDep"
                 label="Chuyên viên thực hiện"
               />
             </v-col>
@@ -43,15 +42,12 @@
 import { AppProvider } from '@/app-provider'
 import { mailBuilder } from '@/helpers/mail-helper'
 import { ComradeModel } from '@/models/comrade-model'
-import { DepartmentModel } from '@/models/department-model'
 import { TaskModel } from '@/models/task-model'
-import { UnitModel } from '@/models/unit-model'
 import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
-    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     UnitDepartmentAutocomplete: () => import('@/components/autocomplete/unit-department-autocomplete.vue')
   }
@@ -90,9 +86,9 @@ export default class TaskAssignDialog extends Vue {
     if (this.form.validate()) {
       try {
         let task: TaskModel = {
-          executedUnit: _.get(this.executedUnitDep, 'unit'),
+          executedUnit: _.get(this.executedUnitDep, 'unit') ?? null,
           executedComrade: this.executedComradeId,
-          executedDepartment: _.get(this.executedUnitDep, 'department')
+          executedDepartment: _.get(this.executedUnitDep, 'department') ?? null
         }
         console.log('task', task)
         task = await this.providers.api.task.update(this.task.id, task)
