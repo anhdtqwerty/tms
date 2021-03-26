@@ -41,6 +41,14 @@
               </task-search-component>
             </template>
 
+            <template v-slot:[`item.supervisorUnitDep`]="{ item }">
+              {{ supervisorUnitDepDisplay(item) }}
+            </template>
+
+            <template v-slot:[`item.executedUnitDep`]="{ item }">
+              {{ executedUnitDepDisplay(item) }}
+            </template>
+
             <template v-slot:[`item.actions`]="{ item }">
               <v-menu :close-on-content-click="true" transition="scale-transition" left>
                 <template v-slot:activator="{ on }">
@@ -96,6 +104,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { TaskActionType, TaskModel, taskRouteNameMap, TaskRouteType } from '@/models/task-model'
+import _ from 'lodash'
 import { Component, Inject, Provide, Vue, Watch } from 'vue-property-decorator'
 import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
 
@@ -153,9 +162,9 @@ export default class TaskManagerPage extends Vue {
     { text: 'Ngày ban hành', value: 'publishedDate', sortable: false },
     { text: 'Trích yếu', value: 'title', sortable: true },
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
-    { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false },
+    { text: 'ĐV theo dõi', value: 'supervisorUnitDep', sortable: false },
     { text: 'CV theo dõi', value: 'supervisors', sortable: false },
-    { text: 'ĐV thực hiện', value: 'executedUnit.title', sortable: false },
+    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: false },
     { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false, defaultHide: true },
     { text: 'Hạn xử lý', value: 'expiredDate', sortable: false, defaultHide: true },
     { text: 'Trạng thái', value: 'state', sortable: false, defaultHide: true },
@@ -212,6 +221,16 @@ export default class TaskManagerPage extends Vue {
 
   showDetail(item: TaskModel) {
     this.$router.push({ path: '/task/' + item.id })
+  }
+
+  executedUnitDepDisplay(task: TaskModel) {
+    if (_.get(task.executedDepartment, 'title')) return _.get(task.executedDepartment, 'title')
+    return _.get(task.executedUnit, 'title')
+  }
+
+  supervisorUnitDepDisplay(task: TaskModel) {
+    if (_.get(task.supervisorDepartment, 'title')) return _.get(task.supervisorDepartment, 'title')
+    return _.get(task.supervisorUnit, 'title')
   }
 }
 </script>

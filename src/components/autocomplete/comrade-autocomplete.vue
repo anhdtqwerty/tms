@@ -1,6 +1,6 @@
 <template>
   <v-autocomplete
-    :disabled="unitRequired && unit | _empty"
+    :disabled="unitRequired && unitDep | _empty"
     v-bind="$attrs"
     v-model="syncedValue"
     dense
@@ -21,7 +21,6 @@ import { Component, Inject, Prop, PropSync, Vue, Watch } from 'vue-property-deco
 import { AppProvider } from '@/app-provider'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
-import { DepartmentModel } from '@/models/department-model'
 
 @Component
 export default class ComradeAutoComplete extends Vue {
@@ -29,67 +28,51 @@ export default class ComradeAutoComplete extends Vue {
   @PropSync('value', { default: null }) syncedValue: string
   @Prop({ default: true }) outlined: boolean
   @Prop({ default: false }) autoselect: boolean
-  @Prop() unit: string | string[]
+  @Prop() unitDep: { unit?: string; department?: string } | { unit?: string; department?: string }[]
   @Prop({ default: false }) multiple: boolean
   @Prop({ default: true }) unitRequired: boolean
 
   items: ComradeModel[] = []
   loading = false
 
-  @Watch('unit', { immediate: true }) async onUnitChanged(val: any) {
-    if (this.unitRequired && !this.unit && _.isEmpty(val)) {
+  @Watch('unitDep', { immediate: true }) async onUnitChanged(val: any) {
+    if (Array.isArray(val) && val.length) {
+      await this.getComrade()
+    } else if (!Array.isArray(val) && val) {
+      await this.getComrade()
+    } else {
       this.items = []
       this.syncedValue = null
-      return
     }
+  }
+
+  async getComrade() {
     this.loading = true
     try {
       const params: any = {}
-      if (this.multiple) {
-        if (Array.isArray(val) && val.length > 0) {
-          params['unit_in'] = val ?? []
+      if (this.unitDep && this.multiple) {
+        if (Array.isArray(this.unitDep) && this.unitDep.length > 0) {
+          params['unit_in'] = (this.unitDep.map(u => u.unit) as []) ?? []
+          params['department_in'] = (this.unitDep.map(d => d.department) as []) ?? []
         }
-      } else {
-        params['unit'] = val
+      } else if (this.unitDep) {
+        params['unit'] = _.get(this.unitDep, 'unit')
+        params['department'] = _.get(this.unitDep, 'department')
       }
 
       // Follow user belong to ministry/unit/department
       const unitParams = authStore.unitParams
-      if (unitParams.department) {
+      if (!params['department'] && !params['department_in'] && unitParams.department) {
         params['department'] = unitParams.department
       } else if (!params['unit'] && !params['unit_in'] && unitParams.unit) {
         params['unit'] = unitParams.unit
       }
 
       this.items = await this.providers.api.comarde.find<ComradeModel>(params)
-      if (this.autoselect && this.items.length > 0 && !this.syncedValue) {
-        this.syncedValue = this.items[0].id
-      }
     } catch (error) {
       //
     }
     this.loading = false
-  }
-
-  @Watch('value')
-  onValueChanged(value: string | string[]) {
-    if (Array.isArray(value)) {
-      const deparmtents = _.reduce(
-        value,
-        (result, cur) => {
-          const deparmtent = this.items.find(i => i.id === cur)?.department as DepartmentModel
-          result[cur] = deparmtent.id
-          return result
-        },
-        {} as any
-      )
-      this.$emit('departmentIds', deparmtents)
-    } else if (value) {
-      const deparmtent = this.items.find(i => i.id === value)?.department as DepartmentModel
-      this.$emit('departmentId', deparmtent?.id)
-    } else {
-      this.$emit('departmentId', '')
-    }
   }
 }
 </script>

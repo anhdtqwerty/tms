@@ -104,7 +104,7 @@
               <div>Theo dõi</div>
             </v-col>
             <v-col cols="12">
-              <div class="font-weight-bold">{{ vm.task | _get('supervisorUnit.title') }}</div>
+              <div v-if="vm.task" class="font-weight-bold">{{ supervisorUnitDepDisplay() }}</div>
             </v-col>
             <v-col cols="12">
               <div>Chuyên viên</div>
@@ -125,7 +125,7 @@
               <div>Thực hiện</div>
             </v-col>
             <v-col cols="12">
-              <div class="font-weight-bold">{{ vm.task | _get('executedUnit.title') }}</div>
+              <div v-if="vm.task" class="font-weight-bold">{{ executedUnitDepDisplay() }}</div>
             </v-col>
             <v-col cols="12">
               <div>Chuyên viên</div>
@@ -179,6 +179,12 @@
 
             <template v-slot:[`item.description`]="{ item }">
               <max-length-text :text="item.description" />
+            </template>
+            <template v-slot:[`item.executedUnitDep`]="{ item }">
+              {{ executedUnitDepSubTask(item) }}
+            </template>
+            <template v-slot:[`item.supervisorUnitDep`]="{ item }">
+              {{ supervisorUnitDepSubTask(item) }}
             </template>
             <template v-slot:[`item.explainState`]="{ item }">
               <max-length-text :text="item.explainState" />
@@ -346,6 +352,9 @@ import { Observer } from 'mobx-vue'
 import { Component, PropSync, Vue, Provide, Inject, Watch } from 'vue-property-decorator'
 import { TaskDetailViewModel } from '../viewmodels/task-detail-viewmodel'
 import { TaskActionType, TaskModel } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
+import { UnitModel } from '@/models/unit-model'
+import _ from 'lodash'
 
 @Observer
 @Component({
@@ -391,7 +400,10 @@ export default class TaskDetailPage extends Vue {
 
   showModifyRequest = false
 
+  userUnit: UnitModel = authStore.comrade.unit as UnitModel
+
   @Watch('$route.params.taskid', { immediate: true }) onTaskParamChange(val: any) {
+    console.log('authStore.isLeader', authStore.isLeader)
     if (val) {
       this.vm.loadData(val)
     }
@@ -486,18 +498,38 @@ export default class TaskDetailPage extends Vue {
     await this.providers.alert.info('Thông tin văn bản đến', this.vm.task.documentInfo)
   }
 
+  executedUnitDepDisplay() {
+    if (_.get(this.vm.task, 'executedDepartment.title')) return _.get(this.vm.task, 'executedDepartment.title')
+    return _.get(this.vm.task, 'executedUnit.title')
+  }
+
+  supervisorUnitDepDisplay() {
+    if (_.get(this.vm.task, 'supervisorDepartment.title')) return _.get(this.vm.task, 'supervisorDepartment.title')
+    return _.get(this.vm.task, 'supervisorUnit.title')
+  }
+
+  executedUnitDepSubTask(task: TaskModel) {
+    if (_.get(task.executedDepartment, 'title')) return _.get(task.executedDepartment, 'title')
+    return _.get(task.executedUnit, 'title')
+  }
+
+  supervisorUnitDepSubTask(task: TaskModel) {
+    if (_.get(task.supervisorDepartment, 'title')) return _.get(task.supervisorDepartment, 'title')
+    return _.get(task.supervisorUnit, 'title')
+  }
+
   selectedHeaders: any[] = []
   subtaskHeaders = [
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
-    { text: 'ĐV thực hiện', value: 'executedUnit.title', sortable: true },
+    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: true },
     { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
     { text: 'Tình hình thực hiện', value: 'explainState', sortable: false },
     { text: 'Số/ký hiệu', value: 'code', sortable: false, defaultHide: true },
     { text: 'Ngày ban hành', value: 'publishedDate', sortable: false, defaultHide: true },
     { text: 'Trích yếu', value: 'title', sortable: true, defaultHide: true },
-    { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false, defaultHide: true },
+    { text: 'ĐV theo dõi', value: 'supervisorUnitDep', sortable: false, defaultHide: true },
     { value: 'actions', align: 'right', sortable: false }
   ]
 

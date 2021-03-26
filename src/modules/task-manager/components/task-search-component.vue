@@ -35,13 +35,17 @@
               </v-col>
 
               <v-col cols="12" md="4" lg="3" class="pa-2">
-                <unit-autocomplete hide-details :value.sync="searchExecuteUnit" label="Đơn vị được giao" />
+                <unit-department-autocomplete
+                  hide-details
+                  :value.sync="searchExecuteUnitDep"
+                  label="Đơn vị được giao"
+                />
               </v-col>
               <v-col cols="12" md="4" lg="3" class="pa-2">
                 <comrade-autocomplete
                   hide-details
                   :value.sync="searchExecuteStaff"
-                  :unit="searchExecuteUnit"
+                  :unitDep="searchExecuteUnitDep"
                   label="Cá nhân được giao"
                 />
               </v-col>
@@ -63,13 +67,17 @@
               </v-col>
 
               <v-col cols="12" md="4" lg="3" class="pa-2">
-                <unit-autocomplete hide-details :value.sync="searchSupervisorUnit" label="Đơn vị theo dõi" />
+                <unit-department-autocomplete
+                  hide-details
+                  :value.sync="searchSupervisorUnitDep"
+                  label="Đơn vị theo dõi"
+                />
               </v-col>
               <v-col cols="12" md="4" lg="3" class="pa-2">
                 <comrade-autocomplete
                   hide-details
                   :value.sync="searchSupervisor"
-                  :unit="searchSupervisorUnit"
+                  :unitDep="searchSupervisorUnitDep"
                   label="Cá nhân theo dõi"
                 />
               </v-col>
@@ -158,6 +166,7 @@ import { AppProvider } from '@/app-provider'
 @Component({
   components: {
     UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
+    UnitDepartmentAutocomplete: () => import('@/components/autocomplete/unit-department-autocomplete.vue'),
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
     TaskApprovementStatusSelect: () => import('@/components/autocomplete/task-approvement-status-select.vue'),
@@ -180,12 +189,14 @@ export default class TaskSearchComponent extends Vue {
   searchPriority: TaskPriorityType = null
   searchApprovementStatus: TaskApprovementStatusType = null
 
-  searchExecuteUnit = ''
+  searchExecuteUnitDep = {}
+
   searchExecuteStaff = ''
   searchState: TaskStateType = null
   searchProcessingExpire: TaskProcessingExpireType = null
 
-  searchSupervisorUnit = ''
+  searchSupervisorUnitDep = {}
+
   searchSupervisor = ''
   publishedDateDisplay: string = null
   searchPublishedDate: string[] = []
@@ -221,7 +232,11 @@ export default class TaskSearchComponent extends Vue {
       if (this.searchTitle) _.set(params, 'title_contains', this.searchTitle.trim())
       if (this.searchPriority) params.priority = this.searchPriority
       if (this.searchState) params.state = this.searchState
-      if (this.searchExecuteUnit) params.executedUnit = this.searchExecuteUnit
+
+      if (_.get(this.searchExecuteUnitDep, 'unit')) params.executedUnit = _.get(this.searchExecuteUnitDep, 'unit')
+      if (_.get(this.searchExecuteUnitDep, 'department'))
+        params.executedDepartment = _.get(this.searchExecuteUnitDep, 'department')
+
       if (this.searchExecuteStaff) params.executedComrade = this.searchExecuteStaff
       if (this.searchApprovementStatus) params.status = this.searchApprovementStatus
       if (this.searchProcessingExpire) {
@@ -244,7 +259,11 @@ export default class TaskSearchComponent extends Vue {
           _.set(params, 'expiredDate_lt', max.toISOString())
         }
       }
-      if (this.searchSupervisorUnit) params.supervisorUnit = this.searchSupervisorUnit
+      if (_.get(this.searchSupervisorUnitDep, 'unit'))
+        params.supervisorUnit = _.get(this.searchSupervisorUnitDep, 'unit')
+      if (_.get(this.searchSupervisorUnitDep, 'department'))
+        params.supervisorDepartment = _.get(this.searchSupervisorUnitDep, 'department')
+
       if (this.searchSupervisor) _.set(params, 'supervisors_contains', this.searchSupervisor)
       if (this.searchPublishedDate.length === 2) {
         _.set(params, 'publishedDate_gte', this.searchPublishedDate[0])

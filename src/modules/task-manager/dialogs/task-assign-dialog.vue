@@ -16,13 +16,11 @@
               <div class="font-weight-bold">Chuyển thực hiện</div>
             </v-col>
             <v-col cols="12" class="pa-2">
-              <unit-autocomplete :value.sync="executedUnitId" label="Đơn vị xử lý" />
+              <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị xử lý" />
               <comrade-autocomplete
-                hide-details
-                :unit="executedUnitId"
                 :value.sync="executedComradeId"
-                @departmentId="executedDepartmentId = $event"
-                label="Người xử lý"
+                :unitDep="executedUnitDep"
+                label="Chuyên viên thực hiện"
               />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
@@ -45,13 +43,13 @@ import { AppProvider } from '@/app-provider'
 import { mailBuilder } from '@/helpers/mail-helper'
 import { ComradeModel } from '@/models/comrade-model'
 import { TaskModel } from '@/models/task-model'
-import { UnitModel } from '@/models/unit-model'
+import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
-    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
-    ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue')
+    ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
+    UnitDepartmentAutocomplete: () => import('@/components/autocomplete/unit-department-autocomplete.vue')
   }
 })
 export default class TaskAssignDialog extends Vue {
@@ -65,10 +63,21 @@ export default class TaskAssignDialog extends Vue {
   executedComradeId = ''
   executedDepartmentId = ''
 
+  executedUnitDep = {}
+
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
+      const unitId = _.get(val.executedUnit, 'id')
+      const departmentId = _.get(val.executedDepartment, 'id')
+
       this.code = val.code
-      this.executedUnitId = (val.executedUnit as UnitModel)?.id
+      this.executedUnitDep = {
+        unit: unitId,
+        department: departmentId
+      }
+
+      this.executedUnitId = unitId
+      this.executedDepartmentId = departmentId
       this.executedComradeId = (val.executedComrade as ComradeModel)?.id
     }
   }
@@ -77,10 +86,11 @@ export default class TaskAssignDialog extends Vue {
     if (this.form.validate()) {
       try {
         let task: TaskModel = {
-          executedUnit: this.executedUnitId,
+          executedUnit: _.get(this.executedUnitDep, 'unit') ?? null,
           executedComrade: this.executedComradeId,
-          executedDepartment: this.executedDepartmentId
+          executedDepartment: _.get(this.executedUnitDep, 'department') ?? null
         }
+        console.log('task', task)
         task = await this.providers.api.task.update(this.task.id, task)
         this.providers.api.sendMail(mailBuilder.assignTask(task))
         this.$emit('success', task)

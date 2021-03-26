@@ -24,7 +24,7 @@ export interface TaskModel {
   supervisorUnit?: string | UnitModel
 
   executedDepartment?: string | DepartmentModel
-  supportedDepartment?: string | DepartmentModel
+  supportedDepartments?: (string | DepartmentModel)[]
   supervisorDepartment?: string | DepartmentModel
 
   supervisors?: (string | ComradeModel)[]
