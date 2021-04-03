@@ -176,7 +176,9 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
       leaderSupervisosParam = {
         _or: [{ supervisorDepartment: department }, { supervisors_contains: authStore.comrade.id }]
       }
-      leaderSupportParam = { supportedComrades_contains: authStore.comrade.id }
+      leaderSupportParam = {
+        _or: [{ supportedDepartments_contains: department }, { supportedComrades_contains: authStore.comrade.id }]
+      }
     } else if (comradeUnitId) {
       leaderOwnerParam = { _or: [{ createdUnit: comradeUnitId }, { createdBy: authStore.comrade.id }] }
       leaderAssignedParam = { _or: [{ executedUnit: comradeUnitId }, { executedComrade: authStore.comrade.id }] }
