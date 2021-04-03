@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { ComradeModel } from './comrade-model'
+import { FileModel } from './file-model'
 import { RequestType, TaskModel } from './task-model'
 
 export interface RequestModel {
@@ -11,7 +12,7 @@ export interface RequestModel {
   description?: string
   requestor?: string | ComradeModel
   approver?: string | ComradeModel
-  files?: string
+  files?: (string | FileModel)[]
   config?: {}
   metadata?: {
     unitId: any

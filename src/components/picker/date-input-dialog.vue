@@ -86,7 +86,6 @@ export default class DateInputDialog extends Vue {
     this.$emit('ok', this.date ?? undefined)
     this.syncedValue = false
     this.form.reset()
-    console.log('date', this.date ?? undefined, this.selectedDate)
   }
 }
 </script>

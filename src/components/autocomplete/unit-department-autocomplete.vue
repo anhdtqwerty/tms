@@ -41,7 +41,18 @@ export default class UnitDepartmentAutoComplete extends Vue {
 
       // Follow user belong to ministry/unit
       const userUnit = authStore.comrade.unit as UnitModel
-      if (userUnit && userUnit.type !== 'ministry') {
+
+      if (authStore.comrade.department && authStore.isLeader) {
+        // leader department
+        const department = authStore.comrade.department as DepartmentModel
+        this.items = [
+          {
+            display: department.code + ' - ' + department.title,
+            value: { unit: (department.unit as UnitModel).id, department: department }
+          }
+        ]
+      } else if (userUnit && userUnit.type !== 'ministry') {
+        // unit
         params['unit'] = userUnit.id
         const items = await this.providers.api.department.find<DepartmentModel>(params)
 
@@ -54,6 +65,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
           this.syncedValue = (this.items[0] as any).value
         }
       } else {
+        // ministry
         params['type'] = this.includeMinistry ? undefined : 'unit'
 
         const items = await this.providers.api.unit.find<UnitModel>(params)

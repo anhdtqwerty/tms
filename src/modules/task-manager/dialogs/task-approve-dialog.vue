@@ -27,9 +27,9 @@
                 File đính kèm
                 <v-menu :close-on-content-click="true" transition="scale-transition" left>
                   <template v-slot:activator="{ on }">
-                    <div class="blue--text ml-4" v-on="on">Xem</div>
+                    <div class="blue--text ml-4" style="cursor: pointer" v-on="on">Xem</div>
                   </template>
-                  <task-files-component :container="task" :canDelete="false" />
+                  <task-files-component :task="task" :requests="task && task.requests" :canDelete="false" />
                 </v-menu>
               </div>
             </v-col>
@@ -49,6 +49,7 @@
                 v-model="reasonReject"
                 v-if="approveStatusResult === 'reject'"
                 :rules="$appRules.taskExplain"
+                counter="1000"
                 label="Lý do"
               />
             </v-col>
@@ -117,15 +118,17 @@ export default class TaskApproveDialog extends Vue {
           state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
         }
 
-        await Promise.all(
-          this.approverSelectedFiles.map(f =>
-            this.providers.api.uploadFiles(f, {
-              model: 'task',
-              modelId: task.id,
-              modelField: 'files'
-            })
+        if (this.approverSelectedFiles.length) {
+          await Promise.all(
+            this.approverSelectedFiles.map(f =>
+              this.providers.api.uploadFiles(f, {
+                model: 'task',
+                modelId: this.task.id,
+                modelField: 'files'
+              })
+            )
           )
-        )
+        }
 
         task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
 

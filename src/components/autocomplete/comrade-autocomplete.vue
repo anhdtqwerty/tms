@@ -25,7 +25,7 @@ import _ from 'lodash'
 @Component
 export default class ComradeAutoComplete extends Vue {
   @Inject() providers!: AppProvider
-  @PropSync('value', { default: null }) syncedValue: string
+  @PropSync('value', { default: null }) syncedValue: string | string[]
   @Prop({ default: true }) outlined: boolean
   @Prop({ default: false }) autoselect: boolean
   @Prop() unitDep: { unit?: string; department?: string } | { unit?: string; department?: string }[]
@@ -38,6 +38,12 @@ export default class ComradeAutoComplete extends Vue {
   @Watch('unitDep', { immediate: true }) async onUnitChanged(val: any) {
     if (Array.isArray(val) && val.length) {
       await this.getComrade()
+
+      // filter selected comrades when change list unit dep
+      if (this.syncedValue && this.syncedValue.length) {
+        const itemsDisplay = this.items.map(i => i.id)
+        this.syncedValue = (this.syncedValue as []).filter(x => itemsDisplay.includes(x))
+      }
     } else if (!Array.isArray(val) && val) {
       await this.getComrade()
     } else {

@@ -69,6 +69,7 @@ export const appRules = {
   taskStartedDate: [rules.required],
   taskExplain: [rules.required, rules.maxLength(1000)],
   taskDocsInfo: [rules.maxLength(1000)],
+  taskState: [rules.required],
 
   //role
   roleName: [rules.required, rules.maxLength(256)],

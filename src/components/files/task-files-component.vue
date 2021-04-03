@@ -16,14 +16,29 @@ import _ from 'lodash'
 @Component
 export default class TaskFilesComponent extends Vue {
   @Inject() providers!: AppProvider
-  @Prop() container: any
+  @Prop() task: any
+  @Prop() requests: []
   @Prop({ default: 'files' }) fileField: string
   @Prop({ default: true }) canDelete: boolean
 
   files: any[] = []
 
-  @Watch('container', { immediate: true }) onContainerChange(val: any) {
-    this.files = this.container ? this.container[this.fileField] : []
+  @Watch('task', { immediate: true }) onTaskChange(val: any) {
+    if (val) {
+      this.files = this.task ? [...this.files, this.task[this.fileField]] : []
+      this.files = _.flatten(this.files)
+    }
+  }
+
+  @Watch('requests', { immediate: true }) onRequestsChange(val: any) {
+    if (Array.isArray(val) && val.length) {
+      this.requests.map(r => {
+        if ((r[this.fileField] as []).length) this.files = [...this.files, r[this.fileField]]
+      })
+      this.files = _.flatten(this.files)
+    } else if (val) {
+      this.files = val[this.fileField]
+    }
   }
 
   async deleteFile(file: File) {
@@ -31,9 +46,9 @@ export default class TaskFilesComponent extends Vue {
       try {
         await this.providers.api.deleteFile(_.get(file, 'id'))
         this.providers.snackbar.deleteSuccess()
-        if (this.container) {
-          this.container[this.fileField] = this.container[this.fileField].filter((x: any) => x.id !== _.get(file, 'id'))
-          this.files = this.container[this.fileField]
+        if (this.task) {
+          this.task[this.fileField] = this.task[this.fileField].filter((x: any) => x.id !== _.get(file, 'id'))
+          this.files = this.task[this.fileField]
         }
       } catch (error) {
         this.providers.snackbar.commonError(error)

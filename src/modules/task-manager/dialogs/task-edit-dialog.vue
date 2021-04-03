@@ -172,10 +172,10 @@ export default class TaskEditDialog extends Vue {
       this.code = val.code
       this.description = val.description
       this.publishedDate = val.publishedDate
-      this.publishedDateDisplay = moment(val.publishedDate).format('DD/MM/YYYY')
+      this.publishedDateDisplay = val.publishedDate && moment(val.publishedDate).format('DD/MM/YYYY')
       this.deadlineType = val.type
       this.expiredDate = val.expiredDate
-      this.expiredDateDisplay = moment(val.expiredDate).format('DD/MM/YYYY')
+      this.expiredDateDisplay = val.expiredDate && moment(val.expiredDate).format('DD/MM/YYYY')
       this.title = val.title
       this.state = val.state
       this.priority = val.priority

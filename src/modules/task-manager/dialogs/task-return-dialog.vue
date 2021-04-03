@@ -13,7 +13,12 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12" class="pa-2">
-              <app-textarea v-model="reasonReturn" :rules="$appRules.taskExplain" label="Lý do trả lại" />
+              <app-textarea
+                v-model="reasonReturn"
+                :rules="$appRules.taskExplain"
+                counter="1000"
+                label="Lý do trả lại"
+              />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -33,7 +38,6 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { mailBuilder } from '@/helpers/mail-helper'
-import { DepartmentModel } from '@/models/department-model'
 import { createTaskBody, TaskModel } from '@/models/task-model'
 import { UnitModel } from '@/models/unit-model'
 import { authStore } from '@/stores/auth-store'
@@ -75,10 +79,14 @@ export default class TaskReturnDialog extends Vue {
           }
         })
         try {
+          const userUnit = authStore.comrade.unit as UnitModel
+
           const modifyTask = await api.task.update(
             this.task.id,
             createTaskBody(this.task, {
               state: 'waiting',
+              executedUnit: userUnit && userUnit.type === 'unit' ? null : undefined,
+              executedDepartment: authStore.comrade.department && authStore.isLeader ? null : undefined,
               executedComrade: null,
               explainState: this.reasonReturn
             })

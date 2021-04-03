@@ -15,9 +15,15 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12" class="pa-2">
-              <task-state-select :includes="taskStateIncludes" :value.sync="state" label="Trạng thái" />
+              <task-state-select
+                :rules="$appRules.taskState"
+                :includes="taskStateIncludes"
+                :value.sync="state"
+                label="Trạng thái"
+              />
               <app-text-field
                 class="mb-6"
+                v-model="startedDateDisplay"
                 :value.sync="startedDateDisplay"
                 :rules="$appRules.taskStartedDate"
                 @click="showDateInputDialog = true"
@@ -31,16 +37,21 @@
               />
               <date-input-dialog :value.sync="showDateInputDialog" @ok="handleStartedDateInput" />
 
-              <app-text-field v-model="explain" :rules="$appRules.taskExplain" label="Diễn giải trạng thái" />
+              <app-text-field
+                v-model="explain"
+                :rules="$appRules.taskExplain"
+                counter="1000"
+                label="Diễn giải trạng thái"
+              />
               <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
               <div class="d-flex">
                 <div class="d-flex">
                   File đã tải trước đó
                   <v-menu :close-on-content-click="true" transition="scale-transition" left>
                     <template v-slot:activator="{ on }">
-                      <div class="blue--text ml-4" v-on="on">Xem</div>
+                      <div class="blue--text ml-4" v-on="on" style="cursor: pointer">Xem</div>
                     </template>
-                    <task-files-component :container="task" />
+                    <task-files-component :task="task" :requests="task && task.requests" />
                   </v-menu>
                 </div>
               </div>
@@ -63,10 +74,8 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { mailBuilder } from '@/helpers/mail-helper'
-import { DepartmentModel } from '@/models/department-model'
 import { RequestModel } from '@/models/request-model'
 import { createTaskBody, getLastRequest, TaskModel, TaskStateType } from '@/models/task-model'
-import { UnitModel } from '@/models/unit-model'
 import { authStore } from '@/stores/auth-store'
 import _ from 'lodash'
 import moment from 'moment'
@@ -98,11 +107,11 @@ export default class TaskUpdateStateDialog extends Vue {
   startedDateDisplay: string = null
   showDateInputDialog = false
 
-  @Watch('value', { immediate: true }) onValueChanged(val: string) {
+  @Watch('value', { immediate: true }) onValueChanged(val: any) {
     if (val) {
       if (this.isUpdateTask) {
         this.code = this.task.code
-        this.state = this.task.state
+        this.state = this.task.state === 'waiting' ? null : this.task.state
       } else {
         const lastRequest = getLastRequest(this.task)
         if (!lastRequest) {
@@ -111,6 +120,7 @@ export default class TaskUpdateStateDialog extends Vue {
           this.request = lastRequest
           this.state = lastRequest.type as TaskStateType
           this.startedDate = lastRequest.startedDate
+          this.startedDateDisplay = lastRequest.startedDate && moment(lastRequest.startedDate).format('DD/MM/YYYY')
           this.explain = lastRequest.description
         }
       }

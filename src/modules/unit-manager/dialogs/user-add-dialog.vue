@@ -144,11 +144,13 @@ export default class UserAddDialog extends Vue {
     const submitErrors: string[] = []
     try {
       const api = this.providers.api
-      const [hasComrade, hasUser] = await Promise.all([
+      const [hasComrade, hasUser, hasEmail] = await Promise.all([
         api.comarde.count({ code: this.code }).then(count => count > 0),
-        api.user.count({ username: this.username }).then(count => count > 0)
+        api.user.count({ username: this.username }).then(count => count > 0),
+        api.user.count({ email: this.email }).then(count => count > 0)
       ])
-      if (!hasComrade && !hasUser) {
+      console.log('x', hasEmail, this.email)
+      if (!hasComrade && !hasUser && !hasEmail) {
         const user = await api.user.create({
           username: this.username,
           email: this.email,
@@ -186,6 +188,9 @@ export default class UserAddDialog extends Vue {
         }
         if (hasUser) {
           submitErrors.push(`[${this.username}]: Tên truy cập này đã được sử dụng`)
+        }
+        if (hasEmail) {
+          submitErrors.push(`[${this.email}]: Email đã tồn tại`)
         }
       }
     } catch (error) {

@@ -13,7 +13,7 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12" class="pa-2">
-              <app-textarea v-model="reasonReopen" :rules="$appRules.taskExplain" label="Lý do mở lại" />
+              <app-textarea v-model="reasonReopen" :rules="$appRules.taskExplain" counter="1000" label="Lý do mở lại" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -78,6 +78,7 @@ export default class TaskReopenDialog extends Vue {
             this.task.id,
             createTaskBody(this.task, {
               status: 'rejected',
+              state: 'doing',
               explainState: this.reasonReopen
             })
           )

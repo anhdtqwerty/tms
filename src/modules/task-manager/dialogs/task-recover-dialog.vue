@@ -13,7 +13,12 @@
         <v-container fluid px-5 py-2>
           <v-row>
             <v-col cols="12" class="pa-2">
-              <app-textarea v-model="reasonRecover" :rules="$appRules.taskExplain" label="Lý do thu hồi" />
+              <app-textarea
+                v-model="reasonRecover"
+                :rules="$appRules.taskExplain"
+                counter="1000"
+                label="Lý do thu hồi"
+              />
               <app-file-input hide-details :value.sync="selectedFiles" label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">

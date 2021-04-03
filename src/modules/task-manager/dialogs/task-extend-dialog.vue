@@ -31,7 +31,12 @@
               <date-input-dialog :value.sync="showExpiredDateInputDialog" @ok="handleNewExpiredDateInput" />
 
               <app-textarea v-model="description" rows="2" disabled label="Nội dung nhiệm vụ" />
-              <app-text-field v-model="reasonExtend" :rules="$appRules.taskExplain" label="Lý do gia hạn" />
+              <app-text-field
+                v-model="reasonExtend"
+                :rules="$appRules.taskExplain"
+                counter="1000"
+                label="Lý do gia hạn"
+              />
               <app-file-input hide-details :value.sync="selectedFiles" label="File đính kèm" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">

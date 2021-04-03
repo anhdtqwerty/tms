@@ -173,7 +173,9 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
     if (department) {
       leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
       leaderAssignedParam = { _or: [{ executedDepartment: department }, { executedComrade: authStore.comrade.id }] }
-      leaderSupervisosParam = { supervisors_contains: authStore.comrade.id }
+      leaderSupervisosParam = {
+        _or: [{ supervisorDepartment: department }, { supervisors_contains: authStore.comrade.id }]
+      }
       leaderSupportParam = { supportedComrades_contains: authStore.comrade.id }
     } else if (comradeUnitId) {
       leaderOwnerParam = { _or: [{ createdUnit: comradeUnitId }, { createdBy: authStore.comrade.id }] }
@@ -341,7 +343,7 @@ export const actionConfigs: TaskActionConfig[] = [
     checkEnable: function(t) {
       return (
         t.status !== 'approved' &&
-        isAssignedTask(t) &&
+        isOwnerTask(t) &&
         t.type === 'hasDeadline' &&
         !['done', 'recovered'].includes(t.state)
       )

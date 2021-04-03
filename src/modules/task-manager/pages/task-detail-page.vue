@@ -68,7 +68,7 @@
                   <template v-slot:activator="{ on }">
                     <div class="blue--text" style="cursor: pointer" v-on="on">Xem</div>
                   </template>
-                  <task-files-component :container="vm.task" />
+                  <task-files-component :task="vm.task" :requests="vm.task && vm.task.requests" />
                 </v-menu>
               </v-col>
               <v-col cols="6" class="pa-2">
@@ -238,9 +238,9 @@
             <template v-slot:[`item.attachFile`]="{ item }">
               <v-menu :close-on-content-click="true" transition="scale-transition" left>
                 <template v-slot:activator="{ on }">
-                  <div class="blue--text" v-on="on">Xem</div>
+                  <div class="blue--text" v-on="on" style="cursor: pointer">Xem</div>
                 </template>
-                <task-files-component :container="item" />
+                <task-files-component :requests="item" />
               </v-menu>
             </template>
           </v-data-table>
