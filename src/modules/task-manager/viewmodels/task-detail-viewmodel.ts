@@ -79,6 +79,7 @@ export class TaskDetailViewModel {
           this.requestHistories = this.requestHistories.map(r =>
             r.id !== request.id ? r : { ...r, files: r.files.filter(f => (f as FileModel).id !== id) }
           )
+          break
         }
       }
     }
