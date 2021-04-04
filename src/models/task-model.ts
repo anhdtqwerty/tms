@@ -238,7 +238,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
       if (authStore.isLeader) {
         leaderPrams = leaderOwnerParam
       } else {
-        taskParams.createdBy = authStore.comrade.id
+        taskParams.executedComrade = authStore.comrade.id
       }
       break
     case 'task-done':
