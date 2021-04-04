@@ -68,7 +68,11 @@
                   <template v-slot:activator="{ on }">
                     <div class="blue--text" style="cursor: pointer" v-on="on">Xem</div>
                   </template>
-                  <task-files-component :task="vm.task" :requests="vm.task && vm.task.requests" />
+                  <task-files-component
+                    :task="vm.task"
+                    :requests="vm.task && vm.task.requests"
+                    @fileDeleted="vm.loadData(vm.task.id)"
+                  />
                 </v-menu>
               </v-col>
               <v-col cols="6" class="pa-2">
@@ -240,7 +244,7 @@
                 <template v-slot:activator="{ on }">
                   <div class="blue--text" v-on="on" style="cursor: pointer">Xem</div>
                 </template>
-                <task-files-component :requests="item" />
+                <task-files-component :requests="[item]" />
               </v-menu>
             </template>
           </v-data-table>
@@ -403,7 +407,6 @@ export default class TaskDetailPage extends Vue {
   userUnit: UnitModel = authStore.comrade.unit as UnitModel
 
   @Watch('$route.params.taskid', { immediate: true }) onTaskParamChange(val: any) {
-    console.log('authStore.isLeader', authStore.isLeader)
     if (val) {
       this.vm.loadData(val)
     }
@@ -481,6 +484,9 @@ export default class TaskDetailPage extends Vue {
         break
       case 'modify-update':
         this.showModifyRequest = true
+        break
+      case 'delete-update':
+        this.vm.deleteLastRequest()
         break
       case 'reopen':
         this.showReopenDialog = true

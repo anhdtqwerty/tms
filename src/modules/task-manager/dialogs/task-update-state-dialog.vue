@@ -51,7 +51,7 @@
                     <template v-slot:activator="{ on }">
                       <div class="blue--text ml-4" v-on="on" style="cursor: pointer">Xem</div>
                     </template>
-                    <task-files-component :task="task" :requests="task && task.requests" />
+                    <task-files-component :requests="[request]" @fileDeleted="fileDeleted" />
                   </v-menu>
                 </div>
               </div>
@@ -74,6 +74,7 @@
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
 import { mailBuilder } from '@/helpers/mail-helper'
+import { FileModel } from '@/models/file-model'
 import { RequestModel } from '@/models/request-model'
 import { createTaskBody, getLastRequest, TaskModel, TaskStateType } from '@/models/task-model'
 import { authStore } from '@/stores/auth-store'
@@ -106,11 +107,17 @@ export default class TaskUpdateStateDialog extends Vue {
 
   startedDateDisplay: string = null
   showDateInputDialog = false
+  oldTaskState: TaskStateType = null
+
+  fileDeleted(id: string) {
+    this.request = { ...this.request, files: this.request.files.filter(f => (f as FileModel).id !== id) }
+  }
 
   @Watch('value', { immediate: true }) onValueChanged(val: any) {
     if (val) {
       if (this.isUpdateTask) {
         this.code = this.task.code
+        this.oldTaskState = this.task.state
         this.state = this.task.state === 'waiting' ? null : this.task.state
       } else {
         const lastRequest = getLastRequest(this.task)
@@ -161,12 +168,15 @@ export default class TaskUpdateStateDialog extends Vue {
               unitTitle: _.get(authStore.comrade.unit, 'title'),
               departmentId: _.get(authStore.comrade.department, 'id'),
               departmentTitle: _.get(authStore.comrade.department, 'title')
+            },
+            data: {
+              oldTaskState: this.oldTaskState
             }
           })
         }
-
+        let files = []
         if (this.selectedFiles.length) {
-          await Promise.all(
+          files = await Promise.all(
             this.selectedFiles.map(f =>
               this.providers.api.uploadFiles(f, {
                 model: 'request',
@@ -188,7 +198,7 @@ export default class TaskUpdateStateDialog extends Vue {
             })
           )
           this.providers.api.sendMail(mailBuilder.updateProgressTask(modifyTask))
-          this.$emit('success', modifyTask, request)
+          this.$emit('success', modifyTask, { ...request, files: _.flatten(files) })
           this.syncedValue = false
           this.form.reset()
           this.providers.snackbar.success(

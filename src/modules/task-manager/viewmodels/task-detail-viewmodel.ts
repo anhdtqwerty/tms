@@ -2,7 +2,7 @@ import { AppProvider } from '@/app-provider'
 import { excelHelper } from '@/helpers/excel-helper'
 import { mailBuilder } from '@/helpers/mail-helper'
 import { RequestModel } from '@/models/request-model'
-import { RequestType, TaskModel } from '@/models/task-model'
+import { createTaskBody, getLastRequest, RequestType, TaskModel } from '@/models/task-model'
 import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -65,6 +65,33 @@ export class TaskDetailViewModel {
     const results = yield Promise.all([this.provider.api.task.find(params), this.provider.api.task.count(params)])
     this.subtasks = results[0]
     this.subtaskTotalCount = results[1]
+  }
+
+  async deleteLastRequest() {
+    if (await this.provider.alert.confirmDelete('cập nhật')) {
+      const lastRequest = getLastRequest(this.task)
+      if (lastRequest) {
+        try {
+          await this.provider.api.task.update(
+            this.task.id,
+            createTaskBody(this.task, {
+              state: lastRequest.data.oldTaskState
+            })
+          )
+
+          try {
+            await this.provider.api.request.delete(lastRequest.id)
+            this.provider.snackbar.success('Xóa cập nhật thành công')
+            this.task = await this.provider.api.task.findOne(this.task.id)
+            await this.loadHistories()
+          } catch (error) {
+            this.provider.snackbar.commonError(error)
+          }
+        } catch (error) {
+          this.provider.snackbar.commonError(error)
+        }
+      }
+    }
   }
 
   @action.bound taskUpdated(item: TaskModel, request: RequestModel) {

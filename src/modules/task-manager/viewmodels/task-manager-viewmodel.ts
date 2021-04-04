@@ -1,6 +1,6 @@
 import { AppProvider } from '@/app-provider'
 import { excelHelper } from '@/helpers/excel-helper'
-import { TaskModel, TaskRouteType, taskTypeToFilterParams } from '@/models/task-model'
+import { createTaskBody, getLastRequest, TaskModel, TaskRouteType, taskTypeToFilterParams } from '@/models/task-model'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -46,6 +46,31 @@ export class TaskManagerViewModel {
     const results = yield Promise.all([this.provider.api.task.find(params), this.provider.api.task.count(params)])
     this.tasks = results[0]
     this.totalCount = results[1]
+  }
+
+  async deleteLastRequest(task: any) {
+    if (await this.provider.alert.confirmDelete('cập nhật')) {
+      const lastRequest = getLastRequest(task)
+      if (lastRequest) {
+        try {
+          await this.provider.api.task.update(
+            (task as TaskModel).id,
+            createTaskBody(task, {
+              state: lastRequest.data.oldTaskState
+            })
+          )
+
+          try {
+            await this.provider.api.request.delete(lastRequest.id)
+            this.provider.snackbar.success('Xóa cập nhật thành công')
+          } catch (error) {
+            this.provider.snackbar.commonError(error)
+          }
+        } catch (error) {
+          this.provider.snackbar.commonError(error)
+        }
+      }
+    }
   }
 
   @action.bound taskAdded(item: TaskModel) {

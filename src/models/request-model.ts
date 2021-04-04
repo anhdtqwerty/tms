@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { ComradeModel } from './comrade-model'
 import { FileModel } from './file-model'
-import { RequestType, TaskModel } from './task-model'
+import { RequestType, TaskModel, TaskStateType } from './task-model'
 
 export interface RequestModel {
   id?: string
@@ -23,8 +23,9 @@ export interface RequestModel {
   updated_at?: string
   created_at?: string
   data?: {
-    oldExpiredDate: string
-    newExpiredDate: string
+    oldExpiredDate?: string
+    newExpiredDate?: string
+    oldTaskState?: TaskStateType
   }
 }
 
