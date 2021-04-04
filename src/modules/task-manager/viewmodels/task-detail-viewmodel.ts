@@ -16,6 +16,7 @@ export class TaskDetailViewModel {
   private _simpleParams: any = {}
 
   @observable requestHistories: RequestModel[] = []
+  @observable lastRequest: RequestModel = null
 
   constructor(private provider: AppProvider) {
     //
@@ -41,6 +42,7 @@ export class TaskDetailViewModel {
 
   @asyncAction *loadHistories() {
     this.requestHistories = yield this.provider.api.request.find({ task: this.task.id }, { _limit: 100 })
+    this.lastRequest = getLastRequest(this.task)
   }
 
   advanceSearch(params: any) {
@@ -67,23 +69,27 @@ export class TaskDetailViewModel {
     this.subtaskTotalCount = results[1]
   }
 
-  async deleteLastRequest() {
-    if (await this.provider.alert.confirmDelete('cập nhật')) {
-      const lastRequest = getLastRequest(this.task)
-      if (lastRequest) {
+  @asyncAction *fileDeleted() {
+    this.task = yield this.provider.api.task.findOne(this.task.id)
+    yield this.loadHistories()
+  }
+
+  @asyncAction *deleteLastRequest() {
+    if (yield this.provider.alert.confirmDelete('cập nhật')) {
+      if (this.lastRequest) {
         try {
-          await this.provider.api.task.update(
+          yield this.provider.api.task.update(
             this.task.id,
             createTaskBody(this.task, {
-              state: lastRequest.data.oldTaskState
+              state: this.lastRequest.data.oldTaskState
             })
           )
 
           try {
-            await this.provider.api.request.delete(lastRequest.id)
+            yield this.provider.api.request.delete(this.lastRequest.id)
             this.provider.snackbar.success('Xóa cập nhật thành công')
-            this.task = await this.provider.api.task.findOne(this.task.id)
-            await this.loadHistories()
+            this.task = yield this.provider.api.task.findOne(this.task.id)
+            yield this.loadHistories()
           } catch (error) {
             this.provider.snackbar.commonError(error)
           }
@@ -108,6 +114,8 @@ export class TaskDetailViewModel {
       } else {
         this.requestHistories = [request, ...this.requestHistories]
       }
+
+      this.lastRequest = getLastRequest(this.task)
     }
   }
 

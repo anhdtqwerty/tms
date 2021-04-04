@@ -160,7 +160,7 @@ export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
     .join(' | ')
   return { ...changes, keywords }
 }
-export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
+export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren = true): any[] => {
   // const unitPrams = authStore.unitParams
   const { department } = authStore.unitParams
   const comradeUnitId = (authStore.comrade.unit as UnitModel)?.id
@@ -262,7 +262,9 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
       console.error(`not support ${taskType}`)
       break
   }
-  return _.isEmpty(taskParams) ? [leaderPrams] : [leaderPrams, taskParams]
+  const taskQueries = _.isEmpty(taskParams) ? [leaderPrams] : [leaderPrams, taskParams]
+
+  return includeChildren ? taskQueries : [{ parent_null: true }, ...taskQueries]
 }
 
 export const getLastRequest = (task: TaskModel) => {

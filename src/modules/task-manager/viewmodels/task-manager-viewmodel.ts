@@ -23,7 +23,7 @@ export class TaskManagerViewModel {
   }
 
   changeTaskType(taskType: TaskRouteType) {
-    this._taskTypeParams = taskTypeToFilterParams(taskType)
+    this._taskTypeParams = taskTypeToFilterParams(taskType, false)
     this.search()
   }
 
