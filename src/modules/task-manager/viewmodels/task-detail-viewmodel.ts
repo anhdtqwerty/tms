@@ -2,7 +2,7 @@ import { AppProvider } from '@/app-provider'
 import { excelHelper } from '@/helpers/excel-helper'
 import { mailBuilder } from '@/helpers/mail-helper'
 import { RequestModel } from '@/models/request-model'
-import { createTaskBody, getLastRequest, RequestType, TaskModel } from '@/models/task-model'
+import { createTaskBody, getLastRequest, RequestType, TaskModel, isAssignedTask } from '@/models/task-model'
 import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -154,5 +154,9 @@ export class TaskDetailViewModel {
     return this.requestHistories.filter(r => r.type === 'extended')
     // const progressTypes: TaskStateType[] = ['doing', 'done', 'recovered', 'todo']
     // return this.requestHistories.filter(r => progressTypes.includes(r.type))
+  }
+
+  @computed get isAssignedTask() {
+    return isAssignedTask(this.task)
   }
 }

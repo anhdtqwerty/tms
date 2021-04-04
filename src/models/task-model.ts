@@ -365,7 +365,7 @@ export const actionConfigs: TaskActionConfig[] = [
     type: 'assign',
     icon: 'pan_tool',
     title: 'Giao thực hiện',
-    checkEnable: t => t.status !== 'approved' && t.state !== 'recovered' && (isOwnerTask(t) || authStore.isLeader)
+    checkEnable: t => t.status !== 'approved' && t.state !== 'recovered' && isOwnerTask(t)
   },
   {
     permission: 'approve',
