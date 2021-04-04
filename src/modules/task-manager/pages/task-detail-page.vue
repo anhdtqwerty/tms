@@ -68,11 +68,7 @@
                   <template v-slot:activator="{ on }">
                     <div class="blue--text" style="cursor: pointer" v-on="on">Xem</div>
                   </template>
-                  <task-files-component
-                    :task="vm.task"
-                    :requests="vm.task && vm.task.requests"
-                    @fileDeleted="vm.fileDeleted($event)"
-                  />
+                  <task-files-component :task="vm.task" :requests="vm.requestHistories" @fileDeleted="vm.fileDeleted" />
                 </v-menu>
               </v-col>
               <v-col cols="6">
@@ -174,7 +170,7 @@
                 <template v-slot:activator="{ on }">
                   <div class="blue--text" style="cursor: pointer" v-on="on">Xem</div>
                 </template>
-                <task-files-component :requests="[vm.lastRequest]" @fileDeleted="vm.fileDeleted($event)" />
+                <task-files-component :requests="[vm.lastRequest]" @fileDeleted="vm.fileDeleted" />
               </v-menu>
             </v-col>
           </v-row>

@@ -1,6 +1,7 @@
 import { AppProvider } from '@/app-provider'
 import { excelHelper } from '@/helpers/excel-helper'
 import { mailBuilder } from '@/helpers/mail-helper'
+import { FileModel } from '@/models/file-model'
 import { RequestModel } from '@/models/request-model'
 import { createTaskBody, getLastRequest, RequestType, TaskModel, isAssignedTask } from '@/models/task-model'
 import { action, computed, observable } from 'mobx'
@@ -69,9 +70,18 @@ export class TaskDetailViewModel {
     this.subtaskTotalCount = results[1]
   }
 
-  @asyncAction *fileDeleted() {
-    this.task = yield this.provider.api.task.findOne(this.task.id)
-    yield this.loadHistories()
+  @action.bound fileDeleted(id: string) {
+    if (this.task.files?.find(f => (f as FileModel).id === id)) {
+      this.task = { ...this.task, files: (this.task.files as FileModel[]).filter(f => f.id !== id) }
+    } else {
+      for (const request of this.requestHistories ?? []) {
+        if (request?.files?.find(f => (f as FileModel).id === id)) {
+          this.requestHistories = this.requestHistories.map(r =>
+            r.id !== request.id ? r : { ...r, files: r.files.filter(f => (f as FileModel).id !== id) }
+          )
+        }
+      }
+    }
   }
 
   @asyncAction *deleteLastRequest() {
