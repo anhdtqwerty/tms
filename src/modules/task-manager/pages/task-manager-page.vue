@@ -205,6 +205,9 @@ export default class TaskManagerPage extends Vue {
         this.showModifyRequest = true
         this.selectedTask = item
         break
+      case 'delete-update':
+        this.viewmodel.deleteLastRequest(item)
+        break
       case 'reopen':
         this.showReopenDialog = true
         this.selectedTask = item

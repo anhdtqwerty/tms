@@ -139,9 +139,9 @@ export default class TaskAddDialog extends Vue {
   expiredDate: string = null
   priority: TaskPriorityType = null
 
-  executedComradeId = ''
+  executedComradeId: string = null
   supportedComradeIds: string[] = []
-  supervisorId = ''
+  supervisorId: string = null
   selectedFiles: File[] = []
 
   executedUnitDep = {}

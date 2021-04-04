@@ -20,36 +20,36 @@
         <v-card height="100%" class="pa-4">
           <div>
             <v-row>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>Số ký hiệu</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div class="font-weight-bold">{{ vm.task.code }}</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>Ngày ban hành</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div class="font-weight-bold">{{ vm.task.publishedDate | ddmmyyyy }}</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>Trích yếu</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>
                   <read-more-component :text="vm.task.title" :isBold="true" />
                 </div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>Mức độ</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div class="font-weight-bold">{{ vm.task.priority | taskPriority }}</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>Trạng thái</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <task-state-component :state="vm.task.state" />
               </v-col>
             </v-row>
@@ -60,35 +60,35 @@
         <v-card height="100%" class="pa-4">
           <div>
             <v-row>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>Văn bản đính kèm</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <v-menu :close-on-content-click="true" transition="scale-transition" left>
                   <template v-slot:activator="{ on }">
                     <div class="blue--text" style="cursor: pointer" v-on="on">Xem</div>
                   </template>
-                  <task-files-component :task="vm.task" :requests="vm.task && vm.task.requests" />
+                  <task-files-component :task="vm.task" :requests="vm.requestHistories" @fileDeleted="vm.fileDeleted" />
                 </v-menu>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>Văn bản đến</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div class="blue--text" style="cursor: pointer" @click="showDocsInfo">Xem</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div>Thời hạn xử lý</div>
               </v-col>
-              <v-col cols="6" class="pa-2">
+              <v-col cols="6">
                 <div class="font-weight-bold">{{ vm.task.expiredDate | ddmmyyyy }}</div>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" class="pa-2">
+              <v-col cols="12">
                 <div>Nội dung nhiệm vụ</div>
               </v-col>
-              <v-col cols="12" class="pa-2">
+              <v-col cols="12">
                 <div>
                   <read-more-component :text="vm.task.description" :isBold="true" />
                 </div>
@@ -99,42 +99,81 @@
       </v-col>
       <v-col cols="12" md="6" lg="3" class="pa-2">
         <v-card height="100%" class="pa-4">
-          <div>
-            <v-col cols="12">
+          <!-- supervisor -->
+          <v-row cols="12">
+            <v-col cols="6">
               <div>Theo dõi</div>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="6">
               <div v-if="vm.task" class="font-weight-bold">{{ supervisorUnitDepDisplay() }}</div>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="6">
               <div>Chuyên viên</div>
             </v-col>
-            <v-col cols="12" v-if="!$_empty(vm.task.supervisors)">
-              <app-avatar :avatar="vm.task.supervisors[0].avatar" width="80" height="80" />
-              <span class="ml-4 font-weight-bold">
+            <v-col cols="6" v-if="!$_empty(vm.task.supervisors)" class="d-flex">
+              <app-avatar :avatar="vm.task.supervisors[0].avatar" size="24" />
+              <div class="ml-2 font-weight-bold">
                 {{ vm.task.supervisors[0].name }}
-              </span>
+              </div>
             </v-col>
-          </div>
+          </v-row>
+
+          <!-- execute -->
+          <v-row cols="12">
+            <v-col cols="6">
+              <div>Thực hiện</div>
+            </v-col>
+            <v-col cols="6">
+              <div v-if="vm.task" class="font-weight-bold">{{ executedUnitDepDisplay() }}</div>
+            </v-col>
+            <v-col cols="6">
+              <div>Chuyên viên</div>
+            </v-col>
+            <v-col cols="6" v-if="vm.task.executedComrade" class="d-flex">
+              <app-avatar :avatar="vm.task.executedComrade.avatar" size="24" />
+              <div class="ml-2 font-weight-bold">{{ vm.task.executedComrade.name }}</div>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
       <v-col cols="12" md="6" lg="3" class="pa-2">
         <v-card height="100%" class="pa-4">
-          <div>
-            <v-col cols="12">
-              <div>Thực hiện</div>
+          <v-row cols="12">
+            <v-col class="font-weight-bold">Tiến độ thực hiện</v-col>
+          </v-row>
+          <v-row cols="12">
+            <v-col cols="6">
+              <div>Trạng thái</div>
             </v-col>
-            <v-col cols="12">
-              <div v-if="vm.task" class="font-weight-bold">{{ executedUnitDepDisplay() }}</div>
+            <v-col cols="6">
+              <div>
+                <task-state-component :state="vm.lastRequest | _get('type')" />
+              </div>
             </v-col>
-            <v-col cols="12">
-              <div>Chuyên viên</div>
+            <v-col cols="6">
+              <div>Ngày thực hiện</div>
             </v-col>
-            <v-col cols="12" v-if="vm.task.executedComrade">
-              <app-avatar :avatar="vm.task.executedComrade.avatar" width="80" height="80" />
-              <span class="ml-4 font-weight-bold">{{ vm.task.executedComrade.name }}</span>
+            <v-col cols="6">
+              <div class="font-weight-bold">{{ vm.lastRequest && vm.lastRequest.startedDate | ddmmyyyy }}</div>
             </v-col>
-          </div>
+            <v-col cols="6">
+              <div>Diễn giải trạng thái</div>
+            </v-col>
+            <v-col cols="6">
+              <div class="font-weight-bold">{{ vm.lastRequest | _get('description') }}</div>
+            </v-col>
+            <v-col cols="6">
+              <div>File đính kèm</div>
+            </v-col>
+            <v-col cols="6" class="pa-2">
+              <v-menu :close-on-content-click="true" transition="scale-transition" left>
+                <template v-slot:activator="{ on }">
+                  <div class="blue--text" style="cursor: pointer" v-on="on">Xem</div>
+                </template>
+                <task-files-component :requests="[vm.lastRequest]" @fileDeleted="vm.fileDeleted" />
+              </v-menu>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>
@@ -160,7 +199,7 @@
               >
                 <div>
                   <v-btn
-                    v-if="$permission('task.sub.add') && vm.task && !vm.task.createdDepartment"
+                    v-if="$permission('task.sub.add') && vm.task && !vm.task.createdDepartment && vm.isAssignedTask"
                     small
                     color="success"
                     class="mr-2"
@@ -240,7 +279,7 @@
                 <template v-slot:activator="{ on }">
                   <div class="blue--text" v-on="on" style="cursor: pointer">Xem</div>
                 </template>
-                <task-files-component :requests="item" />
+                <task-files-component :requests="[item]" />
               </v-menu>
             </template>
           </v-data-table>
@@ -403,7 +442,6 @@ export default class TaskDetailPage extends Vue {
   userUnit: UnitModel = authStore.comrade.unit as UnitModel
 
   @Watch('$route.params.taskid', { immediate: true }) onTaskParamChange(val: any) {
-    console.log('authStore.isLeader', authStore.isLeader)
     if (val) {
       this.vm.loadData(val)
     }
@@ -481,6 +519,9 @@ export default class TaskDetailPage extends Vue {
         break
       case 'modify-update':
         this.showModifyRequest = true
+        break
+      case 'delete-update':
+        this.vm.deleteLastRequest()
         break
       case 'reopen':
         this.showReopenDialog = true

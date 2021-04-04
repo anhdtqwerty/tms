@@ -41,10 +41,7 @@ export class MainContainerViewModel {
         new MenuViewModel(taskRouteNameMap['task-assigned'], { link: '/tasks/task-assigned' }),
         new MenuViewModel(taskRouteNameMap['task-expired'], { link: '/tasks/task-expired' }),
         new MenuViewModel(taskRouteNameMap['task-unfinished'], { link: '/tasks/task-unfinished' }),
-        new MenuViewModel(taskRouteNameMap['task-approving'], {
-          link: '/tasks/task-approving',
-          permission: ['task.main.add', 'task.sub.add']
-        }),
+        new MenuViewModel(taskRouteNameMap['task-approving'], { link: '/tasks/task-approving' }),
         new MenuViewModel(taskRouteNameMap['task-following'], { link: '/tasks/task-following' }),
         new MenuViewModel(taskRouteNameMap['task-support'], { link: '/tasks/task-support' }),
         new MenuViewModel(taskRouteNameMap['task-done'], { link: '/tasks/task-done' })

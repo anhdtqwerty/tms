@@ -12,6 +12,7 @@
 import { Component, Inject, Prop, Vue, Watch } from 'vue-property-decorator'
 import { AppProvider } from '@/app-provider'
 import _ from 'lodash'
+import { FileModel } from '@/models/file-model'
 
 @Component
 export default class TaskFilesComponent extends Vue {
@@ -23,33 +24,34 @@ export default class TaskFilesComponent extends Vue {
 
   files: any[] = []
 
-  @Watch('task', { immediate: true }) onTaskChange(val: any) {
-    if (val) {
-      this.files = this.task ? [...this.files, this.task[this.fileField]] : []
-      this.files = _.flatten(this.files)
-    }
+  @Watch('task', { immediate: true }) onTaskChange() {
+    this.getFiles()
   }
 
-  @Watch('requests', { immediate: true }) onRequestsChange(val: any) {
-    if (Array.isArray(val) && val.length) {
-      this.requests.map(r => {
-        if ((r[this.fileField] as []).length) this.files = [...this.files, r[this.fileField]]
-      })
-      this.files = _.flatten(this.files)
-    } else if (val) {
-      this.files = val[this.fileField]
-    }
+  @Watch('requests', { immediate: true }) onRequestsChange() {
+    this.getFiles()
   }
 
-  async deleteFile(file: File) {
+  getFiles() {
+    let taskFiles: any[] = []
+    if (this.task && this.task[this.fileField]) {
+      taskFiles = [...this.task[this.fileField]]
+    }
+
+    for (const request of this.requests ?? []) {
+      if (request) taskFiles = [...taskFiles, ...(request[this.fileField] as [])]
+    }
+
+    this.files = taskFiles
+  }
+
+  async deleteFile(file: FileModel) {
     if (await this.providers.alert.confirmDelete('file')) {
       try {
-        await this.providers.api.deleteFile(_.get(file, 'id'))
+        await this.providers.api.deleteFile(file.id)
         this.providers.snackbar.deleteSuccess()
-        if (this.task) {
-          this.task[this.fileField] = this.task[this.fileField].filter((x: any) => x.id !== _.get(file, 'id'))
-          this.files = this.task[this.fileField]
-        }
+        this.files = this.files.filter(f => f.id !== file.id)
+        this.$emit('fileDeleted', file.id)
       } catch (error) {
         this.providers.snackbar.commonError(error)
       }
