@@ -49,7 +49,7 @@ export const ApiRouteNames: { [name in ApiRouteType]: string } = {
 const browser = Bowser.getParser(window.navigator.userAgent)
 let ipAddress = ''
 export class ApiHandler<T> {
-  constructor(private route: ApiRouteType, private axios: AxiosInstance, private allowLog = true) {}
+  constructor(private route: ApiRouteType, private axios: AxiosInstance, private allowLog = true) { }
 
   async count(params?: any): Promise<number> {
     const res = await this.axios.get(`${this.route}/count`, { params })
@@ -230,7 +230,12 @@ export class ApiService {
     return res.data
   }
 
-  async getDepartmentsTaskReport(params?: { from?: string; to?: string; unit: string }): Promise<TaskStatModel[]> {
+  async getDepartmentsTaskReport(params?: {
+    from?: string
+    to?: string
+    unit?: string
+    department?: string
+  }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/department/statistic`, { params })
     return res.data
   }

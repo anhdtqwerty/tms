@@ -30,7 +30,13 @@ export class MainContainerViewModel {
   @observable loading = false
   @observable drawer = true
   @observable menuConfigs: MenuViewModel[] = [
-    new MenuViewModel('Trang chủ', { icon: 'dashboard', link: '/dashboard' }),
+    new MenuViewModel('Trang chủ', {
+      icon: 'dashboard',
+      children: [
+        new MenuViewModel('Cá nhân', { link: '/dashboard-comrade' }),
+        new MenuViewModel('Đơn vị', { link: '/dashboard-leader' })
+      ]
+    }),
     new MenuViewModel('Quản lý nhiệm vụ', {
       icon: 'list',
       children: [

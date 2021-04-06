@@ -74,6 +74,24 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'dashboard-comrade',
+        name: 'dashboard-comrade',
+        component: () => import('@/modules/dashboard/dashboard-comrade-page.vue'),
+        meta: {
+          title: 'Trang chủ',
+          auth: true
+        }
+      },
+      {
+        path: 'dashboard-leader',
+        name: 'dashboard-leader',
+        component: () => import('@/modules/dashboard/dashboard-leader-page.vue'),
+        meta: {
+          title: 'Trang chủ',
+          auth: true
+        }
+      },
+      {
         path: 'change-password',
         name: 'change-password',
         component: () => import('@/modules/profile/pages/change-password-page.vue'),
