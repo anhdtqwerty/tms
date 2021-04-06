@@ -63,7 +63,7 @@ export default class TaskReopenDialog extends Vue {
         const api = this.providers.api
         const request = await api.request.create({
           description: this.reasonReopen,
-          type: 'waiting',
+          type: 'reopen',
           requestor: authStore.comrade.id,
           task: this.task.id,
           metadata: {
@@ -77,7 +77,7 @@ export default class TaskReopenDialog extends Vue {
           const modifyTask = await api.task.update(
             this.task.id,
             createTaskBody(this.task, {
-              status: 'rejected',
+              status: 'reopen',
               state: 'doing',
               explainState: this.reasonReopen
             })

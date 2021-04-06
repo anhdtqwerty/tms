@@ -15,7 +15,7 @@ import { fileHelpers } from '@/helpers/file-helper'
 
 export const vueFilterRegister = () => {
   Vue.filter('logAction', (a: ApiLogType) => apiLogNames[a])
-  Vue.filter('taskStatus', (a: TaskApprovementStatusType) => taskApprovementStatusNameMap[a])
+  Vue.filter('taskApprovementStatus', (a: TaskApprovementStatusType) => taskApprovementStatusNameMap[a])
   Vue.filter('taskPriority', (a: TaskPriorityType) => taskPriorityNameMap[a])
   Vue.filter('taskState', (a: TaskStateType) => taskStateNameMap[a])
 

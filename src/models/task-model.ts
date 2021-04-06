@@ -93,11 +93,12 @@ export const taskDeadlineNames: { type: TaskDeadlineType; name: string }[] = Obj
     } as any)
 )
 
-export type TaskApprovementStatusType = 'approving' | 'approved' | 'rejected'
+export type TaskApprovementStatusType = 'approving' | 'approved' | 'rejected' | 'reopen'
 export const taskApprovementStatusNameMap: { [name in TaskApprovementStatusType]: string } = {
   approving: 'Chờ phê duyệt',
   approved: 'Đã phê duyệt',
-  rejected: 'Trả lại'
+  rejected: 'Trả lại',
+  reopen: 'Mở lại'
 }
 export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name: string }[] = Object.entries(
   taskApprovementStatusNameMap
@@ -108,7 +109,7 @@ export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name
       value
     } as any)
 )
-export type RequestType = TaskStateType | 'returned' | 'extended'
+export type RequestType = TaskStateType | 'returned' | 'extended' | TaskApprovementStatusType
 export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered'
 export const taskStateNameMap: { [name in TaskStateType]: string } = {
   waiting: 'Chưa cập nhật tiến độ',
@@ -269,7 +270,8 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
 
 export const getLastRequest = (task: TaskModel) => {
   const updateTaskTypes: RequestType[] = ['doing', 'todo', 'waiting', 'done']
-  const lastest = _.maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
+  const requestsFilter = task.requests.filter(r => updateTaskTypes.includes(_.get(r, 'type')))
+  const lastest = _.maxBy(requestsFilter, r => moment(_.get(r, 'created_at'))) as RequestModel
 
   if (lastest && updateTaskTypes.includes(_.get(lastest, 'type')) && task.state === lastest.type) return lastest
   else return null

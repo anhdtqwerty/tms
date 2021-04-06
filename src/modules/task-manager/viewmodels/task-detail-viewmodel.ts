@@ -167,6 +167,11 @@ export class TaskDetailViewModel {
     // return this.requestHistories.filter(r => progressTypes.includes(r.type))
   }
 
+  @computed get approvementHistory() {
+    const approvementTypes: RequestType[] = ['approved', 'rejected', 'reopen']
+    return this.requestHistories.filter(r => approvementTypes.includes(r.type))
+  }
+
   @computed get isAssignedTask() {
     return isAssignedTask(this.task)
   }

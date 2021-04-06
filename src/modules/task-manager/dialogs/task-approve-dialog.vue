@@ -40,14 +40,14 @@
               <div class="text-subtitle-2 mb-4">Chuyên viên phê duyệt kết quả</div>
               <v-radio-group hide-details row class="ma-0 pa-0" v-model="approveStatusResult">
                 <v-radio label="Phê duyệt" value="approved" />
-                <v-radio label="Trả lại" value="reject" />
+                <v-radio label="Trả lại" value="rejected" />
               </v-radio-group>
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
               <app-text-field
                 hide-details
                 v-model="reasonReject"
-                v-if="approveStatusResult === 'reject'"
+                v-if="approveStatusResult === 'rejected'"
                 :rules="$appRules.taskExplain"
                 counter="1000"
                 label="Lý do"
@@ -77,6 +77,8 @@ import { AppProvider } from '@/app-provider'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
 import { createTaskBody, getLastRequest, TaskApprovementStatusType, TaskModel } from '@/models/task-model'
 import { mailBuilder } from '@/helpers/mail-helper'
+import { authStore } from '@/stores/auth-store'
+import _ from 'lodash'
 
 @Component({
   components: {
@@ -113,29 +115,43 @@ export default class TaskApproveDialog extends Vue {
   async save() {
     if (this.form.validate()) {
       try {
-        let task: TaskModel = {
-          status: this.approveStatusResult,
-          state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
-        }
-
+        const api = this.providers.api
+        const request = await api.request.create({
+          description: this.reasonReject,
+          type: this.approveStatusResult === 'approved' ? 'approved' : 'rejected',
+          requestor: authStore.comrade.id,
+          task: this.task.id
+        })
+        let files = []
         if (this.approverSelectedFiles.length) {
-          await Promise.all(
+          files = await Promise.all(
             this.approverSelectedFiles.map(f =>
               this.providers.api.uploadFiles(f, {
-                model: 'task',
-                modelId: this.task.id,
+                model: 'request',
+                modelId: request.id,
                 modelField: 'files'
               })
             )
           )
         }
 
-        task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
+        try {
+          const modifyTask = await api.task.update(
+            this.task.id,
+            createTaskBody(this.task, {
+              status: this.approveStatusResult,
+              state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
+            })
+          )
 
-        this.providers.api.sendMail(mailBuilder.approveTask(task, this.approveStatusResult === 'approved'))
-        this.$emit('success', task)
-        this.syncedValue = false
-        this.providers.snackbar.success('Phê duyệt kết quả thành công')
+          api.sendMail(mailBuilder.approveTask(modifyTask, this.approveStatusResult === 'approved'))
+          this.$emit('success', modifyTask, { ...request, files: _.flatten(files) })
+          this.syncedValue = false
+          this.providers.snackbar.success('Phê duyệt kết quả thành công')
+        } catch (error) {
+          await api.request.delete(request.id)
+          throw error
+        }
       } catch (error) {
         this.providers.snackbar.commonError(error)
       }
