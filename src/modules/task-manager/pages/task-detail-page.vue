@@ -361,6 +361,51 @@
       </v-col>
     </v-row>
 
+    <!-- approvement history -->
+    <v-row>
+      <v-col cols="12" class="pa-2">
+        <v-card>
+          <v-data-table
+            item-key="id"
+            :items="vm.approvementHistory"
+            :headers="taskApprovementHistoryHeaders"
+            :footer-props="{ itemsPerPageOptions: [25] }"
+            mobile-breakpoint="0"
+          >
+            <template v-slot:top>
+              <v-container fluid class="px-5 py-0">
+                <v-row>
+                  <v-col cols="12" class="pa-2">
+                    <div class="text-h6">Lịch sử phê duyệt nhiệm vụ</div>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </template>
+            <template v-slot:[`item.task.description`]="{ item }">
+              <max-length-text :text="item.task.description" />
+            </template>
+            <template v-slot:[`item.description`]="{ item }">
+              <max-length-text :text="item.description" />
+            </template>
+            <template v-slot:[`item.created_at`]="{ item }">
+              {{ item.created_at | ddmmyyyy }}
+            </template>
+            <template v-slot:[`item.type`]="{ item }">
+              {{ item.type | taskApprovementStatus }}
+            </template>
+            <template v-slot:[`item.attachFile`]="{ item }">
+              <v-menu :close-on-content-click="true" transition="scale-transition" left>
+                <template v-slot:activator="{ on }">
+                  <div class="blue--text" v-on="on" style="cursor: pointer">Xem</div>
+                </template>
+                <task-files-component :requests="[item]" />
+              </v-menu>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
+
     <task-add-dialog :value.sync="showAddSubtask" :taskParent="vm.task" @success="vm.taskAdded" />
     <task-edit-dialog :value.sync="showEditDialog" :task="editingTask" @success="vm.taskUpdated" />
     <task-recover-dialog :value.sync="showRetriveDialog" :task="editingTask" @success="vm.taskRecovered" />
@@ -436,9 +481,7 @@ export default class TaskDetailPage extends Vue {
   showReopenDialog = false
 
   editingTask: TaskModel = null
-
   showModifyRequest = false
-
   userUnit: UnitModel = authStore.comrade.unit as UnitModel
 
   @Watch('$route.params.taskid', { immediate: true }) onTaskParamChange(val: any) {
@@ -598,6 +641,15 @@ export default class TaskDetailPage extends Vue {
     { text: 'Hạn xử lý cũ', value: 'data.oldExpiredDate', sortable: false },
     { text: 'Hạn xử lý mới', value: 'data.newExpiredDate', sortable: true },
     { text: 'Lý do gia hạn', value: 'description', sortable: false }
+  ]
+
+  taskApprovementHistoryHeaders = [
+    { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
+    { text: 'Ngày phê duyệt', value: 'created_at', sortable: false },
+    { text: 'Người phê duyệt', value: 'requestor.name', sortable: false },
+    { text: 'Trạng thái phê duyệt', value: 'type', sortable: true },
+    { text: 'Lý do', value: 'description', sortable: false },
+    { text: 'File đính kèm', value: 'attachFile', sortable: false }
   ]
 }
 </script>

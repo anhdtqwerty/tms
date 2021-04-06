@@ -18,6 +18,7 @@ export const vueFilterRegister = () => {
   Vue.filter('taskStatus', (a: TaskApprovementStatusType) => taskApprovementStatusNameMap[a])
   Vue.filter('taskPriority', (a: TaskPriorityType) => taskPriorityNameMap[a])
   Vue.filter('taskState', (a: TaskStateType) => taskStateNameMap[a])
+  Vue.filter('taskApprovementStatus', (a: TaskApprovementStatusType) => taskApprovementStatusNameMap[a])
 
   Vue.filter('date', (isoStr: string, format: string) => (isoStr ? moment(isoStr).format(format) : ''))
   Vue.filter('ddmmyyyy', (isoStr: string) => (isoStr ? moment(isoStr).format('DD/MM/YYYY') : ''))
