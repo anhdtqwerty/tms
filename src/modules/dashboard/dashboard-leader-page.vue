@@ -7,24 +7,24 @@
     </v-row>
     <v-row>
       <v-col cols="6" lg="3" class="pa-2">
-        <overview-card icon="list_alt" title="Tổng số" :value="viewmodel.topStatCriterias.total" />
+        <overview-card icon="list_alt" title="Tổng số" :value="viewmodel.topStats.total" />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
         <overview-card
           icon="schedule"
           title="Đang thực hiện"
-          :value="viewmodel.topStatCriterias.doing + viewmodel.topStatCriterias.doingOutDate || 0"
-          :intime="viewmodel.topStatCriterias.doing"
-          :overtime="viewmodel.topStatCriterias.doingOutDate"
+          :value="viewmodel.topStats.doing + viewmodel.topStats.doingOutDate || 0"
+          :intime="viewmodel.topStats.doing"
+          :overtime="viewmodel.topStats.doingOutDate"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
         <overview-card
           icon="done"
           title="Hoàn thành"
-          :value="viewmodel.topStatCriterias.done + viewmodel.topStatCriterias.doneOutDate || 0"
-          :intime="viewmodel.topStatCriterias.done"
-          :overtime="viewmodel.topStatCriterias.doneOutDate"
+          :value="viewmodel.topStats.done + viewmodel.topStats.doneOutDate || 0"
+          :intime="viewmodel.topStats.done"
+          :overtime="viewmodel.topStats.doneOutDate"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">

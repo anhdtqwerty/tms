@@ -235,12 +235,18 @@ export class ApiService {
     to?: string
     unit?: string
     department?: string
+    joinDepartmentBy: 'executedDepartment' | 'createdDepartment'
+    joinBy: 'executedComrade' | 'createdComrade'
   }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/department/statistic`, { params })
     return res.data
   }
 
-  async getUnitsTaskReport(params?: { from?: string; to?: string }): Promise<TaskStatModel[]> {
+  async getUnitsTaskReport(params?: {
+    from?: string
+    to?: string
+    joinBy: 'executedUnit' | 'createdUnit'
+  }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/unit/statistic`, { params })
     return res.data
   }

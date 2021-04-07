@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _, { flatten, isNumber } from 'lodash'
 
 export interface TaskStatCriteria {
   total?: number
@@ -29,4 +29,20 @@ export const flatStats = (reports: TaskStatModel[]): TaskStatCriteria => {
     .groupBy('key')
     .forEach((values, key) => (results[key] = _.sumBy(values, 'value')))
   return results
+}
+
+export const mergeStatList = (...statss: TaskStatModel[][]) => {
+  return Object.values(
+    flatten(statss).reduce((prev, cur) => {
+      const last = prev[cur.id] as any
+      if (!last) {
+        prev[cur.id] = { ...cur }
+      } else {
+        Object.entries(cur).forEach(([key, value]) => {
+          if (isNumber(value) && key !== 'id') last[key] = last[key] + value
+        })
+      }
+      return prev
+    }, {} as any)
+  )
 }
