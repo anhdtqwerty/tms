@@ -235,8 +235,8 @@ export class ApiService {
     to?: string
     unit?: string
     department?: string
-    joinDepartmentBy: 'executedDepartment' | 'createdDepartment'
-    joinBy: 'executedComrade' | 'createdComrade'
+    joinUnitBy?: 'executedUnit' | 'createdUnit'
+    joinBy?: 'executedComrade' | 'createdBy'
   }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/department/statistic`, { params })
     return res.data
@@ -245,13 +245,21 @@ export class ApiService {
   async getUnitsTaskReport(params?: {
     from?: string
     to?: string
-    joinBy: 'executedUnit' | 'createdUnit'
+    joinUnitBy?: 'executedUnit' | 'createdUnit'
+    ministry: string
   }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/unit/statistic`, { params })
     return res.data
   }
 
-  async getComradeTaskReport(params: { from?: string; to?: string; id: string }): Promise<TaskStatModel[]> {
+  async getComradeTaskReport(params: {
+    from?: string
+    to?: string
+    id?: string
+    department?: string
+    joinDepartmentBy?: 'executedDepartment' | 'createdDepartment'
+    joinBy?: 'executedComrade' | 'createdBy'
+  }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/comrade/statistic`, { params })
     return res.data
   }

@@ -1,6 +1,6 @@
 import { textHelpers } from '@/helpers/text-helper'
 import { authStore } from '@/stores/auth-store'
-import _ from 'lodash'
+import _, { isEmpty } from 'lodash'
 import moment from 'moment'
 import { ComradeModel } from './comrade-model'
 import { DepartmentModel } from './department-model'
@@ -162,13 +162,14 @@ export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
 }
 export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren = true): any[] => {
   // const unitPrams = authStore.unitParams
-  const { department } = authStore.unitParams
+  const { department, unit, ministry } = authStore.unitParams
   const comradeUnitId = (authStore.comrade.unit as UnitModel)?.id
 
   let leaderOwnerParam = {}
   let leaderAssignedParam = {}
   let leaderSupervisosParam = {}
   let leaderSupportParam = {}
+  let exlucdeChildren = {}
   if (authStore.isLeader) {
     if (department) {
       leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
@@ -188,6 +189,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
       leaderSupportParam = {
         _or: [{ supportedUnits_contains: comradeUnitId }, { supportedComrades_contains: authStore.comrade.id }]
       }
+      exlucdeChildren = { createdDepartment_null: true }
     }
   }
 
@@ -263,8 +265,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
       break
   }
   const taskQueries = _.isEmpty(taskParams) ? [leaderPrams] : [leaderPrams, taskParams]
-
-  return includeChildren ? taskQueries : [{ parent_null: true }, ...taskQueries]
+  return includeChildren || isEmpty(exlucdeChildren) ? taskQueries : [exlucdeChildren, ...taskQueries]
 }
 
 export const getLastRequest = (task: TaskModel) => {

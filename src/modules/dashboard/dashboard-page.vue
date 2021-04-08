@@ -14,8 +14,8 @@
           icon="schedule"
           title="Đang thực hiện"
           :value="viewmodel.topStatCriterias.doing + viewmodel.topStatCriterias.doingOutDate || 0"
-          :intime="viewmodel.topStatCriterias.doing"
-          :overtime="viewmodel.topStatCriterias.doingOutDate"
+          :left-value="viewmodel.topStatCriterias.doing"
+          :right-value="viewmodel.topStatCriterias.doingOutDate"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
@@ -23,8 +23,8 @@
           icon="done"
           title="Hoàn thành"
           :value="viewmodel.topStatCriterias.done + viewmodel.topStatCriterias.doneOutDate || 0"
-          :intime="viewmodel.topStatCriterias.done"
-          :overtime="viewmodel.topStatCriterias.doneOutDate"
+          :left-value="viewmodel.topStatCriterias.done"
+          :right-value="viewmodel.topStatCriterias.doneOutDate"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">

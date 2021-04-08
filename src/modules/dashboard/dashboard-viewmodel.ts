@@ -121,12 +121,18 @@ export class DashboardViewModel {
       series: [
         {
           data: this.unitStats.map(s => {
-            if (this.taskStateFilter === 'doing') {
-              return s.doing + s.doingOutDate
-            } else if (this.taskStateFilter === 'done') {
-              return s.done + s.doneOutDate
+            switch (this.taskStateFilter) {
+              case 'waiting':
+                return s.waiting + s.waitingOutDate
+              case 'todo':
+                return s.todo + s.todoOutDate
+              case 'doing':
+                return s.doing + s.doingOutDate
+              case 'done':
+                return s.done + s.doneOutDate
+              case 'recovered':
+                return s.recovered + s.recoveredOutDate
             }
-            return s.total
           }),
           name: ''
         }
@@ -146,7 +152,7 @@ export class DashboardViewModel {
           }
         }
       },
-      series: [stat.aprroving ?? 0, stat.doing - stat.doingOutDate ?? 0, stat.done ?? 0, stat.doneOutDate ?? 0]
+      series: [stat.approving ?? 0, stat.doing - stat.doingOutDate ?? 0, stat.done ?? 0, stat.doneOutDate ?? 0]
     }
     return result
   }

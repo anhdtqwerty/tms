@@ -10,16 +10,16 @@
       </div>
       <div class="d-flex justify-space-between caption mt-4">
         <div>
-          <div v-if="intime > 0">
-            Trong hạn <span class="green--text font-weight-medium">{{ intime }}</span>
+          <div v-if="leftValue > 0">
+            {{ leftText }} <span class="green--text font-weight-medium">{{ leftValue }}</span>
           </div>
         </div>
         <div>
-          <div v-if="overtime > 0">
-            Quá hạn <span class="red--text font-weight-medium">{{ overtime }}</span>
+          <div v-if="rightValue > 0">
+            {{ rightText }} <span class="red--text font-weight-medium">{{ rightValue }}</span>
           </div>
         </div>
-        <div v-if="intime < 1 && overtime < 1" class="transparent--text">|</div>
+        <div v-if="leftValue < 1 && rightValue < 1" class="transparent--text">|</div>
       </div>
     </div>
   </v-card>
@@ -33,8 +33,10 @@ export default class OverviewCard extends Vue {
   @Prop() title!: string
   @Prop() value!: number
   @Prop() icon!: string
-  @Prop({ default: 0 }) intime: number
-  @Prop({ default: 0 }) overtime: number
+  @Prop({ default: 'Trong hạn' }) leftText: string
+  @Prop({ default: 'Quá hạn' }) rightText: string
+  @Prop({ default: 0 }) leftValue: number
+  @Prop({ default: 0 }) rightValue: number
 }
 </script>
 

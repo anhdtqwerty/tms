@@ -1,11 +1,10 @@
 import { AppProvider } from '@/app-provider'
 import { flatStats, mergeStatList, TaskStatCriteria, TaskStatModel } from '@/models/report-model'
 import { RequestModel } from '@/models/request-model'
-import { TaskDeadlineType, TaskModel, taskStateNameMap, taskStateNames, TaskStateType } from '@/models/task-model'
-import _, { isNumber, uniqBy } from 'lodash'
+import { TaskModel, TaskStateType, taskTypeToFilterParams } from '@/models/task-model'
+import { isNaN, isNumber } from 'lodash'
 import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
-import moment from 'moment'
 
 export class DashboardLeaderViewModel {
   @observable topStats: TaskStatCriteria = {}
@@ -13,6 +12,7 @@ export class DashboardLeaderViewModel {
   @observable totalCreated = 0
 
   @observable updateTaskHistory: RequestModel[] = []
+  @observable latestTasks: TaskModel[] = []
   @observable personalHistoryFilter: 'new' | 'expired' = 'new'
 
   @observable taskStateFilter: TaskStateType = 'doing'
@@ -24,68 +24,66 @@ export class DashboardLeaderViewModel {
   }
 
   @asyncAction *loadTop() {
-    const { api, authStore } = this.provider
-    let createds: TaskStatModel[] = []
-    let executeds: TaskStatModel[] = []
-    const { department, unit } = authStore.unitParams
-    if (department) {
-      createds = yield api.getDepartmentsTaskReport({ department, joinBy: 'createdComrade' })
-      executeds = yield api.getDepartmentsTaskReport({ department, joinBy: 'executedComrade' })
-    } else if (unit) {
-      createds = yield api.getDepartmentsTaskReport({
-        unit,
-        joinDepartmentBy: 'createdDepartment',
-        joinBy: 'createdComrade'
-      })
-      executeds = yield api.getDepartmentsTaskReport({
-        unit,
-        joinDepartmentBy: 'executedDepartment',
-        joinBy: 'executedComrade'
-      })
-    } else {
-      // results = yield api.getUnitsTaskReport()
-      createds = yield api.getUnitsTaskReport({ joinBy: 'createdUnit' })
-      executeds = yield api.getUnitsTaskReport({ joinBy: 'executedUnit' })
-    }
-    console.log(createds, executeds)
-    this.totalCreated = flatStats(createds).total
-    this.totalExecuted = flatStats(executeds).total
+    const { createds, executeds } = yield this.getTaskStats()
+    this.totalCreated = flatStats(createds)?.total ?? 0
+    this.totalExecuted = flatStats(executeds)?.total ?? 0
     const results = mergeStatList(createds, executeds)
     this.topStats = flatStats(results)
   }
 
-  @asyncAction *loadUnitStats(from: string, to: string) {
+  async getTaskStats(options: { hasExecuteds: boolean; from?: string; to?: string } = { hasExecuteds: true }) {
+    const { hasExecuteds, from, to } = options
     const { api, authStore } = this.provider
-    let results: TaskStatModel[] = []
-    const params = authStore.unitParams
-    if (params.department) {
-      console.log('loadUnitStats department')
-
-      // nothing
-    } else if (params.unit) {
-      console.log('loadUnitStats unit')
-
-      results = yield api.getDepartmentsTaskReport({ from, to, unit: params.unit })
-    } else {
-      console.log('loadUnitStats ministry')
-
-      const createds = yield api.getUnitsTaskReport({ from, to, joinBy: 'createdUnit' })
-      results = yield api.getUnitsTaskReport({ from, to, joinBy: 'executedUnit' })
-      // console.log(createds, results)
+    let createds: TaskStatModel[] = []
+    let executeds: TaskStatModel[] = []
+    const { department, unit, ministry } = authStore.unitParams
+    if (department) {
+      createds = await api.getComradeTaskReport({
+        department,
+        joinDepartmentBy: 'createdDepartment',
+        joinBy: 'createdBy',
+        from,
+        to
+      })
+      executeds = !hasExecuteds
+        ? []
+        : await api.getDepartmentsTaskReport({
+            unit,
+            joinUnitBy: 'executedUnit',
+            joinBy: 'executedComrade',
+            from,
+            to
+          })
+      executeds = executeds.filter(t => t.id === department)
+    } else if (unit) {
+      createds = await api.getDepartmentsTaskReport({
+        unit,
+        joinUnitBy: 'createdUnit',
+        joinBy: 'createdBy',
+        from,
+        to
+      })
+      executeds = !hasExecuteds ? [] : await api.getUnitsTaskReport({ joinUnitBy: 'createdUnit', ministry })
+      executeds = executeds.filter(t => t.id === unit)
+    } else if (ministry) {
+      createds = await api.getUnitsTaskReport({ joinUnitBy: 'createdUnit', ministry, from, to })
     }
-    this.unitStats = results
+    return { createds, executeds }
+  }
+
+  @asyncAction *loadUnitStats(from: string, to: string) {
+    const { createds } = yield this.getTaskStats({ from, to, hasExecuteds: false })
+    this.unitStats = createds
   }
 
   @asyncAction *loadUpdateTaskHistory() {
-    const { api, authStore } = this.provider
-    const unitParams = authStore.unitParams
-    const params: any = { _limit: 10 }
-    if (unitParams.department) {
-      params['requestor.department'] = unitParams.department
-    } else if (unitParams.unit) {
-      params['requestor.unit'] = unitParams.unit
-    }
-    this.updateTaskHistory = yield api.request.find(params)
+    const { api } = this.provider
+    this.latestTasks = yield api.task.find(
+      {
+        _where: [taskTypeToFilterParams('task-created'), { requests_null: false }]
+      },
+      { _limit: 10, _sort: 'updated_at:DESC' }
+    )
   }
 
   @action.bound changeTaskStateFilter(val: TaskStateType) {
@@ -110,12 +108,18 @@ export class DashboardLeaderViewModel {
       series: [
         {
           data: this.unitStats.map(s => {
-            if (this.taskStateFilter === 'doing') {
-              return s.doing + s.doingOutDate
-            } else if (this.taskStateFilter === 'done') {
-              return s.done + s.doneOutDate
+            switch (this.taskStateFilter) {
+              case 'waiting':
+                return s.waiting + s.waitingOutDate
+              case 'todo':
+                return s.todo + s.todoOutDate
+              case 'doing':
+                return s.doing + s.doingOutDate
+              case 'done':
+                return s.done + s.doneOutDate
+              case 'recovered':
+                return s.recovered + s.recoveredOutDate
             }
-            return s.total
           }),
           name: ''
         }
@@ -123,24 +127,34 @@ export class DashboardLeaderViewModel {
     }
   }
 
+  @computed get topTotalDoing() {
+    return this.topDoing + this.topDoingOutDate
+  }
   @computed get topDoing() {
-    return this.topStats.doing + this.topStats.aprroving ?? 0
+    const { doing, approving } = this.topStats
+    const value = doing + approving
+    return !isNaN(value) ? value : 0
   }
-
   @computed get topDoingOutDate() {
-    return this.topStats.doingOutDate + this.topStats.aprrovingOutDate ?? 0
+    const { doingOutDate, approvingOutDate } = this.topStats
+    const value = doingOutDate + approvingOutDate
+    return !isNaN(value) ? value : 0
   }
-
+  @computed get topTotalDone() {
+    const value = this.topDone + this.topDoneOutDate
+    return !isNaN(value) ? value : 0
+  }
   @computed get topDone() {
-    return this.topStats.doing + this.topStats.aprroving ?? 0
+    const value = this.topStats.done
+    return !isNaN(value) ? value : 0
   }
-
   @computed get topDoneOutDate() {
-    return this.topStats.aprrovingOutDate ?? 0
+    const value = this.topStats.doneOutDate
+    return !isNaN(value) ? value : 0
   }
-
   @computed get topOutOfDate() {
-    const { todoOutDate, doingOutDate, waitingOutDate, aprrovingOutDate, recoveredOutDate } = this.topStats
-    return todoOutDate + doingOutDate + waitingOutDate + aprrovingOutDate + recoveredOutDate
+    const { todoOutDate, doingOutDate, waitingOutDate, approvingOutDate } = this.topStats
+    const value = todoOutDate + doingOutDate + waitingOutDate + approvingOutDate
+    return !isNaN(value) ? value : 0
   }
 }

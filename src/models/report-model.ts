@@ -5,13 +5,13 @@ export interface TaskStatCriteria {
   waiting?: number
   todo?: number
   doing?: number
-  aprroving?: number
+  approving?: number
   recovered?: number
   done?: number
   waitingOutDate?: number
   todoOutDate?: number
   doingOutDate?: number
-  aprrovingOutDate?: number
+  approvingOutDate?: number
   recoveredOutDate?: number
   doneOutDate?: number
 }
