@@ -3,9 +3,9 @@
     <v-container class="pa-4" fluid>
       <v-row>
         <v-col cols="12" class="pa-2 d-flex justify-space-between">
-          <div class="primary--text text-h6">Nhiệm vụ</div>
+          <div class="primary--text text-h6 pr-4">Nhiệm vụ</div>
           <date-picker-input
-            class="date-picker pl-4"
+            class="date-picker"
             :value.sync="selectedMonth"
             type="month"
             label="Chọn tháng"
@@ -15,13 +15,16 @@
         </v-col>
         <v-col cols="12" class="pa-2">
           <apexchart
-            v-if="viewmodel.personalTaskChart"
+            v-if="vm.personalHasData"
             width="100%"
             height="300"
             type="pie"
-            :options="viewmodel.personalTaskChart.options"
-            :series="viewmodel.personalTaskChart.series"
+            :options="vm.personalTaskChart.options"
+            :series="vm.personalTaskChart.series"
           ></apexchart>
+          <div v-else>
+            Không có dữ liệu
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -31,7 +34,7 @@
 <script lang="ts">
 import { Component, Inject, Vue, Watch } from 'vue-property-decorator'
 import moment from 'moment'
-import { DashboardViewModel } from '../dashboard-viewmodel'
+import { DashboardComradeViewModel } from '../dashboard-comrade-viewmodel'
 import { Observer } from 'mobx-vue'
 
 @Observer
@@ -41,7 +44,7 @@ import { Observer } from 'mobx-vue'
   }
 })
 export default class TaskCircleChartCard extends Vue {
-  @Inject() viewmodel: DashboardViewModel
+  @Inject() vm: DashboardComradeViewModel
 
   selectedMonth = moment().toISOString()
 
@@ -49,7 +52,7 @@ export default class TaskCircleChartCard extends Vue {
     const time = moment(val)
     const start = time.clone().startOf('month')
     const end = time.clone().endOf('month')
-    this.viewmodel.loadPersonalStats(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'))
+    this.vm.loadPersonalStats(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'))
   }
 }
 </script>

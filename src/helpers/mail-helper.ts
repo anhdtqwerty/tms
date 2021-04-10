@@ -11,7 +11,6 @@ export interface MailModel {
 }
 
 const getAllMails = (task: TaskModel) => {
-  console.log(task.executedComrade)
   return {
     executeUnit: _.get(task.executedUnit, 'email'),
     executeComrade: _.get(task.executedComrade, 'email'),

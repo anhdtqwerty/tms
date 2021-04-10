@@ -40,7 +40,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-if="providers.isLeader" cols="12" class="pa-2">
+      <v-col cols="12" class="pa-2">
         <task-column-chart-card />
       </v-col>
       <v-col cols="12" class="pa-2">
@@ -57,7 +57,7 @@
             <template v-slot:top>
               <div class="d-flex flex-column">
                 <div class="primary--text text-h6 px-4 pt-4 pb-2">
-                  {{ providers.authStore.isLeader ? 'Các nhiệm vụ mới cập nhật' : 'Các nhiệm vụ cập nhật' }}
+                  Các nhiệm vụ cập nhật
                 </div>
                 <div class="px-4">
                   <v-btn
@@ -88,7 +88,7 @@
               </div>
             </template>
             <template v-slot:[`item.updated_at`]="{ item }">
-              {{ item.created_at | ddmmyyyy }}
+              {{ item.updated_at | ddmmyyyy }}
             </template>
           </v-data-table>
         </v-card>

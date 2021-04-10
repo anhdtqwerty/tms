@@ -13,8 +13,7 @@ export default {
     items() {
       return this.$route.matched.map((item, index) => {
         const title = item.meta && item.meta.title ? item.meta.title : ''
-        const path = item.path || '/dashboard'
-        console.log(path)
+        const path = item.path || '/'
         return {
           text: title,
           disabled: false,

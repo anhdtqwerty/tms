@@ -90,7 +90,6 @@ export default class TaskAssignDialog extends Vue {
           executedComrade: this.executedComradeId,
           executedDepartment: _.get(this.executedUnitDep, 'department') ?? null
         }
-        console.log('task', task)
         task = await this.providers.api.task.update(this.task.id, task)
         this.providers.api.sendMail(mailBuilder.assignTask(task))
         this.$emit('success', task)

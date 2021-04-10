@@ -277,7 +277,6 @@ export default class UserDetailPage extends Vue {
   }
 
   selectAvatar() {
-    console.log('selectAvatar')
     this.fileInput.$refs.input.click()
   }
 }

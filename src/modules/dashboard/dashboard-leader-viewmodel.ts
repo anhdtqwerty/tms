@@ -66,7 +66,9 @@ export class DashboardLeaderViewModel {
         from,
         to
       })
-      executeds = !hasExecuteds ? [] : await api.getUnitsTaskReport({ joinUnitBy: 'createdUnit', ministry })
+      executeds = !hasExecuteds
+        ? []
+        : await api.getUnitsTaskReport({ joinUnitBy: 'executedUnit', ministry: authStore.ministry?.id })
       executeds = executeds.filter(t => t.id === unit)
     } else if (ministry) {
       createds = await api.getUnitsTaskReport({ joinUnitBy: 'createdUnit', ministry, from, to })
@@ -79,13 +81,12 @@ export class DashboardLeaderViewModel {
     this.unitStats = createds
   }
 
-  @asyncAction *loadUpdateTaskHistory() {
+  @asyncAction *loadUpdateTaskHistory(): Generator<any> {
     try {
       const { api } = this.provider
       const createdsParams: any[] = [...taskTypeToFilterParams('task-created')]
       const executedParams: any[] = [...taskTypeToFilterParams('task-assigned')]
       let moreParam = {}
-      console.log(createdsParams)
       switch (this.lastTaskFilter) {
         case 'new':
           break
@@ -109,17 +110,17 @@ export class DashboardLeaderViewModel {
           executedParams.push(moreParam)
           break
       }
-      const [createds, excuteds] = yield Promise.all([
-        api.task.find(createdsParams.length === 1 ? createdsParams[0] : { _where: createdsParams }, {
+      const results: any = yield Promise.all([
+        api.task.find<TaskStatModel[]>(createdsParams.length === 1 ? createdsParams[0] : { _where: createdsParams }, {
           _limit: 5,
           _sort: 'updated_at:DESC'
         }),
-        api.task.find(executedParams.length === 1 ? executedParams[0] : { _where: executedParams }, {
+        api.task.find<TaskStatModel[]>(executedParams.length === 1 ? executedParams[0] : { _where: executedParams }, {
           _limit: 5,
           _sort: 'updated_at:DESC'
         })
       ])
-      this.latestTasks = uniqBy([...excuteds, ...createds], t => t.id)
+      this.latestTasks = uniqBy([...results[0], ...results[1]], t => t.id)
     } catch (error) {
       console.error(error)
     }
@@ -137,11 +138,11 @@ export class DashboardLeaderViewModel {
   }
 
   @computed get unitTaskChart(): { options: ApexCharts.ApexOptions; series: ApexAxisChartSeries } {
-    if (this.unitStats.length === 0) return null
-    return {
+    if (!this.unitStats || this.unitStats.length === 0) return null
+    const data = {
       options: {
         xaxis: {
-          categories: this.unitStats.map(s => s.title)
+          categories: this.unitStats.map(s => s.title || s.name || '')
         }
       },
       series: [
@@ -164,6 +165,7 @@ export class DashboardLeaderViewModel {
         }
       ]
     }
+    return data
   }
 
   @computed get topTotalDoing() {

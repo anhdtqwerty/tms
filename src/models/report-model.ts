@@ -19,6 +19,7 @@ export interface TaskStatCriteria {
 export interface TaskStatModel extends TaskStatCriteria {
   id?: any
   title?: string
+  name?: string
 }
 
 export const flatStats = (reports: TaskStatModel[]): TaskStatCriteria => {
@@ -33,16 +34,18 @@ export const flatStats = (reports: TaskStatModel[]): TaskStatCriteria => {
 
 export const mergeStatList = (...statss: TaskStatModel[][]) => {
   return Object.values(
-    flatten(statss).reduce((prev, cur) => {
-      const last = prev[cur.id] as any
-      if (!last) {
-        prev[cur.id] = { ...cur }
-      } else {
-        Object.entries(cur).forEach(([key, value]) => {
-          if (isNumber(value) && key !== 'id') last[key] = last[key] + value
-        })
-      }
-      return prev
-    }, {} as any)
+    flatten(statss)
+      .filter(x => !!x)
+      .reduce((prev, cur) => {
+        const last = prev[cur.id] as any
+        if (!last) {
+          prev[cur.id] = { ...cur }
+        } else {
+          Object.entries(cur).forEach(([key, value]) => {
+            if (isNumber(value) && key !== 'id') last[key] = last[key] + value
+          })
+        }
+        return prev
+      }, {} as any)
   )
 }

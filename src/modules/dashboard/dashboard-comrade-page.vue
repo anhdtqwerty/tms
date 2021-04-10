@@ -7,43 +7,48 @@
     </v-row>
     <v-row>
       <v-col cols="6" lg="3" class="pa-2">
-        <overview-card icon="list_alt" title="Tổng số" :value="viewmodel.topStatCriterias.total" />
+        <overview-card
+          icon="list_alt"
+          title="Tổng số"
+          :value="vm.totalCreated + vm.totalExecuted"
+          left-text="Được giao"
+          right-text="Giao"
+          :left-value="vm.totalExecuted"
+          :right-value="vm.totalCreated"
+        />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
         <overview-card
           icon="schedule"
           title="Đang thực hiện"
-          :value="viewmodel.topStatCriterias.doing + viewmodel.topStatCriterias.doingOutDate || 0"
-          :left-value="viewmodel.topStatCriterias.doing"
-          :right-value="viewmodel.topStatCriterias.doingOutDate"
+          :value="vm.topTotalDoing"
+          :left-value="vm.topDoing"
+          :right-value="vm.topDoingOutDate"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
         <overview-card
           icon="done"
           title="Hoàn thành"
-          :value="viewmodel.topStatCriterias.done + viewmodel.topStatCriterias.doneOutDate || 0"
-          :left-value="viewmodel.topStatCriterias.done"
-          :right-value="viewmodel.topStatCriterias.doneOutDate"
+          :value="vm.topTotalDone"
+          :left-value="vm.topDone"
+          :right-value="vm.topDoneOutDate"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
-        <overview-card icon="restore" title="Đã quá hạn" value="0" />
+        <overview-card icon="restore" title="Đã quá hạn" :value="vm.topOutOfDate" />
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-if="providers.isLeader" cols="12" class="pa-2">
-        <task-column-chart-card />
-      </v-col>
-      <v-col v-if="!providers.isLeader" cols="12" md="6" class="pa-2">
+      <v-col cols="12" md="6" class="pa-2">
         <task-circle-chart-card />
       </v-col>
-      <v-col v-if="!providers.isLeader" cols="12" md="6" class="pa-2">
+      <v-col cols="12" md="6" class="pa-2">
         <v-card>
           <div>
             <div class="primary--text text-h6 px-4 pt-4">Nhiệm vụ chưa cập nhật</div>
-            <v-list v-if="viewmodel.unupdatedTasks.length > 0">
-              <v-list-item v-for="(item, index) in viewmodel.unupdatedTasks" :key="index">
+            <v-list v-if="vm.unupdatedTasks.length > 0">
+              <v-list-item v-for="(item, index) in vm.unupdatedTasks" :key="index">
                 <v-list-item-action>
                   {{ index + 1 }}
                 </v-list-item-action>
@@ -63,8 +68,10 @@
       <v-col cols="12" class="pa-2">
         <v-card>
           <v-data-table
-            :items="viewmodel.updateTaskHistory"
-            item-key="title"
+            class="row-pointer"
+            :items="vm.latestTasks"
+            item-key="id"
+            @click:row="showDetail"
             :headers="headers"
             :footer-props="{ itemsPerPageOptions: [25] }"
             mobile-breakpoint="0"
@@ -72,38 +79,38 @@
             <template v-slot:top>
               <div class="d-flex flex-column">
                 <div class="primary--text text-h6 px-4 pt-4 pb-2">
-                  {{ providers.authStore.isLeader ? 'Các nhiệm vụ mới cập nhật' : 'Các nhiệm vụ cập nhật' }}
+                  Các nhiệm vụ cập nhật
                 </div>
-                <div class="px-4" v-if="!providers.isLeader">
+                <div class="px-4">
                   <v-btn
-                    :text="viewmodel.personalHistoryFilter !== 'new'"
-                    :outlined="viewmodel.personalHistoryFilter === 'new'"
+                    :text="vm.lastTaskFilter !== 'new'"
+                    :outlined="vm.lastTaskFilter === 'new'"
                     color="primary"
                     small
-                    @click="viewmodel.changePersonalHistoryFilter('new')"
+                    @click="vm.changeLatestTaskType('new')"
                     >Nhiệm vụ mới</v-btn
                   >
-                  <!-- <v-btn
-                    :text="viewmodel.updatedTaskFilter !== 'soon_expired'"
-                    :outlined="viewmodel.updatedTaskFilter === 'soon_expired'"
+                  <v-btn
+                    :text="vm.lastTaskFilter !== 'expired_soon'"
+                    :outlined="vm.lastTaskFilter === 'expired_soon'"
                     color="error"
                     small
-                    @click="viewmodel.changeUpdatedTaskFilter('soon_expired')"
+                    @click="vm.changeLatestTaskType('expired_soon')"
                     >Sắp hết hạn</v-btn
-                  > -->
+                  >
                   <v-btn
-                    :text="viewmodel.personalHistoryFilter !== 'expired'"
-                    :outlined="viewmodel.personalHistoryFilter === 'expired'"
+                    :text="vm.lastTaskFilter !== 'expired'"
+                    :outlined="vm.lastTaskFilter === 'expired'"
                     color="grey"
                     small
-                    @click="viewmodel.changePersonalHistoryFilter('expired')"
+                    @click="vm.changeLatestTaskType('expired')"
                     >Quá hạn</v-btn
                   >
                 </div>
               </div>
             </template>
-            <template v-slot:[`item.created_at`]="{ item }">
-              {{ item.created_at | ddmmyyyy }}
+            <template v-slot:[`item.updated_at`]="{ item }">
+              {{ item.updated_at | ddmmyyyy }}
             </template>
           </v-data-table>
         </v-card>
@@ -114,8 +121,9 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { TaskModel } from '@/models/task-model'
 import { Component, Inject, Provide, Vue } from 'vue-property-decorator'
-import { DashboardViewModel } from './dashboard-viewmodel'
+import { DashboardComradeViewModel } from './dashboard-comrade-viewmodel'
 
 @Component({
   components: {
@@ -126,14 +134,21 @@ import { DashboardViewModel } from './dashboard-viewmodel'
 })
 export default class DashboardPage extends Vue {
   @Inject() providers!: AppProvider
-  @Provide() viewmodel = new DashboardViewModel(this.providers)
+  @Provide() vm = new DashboardComradeViewModel(this.providers)
 
   headers = [
-    { text: 'Tên nhiệm vụ', value: 'task.title', sortable: false },
-    { text: 'Thời gian cập nhật', value: 'created_at', sortable: false },
-    { text: 'Người cập nhật', value: 'requestor.name', sortable: false }
+    { text: 'Tên nhiệm vụ', value: 'title', sortable: false },
+    { text: 'Thời gian cập nhật', value: 'updated_at', sortable: false }
   ]
+
+  showDetail(item: TaskModel) {
+    this.$router.push({ path: '/task/' + item.id })
+  }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.row-pointer >>> tbody tr :hover {
+  cursor: pointer;
+}
+</style>

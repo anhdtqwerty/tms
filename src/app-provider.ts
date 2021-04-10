@@ -16,7 +16,6 @@ export class AppProvider {
   authStore = authStore
 
   constructor(router: VueRouter) {
-    console.log('AppProvider ctor')
     this.router = router
     appProvider = this
   }
