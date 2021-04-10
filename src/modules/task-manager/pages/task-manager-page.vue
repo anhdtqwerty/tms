@@ -17,6 +17,7 @@
         <v-card>
           <v-data-table
             class="row-pointer"
+            :item-class="row_classes"
             :items="viewmodel.tasks"
             item-key="id"
             @click:row="showDetail"
@@ -103,8 +104,10 @@
 
 <script lang="ts">
 import { AppProvider } from '@/app-provider'
+import { RequestModel } from '@/models/request-model'
 import { TaskActionType, TaskModel, taskRouteNameMap, TaskRouteType } from '@/models/task-model'
-import _ from 'lodash'
+import _, { maxBy } from 'lodash'
+import moment from 'moment'
 import { Component, Inject, Provide, Vue, Watch } from 'vue-property-decorator'
 import { TaskManagerViewModel } from '../viewmodels/task-manager-viewmodel'
 
@@ -234,6 +237,12 @@ export default class TaskManagerPage extends Vue {
   supervisorUnitDepDisplay(task: TaskModel) {
     if (_.get(task.supervisorDepartment, 'title')) return _.get(task.supervisorDepartment, 'title')
     return _.get(task.supervisorUnit, 'title')
+  }
+
+  row_classes(task: TaskModel) {
+    const lastest = maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
+    const news = lastest && moment().isBefore(moment(lastest.created_at).add(1, 'day'))
+    if (news) return 'blue lighten-4'
   }
 }
 </script>
