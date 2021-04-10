@@ -278,7 +278,6 @@ export default class TaskSearchComponent extends Vue {
     } else {
       const cleaned = textHelpers.clearUnicode(this.simpleSearchKeyword)
       const simpleParam = cleaned ? { keywords_contains: cleaned } : {}
-      console.log(cleaned, simpleParam)
       this.$emit('simple-search', simpleParam)
     }
   }

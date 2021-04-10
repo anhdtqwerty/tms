@@ -34,7 +34,6 @@ export default class UnitAutoComplete extends Vue {
   loading = false
 
   async mounted() {
-    console.log(this.includeMinistry)
     this.loading = true
     try {
       const params: any = {}

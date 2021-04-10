@@ -33,7 +33,13 @@ export class SigninViewModel {
       } catch (error) {
         console.error('handleLogin get comrade', error)
       }
-      this.providers.router.replace('dashboard')
+      try {
+        const res = yield this._api.unit.find({ _limit: 1, type: 'ministry' })
+        authStore.ministry = res[0]
+      } catch (error) {
+        console.error('handleLogin get ministry', error)
+      }
+      this.providers.router.replace(authStore.isLeader ? 'dashboard-leader' : 'dashboard-comrade')
     } catch (error) {
       this.providers.snackbar.commonError(error)
     }

@@ -65,12 +65,22 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/modules/containers/main-container.vue'),
     children: [
       {
-        path: 'dashboard',
-        name: 'dashboard',
-        component: () => import('@/modules/dashboard/dashboard-page.vue'),
+        path: 'dashboard-comrade',
+        name: 'dashboard-comrade',
+        component: () => import('@/modules/dashboard/dashboard-comrade-page.vue'),
         meta: {
           title: 'Trang chủ',
           auth: true
+        }
+      },
+      {
+        path: 'dashboard-leader',
+        name: 'dashboard-leader',
+        component: () => import('@/modules/dashboard/dashboard-leader-page.vue'),
+        meta: {
+          title: 'Trang chủ',
+          auth: true,
+          requiredLeader: true
         }
       },
       {
@@ -102,15 +112,6 @@ const routes: Array<RouteConfig> = [
           permission: 'system.user.edit'
         }
       },
-      // {
-      //   path: 'role-sections',
-      //   name: 'role-sections',
-      //   component: () => import('@/modules/system-manager/pages/role-sections-page.vue'),
-      //   meta: {
-      //     title: 'Vai trò',
-      //     auth: true
-      //   }
-      // },
       {
         path: 'roles',
         name: 'roles',
@@ -236,20 +237,21 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  const dashboardRoute = authStore.isLeader ? 'dashboard-leader' : 'dashboard-comrade'
   if (!to.name) {
-    next('dashboard')
+    next(dashboardRoute)
   } else {
     const requriedAuth = to.matched.some(m => m.meta?.auth === true)
     const isAuthenticated = authStore.authenticated
 
     if ((requriedAuth && isAuthenticated) || (!requriedAuth && !isAuthenticated)) {
-      if (permissionHelper.check(to.meta?.permission)) {
+      if (permissionHelper.check(to.meta?.permission, to.meta?.requiredLeader)) {
         next()
       } else {
-        next('dashboard')
+        next(dashboardRoute)
       }
     } else if (!requriedAuth && isAuthenticated) {
-      next('dashboard')
+      next(dashboardRoute)
     } else if (requriedAuth && !isAuthenticated) {
       next('signin')
     } else {

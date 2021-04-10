@@ -3,6 +3,7 @@ import { ComradeModel } from '@/models/comrade-model'
 import { action, observable, reaction } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 import { taskRouteNameMap } from '@/models/task-model'
+import { authStore } from '@/stores/auth-store'
 
 export class MenuViewModel {
   @observable selected = false
@@ -30,7 +31,15 @@ export class MainContainerViewModel {
   @observable loading = false
   @observable drawer = true
   @observable menuConfigs: MenuViewModel[] = [
-    new MenuViewModel('Trang chủ', { icon: 'dashboard', link: '/dashboard' }),
+    new MenuViewModel('Trang chủ', {
+      icon: 'dashboard',
+      children: authStore.isLeader
+        ? [
+            new MenuViewModel('Cá nhân', { link: '/dashboard-comrade' }),
+            new MenuViewModel('Đơn vị', { link: '/dashboard-leader' })
+          ]
+        : [new MenuViewModel('Cá nhân', { link: '/dashboard-comrade' })]
+    }),
     new MenuViewModel('Quản lý nhiệm vụ', {
       icon: 'list',
       children: [
@@ -107,7 +116,6 @@ export class MainContainerViewModel {
   }
 
   @action.bound onSelectedMenu(menu: MenuViewModel) {
-    console.log('onSelectedMenu')
     this.selectedMenu = menu
   }
 

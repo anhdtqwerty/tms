@@ -9,8 +9,8 @@
           <task-state-select
             class="date-picker pl-4"
             hide-details
-            :value.sync="viewmodel.taskStateFilter"
-            @update:name="viewmodel.changeTaskStateFilter"
+            :value.sync="vm.taskStateFilter"
+            @update:name="vm.changeTaskStateFilter"
             :includes="taskStateIncludes"
             label="Tình hình thực hiện"
           />
@@ -26,12 +26,12 @@
         </v-col>
         <v-col cols="12" class="pa-2">
           <apexchart
-            v-if="viewmodel.unitTaskChart"
+            v-if="vm.unitTaskChart"
             width="100%"
             height="300"
             type="bar"
-            :options="viewmodel.unitTaskChart.options"
-            :series="viewmodel.unitTaskChart.series"
+            :options="vm.unitTaskChart.options"
+            :series="vm.unitTaskChart.series"
           ></apexchart>
         </v-col>
       </v-row>
@@ -42,7 +42,7 @@
 <script lang="ts">
 import { Component, Inject, Vue, Watch } from 'vue-property-decorator'
 import moment from 'moment'
-import { DashboardViewModel } from '../dashboard-viewmodel'
+import { DashboardLeaderViewModel } from '../dashboard-leader-viewmodel'
 import { Observer } from 'mobx-vue'
 import { TaskStateType } from '@/models/task-model'
 
@@ -54,9 +54,9 @@ import { TaskStateType } from '@/models/task-model'
   }
 })
 export default class TaskColumnChartCard extends Vue {
-  @Inject() viewmodel: DashboardViewModel
+  @Inject() vm: DashboardLeaderViewModel
 
-  taskStateIncludes: TaskStateType[] = ['doing', 'done']
+  taskStateIncludes: TaskStateType[] = ['waiting', 'todo', 'doing', 'done', 'recovered']
 
   selectedMonth = moment().toISOString()
 
@@ -64,7 +64,7 @@ export default class TaskColumnChartCard extends Vue {
     const time = moment(val)
     const start = time.clone().startOf('month')
     const end = time.clone().endOf('month')
-    this.viewmodel.loadUnitStats(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'))
+    this.vm.loadUnitStats(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'))
   }
 }
 </script>

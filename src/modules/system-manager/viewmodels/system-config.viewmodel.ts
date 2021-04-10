@@ -16,6 +16,5 @@ export class SystemConfigViewModel {
   @asyncAction *loadData() {
     const { api } = this.provider
     this.config = yield api.configs.findOne(undefined)
-    console.log(this.config)
   }
 }

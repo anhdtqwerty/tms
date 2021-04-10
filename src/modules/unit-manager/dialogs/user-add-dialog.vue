@@ -149,7 +149,6 @@ export default class UserAddDialog extends Vue {
         api.user.count({ username: this.username }).then(count => count > 0),
         api.user.count({ email: this.email }).then(count => count > 0)
       ])
-      console.log('x', hasEmail, this.email)
       if (!hasComrade && !hasUser && !hasEmail) {
         const user = await api.user.create({
           username: this.username,

@@ -10,6 +10,7 @@ class AuthStore {
   @observable jwt = localStorage.getItem('jwt')
   @observable user: UserModel = null
   @observable comrade: ComradeModel = null
+  @observable ministry: UnitModel = null
   saveAccount = false
 
   constructor() {
@@ -21,6 +22,10 @@ class AuthStore {
     const comradeRaw = localStorage.getItem('comrade')
     if (comradeRaw) {
       this.comrade = JSON.parse(comradeRaw)
+    }
+    const ministryRaw = localStorage.getItem('ministry')
+    if (ministryRaw) {
+      this.ministry = JSON.parse(ministryRaw)
     }
     reaction(
       () => this.jwt,
@@ -43,6 +48,13 @@ class AuthStore {
         else localStorage.removeItem('comrade')
       }
     )
+    reaction(
+      () => this.ministry,
+      ministry => {
+        if (ministry && this.saveAccount) localStorage.setItem('ministry', JSON.stringify(ministry))
+        else localStorage.removeItem('ministry')
+      }
+    )
   }
 
   @action onLogout() {
@@ -60,6 +72,10 @@ class AuthStore {
 
   @action changeComrade(val: ComradeModel) {
     this.comrade = val
+  }
+
+  @action changeMinistry(val: UnitModel) {
+    this.ministry = val
   }
 
   @computed get authenticated() {

@@ -12,10 +12,24 @@ export class ReportGeneralViewModel {
   constructor(private provider: AppProvider) {}
 
   @asyncAction *loadData(from: string, to: string) {
-    this.reports = yield this.provider.api.getUnitsTaskReport({
-      from: moment(from).format('YYYY-MM-DD'),
-      to: moment(to).format('YYYY-MM-DD')
-    })
+    const { api, authStore } = this.provider
+    const { department, unit, ministry } = authStore.unitParams
+    let stats: TaskStatModel[] = []
+    if (department) {
+      stats = yield api.getDepartmentsTaskReport({
+        unit,
+        joinUnitBy: 'executedUnit',
+        joinBy: 'executedComrade',
+        from,
+        to
+      })
+    } else if (unit) {
+      stats = yield api.getUnitsTaskReport({ joinUnitBy: 'executedUnit', ministry: authStore.ministry?.id })
+      stats = stats.filter(t => t.id === unit)
+    } else if (ministry) {
+      stats = yield api.getUnitsTaskReport({ joinUnitBy: 'createdUnit', ministry, from, to })
+    }
+    this.reports = stats
     this.exportedDate = moment().toISOString()
   }
 
