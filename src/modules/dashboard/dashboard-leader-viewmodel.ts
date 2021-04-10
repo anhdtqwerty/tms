@@ -1,10 +1,13 @@
 import { AppProvider } from '@/app-provider'
+import { ConfigModel } from '@/models/config-model'
 import { flatStats, mergeStatList, TaskStatCriteria, TaskStatModel } from '@/models/report-model'
 import { RequestModel } from '@/models/request-model'
 import { TaskModel, TaskStateType, taskTypeToFilterParams } from '@/models/task-model'
-import { isNaN, isNumber } from 'lodash'
+import _, { uniqBy } from 'lodash'
+import { isNaN } from 'lodash'
 import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
+import moment from 'moment'
 
 export class DashboardLeaderViewModel {
   @observable topStats: TaskStatCriteria = {}
@@ -13,7 +16,7 @@ export class DashboardLeaderViewModel {
 
   @observable updateTaskHistory: RequestModel[] = []
   @observable latestTasks: TaskModel[] = []
-  @observable personalHistoryFilter: 'new' | 'expired' = 'new'
+  @observable lastTaskFilter: 'new' | 'expired' | 'expired_soon' = 'new'
 
   @observable taskStateFilter: TaskStateType = 'doing'
   @observable unitStats: TaskStatModel[] = []
@@ -77,22 +80,58 @@ export class DashboardLeaderViewModel {
   }
 
   @asyncAction *loadUpdateTaskHistory() {
-    const { api } = this.provider
-    this.latestTasks = yield api.task.find(
-      {
-        _where: [taskTypeToFilterParams('task-created'), { requests_null: false }]
-      },
-      { _limit: 10, _sort: 'updated_at:DESC' }
-    )
+    try {
+      const { api } = this.provider
+      const createdsParams: any[] = [...taskTypeToFilterParams('task-created')]
+      const executedParams: any[] = [...taskTypeToFilterParams('task-assigned')]
+      let moreParam = {}
+      console.log(createdsParams)
+      switch (this.lastTaskFilter) {
+        case 'new':
+          break
+        case 'expired':
+          moreParam = {
+            type: 'hasDeadline',
+            expiredDate_lt: moment().toISOString()
+          }
+          createdsParams.push(moreParam)
+          executedParams.push(moreParam)
+          break
+        case 'expired_soon':
+          const config: ConfigModel = yield api.getConfig()
+          const max = moment().add(config.data?.earlyExpiredDays ?? 10, 'd')
+          moreParam = {
+            type: 'hasDeadline',
+            expiredDate_gt: moment().toISOString(),
+            expiredDate_lt: max.toISOString()
+          }
+          createdsParams.push(moreParam)
+          executedParams.push(moreParam)
+          break
+      }
+      const [createds, excuteds] = yield Promise.all([
+        api.task.find(createdsParams.length === 1 ? createdsParams[0] : { _where: createdsParams }, {
+          _limit: 5,
+          _sort: 'updated_at:DESC'
+        }),
+        api.task.find(executedParams.length === 1 ? executedParams[0] : { _where: executedParams }, {
+          _limit: 5,
+          _sort: 'updated_at:DESC'
+        })
+      ])
+      this.latestTasks = uniqBy([...excuteds, ...createds], t => t.id)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   @action.bound changeTaskStateFilter(val: TaskStateType) {
     this.taskStateFilter = val
   }
 
-  @action.bound changePersonalHistoryFilter(val: any) {
-    if (this.personalHistoryFilter !== val) {
-      this.personalHistoryFilter = val
+  @action.bound changeLatestTaskType(val: any) {
+    if (this.lastTaskFilter !== val) {
+      this.lastTaskFilter = val
       this.loadUpdateTaskHistory()
     }
   }

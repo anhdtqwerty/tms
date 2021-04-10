@@ -59,21 +59,29 @@
                 <div class="primary--text text-h6 px-4 pt-4 pb-2">
                   {{ providers.authStore.isLeader ? 'Các nhiệm vụ mới cập nhật' : 'Các nhiệm vụ cập nhật' }}
                 </div>
-                <div class="px-4" v-if="!providers.isLeader">
+                <div class="px-4">
                   <v-btn
-                    :text="vm.personalHistoryFilter !== 'new'"
-                    :outlined="vm.personalHistoryFilter === 'new'"
+                    :text="vm.lastTaskFilter !== 'new'"
+                    :outlined="vm.lastTaskFilter === 'new'"
                     color="primary"
                     small
-                    @click="vm.changePersonalHistoryFilter('new')"
+                    @click="vm.changeLatestTaskType('new')"
                     >Nhiệm vụ mới</v-btn
                   >
                   <v-btn
-                    :text="vm.personalHistoryFilter !== 'expired'"
-                    :outlined="vm.personalHistoryFilter === 'expired'"
+                    :text="vm.lastTaskFilter !== 'expired_soon'"
+                    :outlined="vm.lastTaskFilter === 'expired_soon'"
+                    color="error"
+                    small
+                    @click="vm.changeLatestTaskType('expired_soon')"
+                    >Sắp hết hạn</v-btn
+                  >
+                  <v-btn
+                    :text="vm.lastTaskFilter !== 'expired'"
+                    :outlined="vm.lastTaskFilter === 'expired'"
                     color="grey"
                     small
-                    @click="vm.changePersonalHistoryFilter('expired')"
+                    @click="vm.changeLatestTaskType('expired')"
                     >Quá hạn</v-btn
                   >
                 </div>
@@ -110,8 +118,7 @@ export default class DashboardLeaderPage extends Vue {
 
   headers = [
     { text: 'Tên nhiệm vụ', value: 'title', sortable: false },
-    { text: 'Thời gian cập nhật', value: 'updated_at', sortable: false },
-    { text: 'Người cập nhật', value: 'requests[0].requestor', sortable: false }
+    { text: 'Thời gian cập nhật', value: 'updated_at', sortable: false }
   ]
 
   showDetail(item: TaskModel) {
