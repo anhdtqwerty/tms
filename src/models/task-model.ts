@@ -162,10 +162,14 @@ export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
   return { ...changes, keywords }
 }
 export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren = true): any[] => {
-  // const unitPrams = authStore.unitParams
+  const resultParams = []
+
   const { department, unit, ministry } = authStore.unitParams
   const comradeUnitId = (authStore.comrade.unit as UnitModel)?.id
 
+  const comradeOwnerAndAssigned = {}
+
+  let leaderOwnerAndAssigned = {}
   let leaderOwnerParam = {}
   let leaderAssignedParam = {}
   let leaderSupervisosParam = {}
@@ -175,6 +179,14 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
     if (department) {
       leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
       leaderAssignedParam = { _or: [{ executedDepartment: department }, { executedComrade: authStore.comrade.id }] }
+      leaderOwnerAndAssigned = {
+        _or: [
+          { createdDepartment: department },
+          { createdBy: authStore.comrade.id },
+          { executedDepartment: department },
+          { executedComrade: authStore.comrade.id }
+        ]
+      }
       leaderSupervisosParam = {
         _or: [{ supervisorDepartment: department }, { supervisors_contains: authStore.comrade.id }]
       }
@@ -184,6 +196,14 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
     } else if (comradeUnitId) {
       leaderOwnerParam = { _or: [{ createdUnit: comradeUnitId }, { createdBy: authStore.comrade.id }] }
       leaderAssignedParam = { _or: [{ executedUnit: comradeUnitId }, { executedComrade: authStore.comrade.id }] }
+      leaderOwnerAndAssigned = {
+        _or: [
+          { createdUnit: comradeUnitId },
+          { createdBy: authStore.comrade.id },
+          { executedUnit: comradeUnitId },
+          { executedComrade: authStore.comrade.id }
+        ]
+      }
       leaderSupervisosParam = {
         _or: [{ supervisorUnit: comradeUnitId }, { supervisors_contains: authStore.comrade.id }]
       }
@@ -194,79 +214,75 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
     }
   }
 
-  let leaderPrams = {}
-  const taskParams: TaskModel = {}
-
   switch (taskType) {
     case 'task-created':
       if (authStore.isLeader) {
-        leaderPrams = leaderOwnerParam
+        resultParams.push(leaderOwnerParam)
       } else {
-        taskParams.createdBy = authStore.comrade.id
+        resultParams.push({ createdBy: authStore.comrade.id })
       }
+      if (!includeChildren && !isEmpty(exlucdeChildren)) resultParams.push(exlucdeChildren)
       break
     case 'task-assigned':
       if (authStore.isLeader) {
-        leaderPrams = leaderAssignedParam
+        resultParams.push(leaderAssignedParam)
       } else {
-        taskParams.executedComrade = authStore.comrade.id
+        resultParams.push({ executedComrade: authStore.comrade.id })
       }
+      if (!includeChildren && !isEmpty(exlucdeChildren)) resultParams.push(exlucdeChildren)
       break
     case 'task-following':
       if (authStore.isLeader) {
-        leaderPrams = leaderSupervisosParam
+        resultParams.push(leaderSupervisosParam)
       } else {
-        _.set(taskParams, 'supervisors_contains', authStore.comrade.id)
+        resultParams.push({ supervisors_contains: authStore.comrade.id })
       }
       break
     case 'task-support':
       if (authStore.isLeader) {
-        leaderPrams = leaderSupportParam
+        resultParams.push(leaderSupportParam)
       } else {
-        _.set(taskParams, 'supportedComrades_contains', authStore.comrade.id)
+        resultParams.push({ supportedComrades_contains: authStore.comrade.id })
       }
       break
     case 'task-expired':
-      taskParams.type = 'hasDeadline'
-      _.set(taskParams, 'expiredDate_lt', moment().toISOString())
+      resultParams.push({ type: 'hasDeadline', expiredDate_lt: moment().toISOString() })
       if (authStore.isLeader) {
-        leaderPrams = leaderOwnerParam
+        resultParams.push(leaderOwnerAndAssigned)
       } else {
-        taskParams.createdBy = authStore.comrade.id
+        resultParams.push(comradeOwnerAndAssigned)
       }
       break
     case 'task-approving':
-      taskParams.state = 'done'
-      taskParams.status = 'approving'
+      resultParams.push({ state: 'done', status: 'approving' })
       if (authStore.isLeader) {
-        leaderPrams = leaderOwnerParam
+        resultParams.push(leaderOwnerAndAssigned)
       } else {
-        taskParams.executedComrade = authStore.comrade.id
+        resultParams.push(comradeOwnerAndAssigned)
       }
       break
     case 'task-done':
-      taskParams.state = 'done'
-      taskParams.status = 'approved'
+      resultParams.push({ state: 'done', status: 'approved' })
       if (authStore.isLeader) {
-        leaderPrams = leaderOwnerParam
+        resultParams.push(leaderOwnerAndAssigned)
       } else {
-        taskParams.createdBy = authStore.comrade.id
+        resultParams.push(comradeOwnerAndAssigned)
       }
       break
     case 'task-unfinished':
-      _.set(taskParams, 'state_ne', 'done')
+      resultParams.push({ state_ne: 'done' })
       if (authStore.isLeader) {
-        leaderPrams = leaderOwnerParam
+        resultParams.push(leaderOwnerAndAssigned)
       } else {
-        taskParams.createdBy = authStore.comrade.id
+        resultParams.push(comradeOwnerAndAssigned)
       }
       break
     default:
       console.error(`not support ${taskType}`)
       break
   }
-  const taskQueries = _.isEmpty(taskParams) ? [leaderPrams] : [leaderPrams, taskParams]
-  return includeChildren || isEmpty(exlucdeChildren) ? taskQueries : [exlucdeChildren, ...taskQueries]
+
+  return resultParams
 }
 
 export const getLastRequest = (task: TaskModel) => {
