@@ -2,6 +2,7 @@ import { AppProvider } from '@/app-provider'
 import { ConfigModel } from '@/models/config-model'
 import { flatStats, mergeStatList, TaskStatCriteria, TaskStatModel } from '@/models/report-model'
 import { RequestModel } from '@/models/request-model'
+import { getLeaderTaskStats, TaskStatsResult } from '@/models/task-business'
 import { TaskModel, TaskStateType, taskTypeToFilterParams } from '@/models/task-model'
 import _, { uniqBy } from 'lodash'
 import { isNaN } from 'lodash'
@@ -27,57 +28,15 @@ export class DashboardLeaderViewModel {
   }
 
   @asyncAction *loadTop() {
-    const { createds, executeds } = yield this.getTaskStats()
+    const { createds, assigneds }: TaskStatsResult = yield getLeaderTaskStats()
     this.totalCreated = flatStats(createds)?.total ?? 0
-    this.totalExecuted = flatStats(executeds)?.total ?? 0
-    const results = mergeStatList(createds, executeds)
+    this.totalExecuted = flatStats(assigneds)?.total ?? 0
+    const results = mergeStatList(createds, assigneds)
     this.topStats = flatStats(results)
   }
 
-  async getTaskStats(options: { hasExecuteds: boolean; from?: string; to?: string } = { hasExecuteds: true }) {
-    const { hasExecuteds, from, to } = options
-    const { api, authStore } = this.provider
-    let createds: TaskStatModel[] = []
-    let executeds: TaskStatModel[] = []
-    const { department, unit, ministry } = authStore.unitParams
-    if (department) {
-      createds = await api.getComradeTaskReport({
-        department,
-        joinDepartmentBy: 'createdDepartment',
-        joinBy: 'createdBy',
-        from,
-        to
-      })
-      executeds = !hasExecuteds
-        ? []
-        : await api.getDepartmentsTaskReport({
-            unit,
-            joinUnitBy: 'executedUnit',
-            joinBy: 'executedComrade',
-            from,
-            to
-          })
-      executeds = executeds.filter(t => t.id === department)
-    } else if (unit) {
-      createds = await api.getDepartmentsTaskReport({
-        unit,
-        joinUnitBy: 'createdUnit',
-        joinBy: 'createdBy',
-        from,
-        to
-      })
-      executeds = !hasExecuteds
-        ? []
-        : await api.getUnitsTaskReport({ joinUnitBy: 'executedUnit', ministry: authStore.ministry?.id })
-      executeds = executeds.filter(t => t.id === unit)
-    } else if (ministry) {
-      createds = await api.getUnitsTaskReport({ joinUnitBy: 'createdUnit', ministry, from, to })
-    }
-    return { createds, executeds }
-  }
-
   @asyncAction *loadUnitStats(from: string, to: string) {
-    const { createds } = yield this.getTaskStats({ from, to, hasExecuteds: false })
+    const { createds }: TaskStatsResult = yield getLeaderTaskStats({ from, to, hasAssigneds: false })
     this.unitStats = createds
   }
 

@@ -2,6 +2,7 @@ import { AppProvider } from '@/app-provider'
 import { ConfigModel } from '@/models/config-model'
 import { flatStats, mergeStatList, TaskStatCriteria, TaskStatModel } from '@/models/report-model'
 import { RequestModel } from '@/models/request-model'
+import { getComradeTaskStats, TaskStatsResult } from '@/models/task-business'
 import {
   TaskDeadlineType,
   TaskModel,
@@ -36,37 +37,11 @@ export class DashboardComradeViewModel {
   }
 
   @asyncAction *loadTop() {
-    const { createds, executeds } = yield this.getTaskStats()
-    this.totalCreated = createds?.total ?? 0
-    this.totalExecuted = executeds?.total ?? 0
-    const results = mergeStatList([createds], [executeds])
+    const { createds, assigneds }: TaskStatsResult = yield getComradeTaskStats()
+    this.totalCreated = first(createds)?.total ?? 0
+    this.totalExecuted = first(assigneds)?.total ?? 0
+    const results = mergeStatList(createds, assigneds)
     this.topStats = flatStats(results)
-  }
-
-  async getTaskStats(options: { hasCreateds?: boolean; from?: string; to?: string } = { hasCreateds: true }) {
-    const { from, to } = options
-    const { api, authStore } = this.provider
-    const id = authStore.comrade.id
-    const [executeds, createds] = await Promise.all([
-      api.getComradeTaskReport({
-        comrade: authStore.comrade.id,
-        from,
-        to
-      }),
-      options.hasCreateds
-        ? api.getComradeTaskReport({
-            comrade: authStore.comrade.id,
-            joinBy: 'createdBy',
-            from,
-            to
-          })
-        : Promise.resolve([] as TaskStatModel[])
-    ])
-    const results = {
-      createds: first(createds.filter(c => c.id === id)),
-      executeds: first(executeds.filter(c => c.id === id))
-    }
-    return results
   }
 
   @asyncAction *loadUnupdatedTasks() {
@@ -132,8 +107,8 @@ export class DashboardComradeViewModel {
   }
 
   @asyncAction *loadPersonalStats(from: string, to: string) {
-    const { executeds, createds } = yield this.getTaskStats({ from, to, hasCreateds: false })
-    this.personalStat = executeds
+    const { assigneds }: TaskStatsResult = yield getComradeTaskStats({ hasCreateds: false, from, to })
+    this.personalStat = first(assigneds)
   }
 
   @computed get personalTaskChart(): { options: ApexCharts.ApexOptions; series: ApexNonAxisChartSeries } {

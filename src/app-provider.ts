@@ -1,18 +1,18 @@
 import { computed } from 'mobx'
 import VueRouter from 'vue-router'
-import { AlertController } from './components/alert/alert-controller'
-import { GlobalLoadingController } from './components/global-loading/global-loading-controller'
-import { SnackBarController } from './components/snack-bar/snack-bar-controller'
-import { ApiService } from './services/api-service'
+import { alertController, AlertController } from './components/alert/alert-controller'
+import { GlobalLoadingController, loadingController } from './components/global-loading/global-loading-controller'
+import { snackbarController, SnackBarController } from './components/snack-bar/snack-bar-controller'
+import { apiService, ApiService } from './services/api-service'
 import { authStore } from './stores/auth-store'
 
 export let appProvider: AppProvider = null
 export class AppProvider {
   router: VueRouter
-  loading = new GlobalLoadingController()
-  snackbar = new SnackBarController()
-  alert = new AlertController()
-  api = new ApiService()
+  loading = loadingController
+  snackbar = snackbarController
+  alert = alertController
+  api = apiService
   authStore = authStore
 
   constructor(router: VueRouter) {

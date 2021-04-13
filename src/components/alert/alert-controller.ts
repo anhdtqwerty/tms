@@ -49,3 +49,5 @@ export class AlertController {
     this.config.callback && this.config.callback(false)
   }
 }
+
+export const alertController = new AlertController()

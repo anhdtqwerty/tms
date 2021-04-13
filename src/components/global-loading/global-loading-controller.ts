@@ -19,3 +19,5 @@ export class GlobalLoadingController {
     return this.numberRequests > 0
   }
 }
+
+export const loadingController = new GlobalLoadingController()

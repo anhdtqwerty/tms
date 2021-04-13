@@ -69,3 +69,5 @@ export class SnackBarController {
     this.show = false
   }
 }
+
+export const snackbarController = new SnackBarController()
