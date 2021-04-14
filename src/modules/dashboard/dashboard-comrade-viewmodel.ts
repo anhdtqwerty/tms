@@ -107,7 +107,7 @@ export class DashboardComradeViewModel {
   }
 
   @asyncAction *loadPersonalStats(from: string, to: string) {
-    const { assigneds }: TaskStatsResult = yield getComradeTaskStats({ hasCreateds: false, from, to })
+    const { assigneds }: TaskStatsResult = yield getComradeTaskStats({ hasAssigneds: true, from, to })
     this.personalStat = first(assigneds)
   }
 

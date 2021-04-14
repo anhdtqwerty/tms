@@ -1,6 +1,6 @@
 import { AppProvider } from '@/app-provider'
 import { flatStats, mergeStatList, TaskStatModel } from '@/models/report-model'
-import { getLeaderTaskStats, TaskStatsResult } from '@/models/task-business'
+import { getLeaderTaskStats, getTaskStats, TaskStatsResult } from '@/models/task-business'
 import _ from 'lodash'
 import { computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
@@ -13,7 +13,7 @@ export class ReportGeneralViewModel {
   constructor(private provider: AppProvider) {}
 
   @asyncAction *loadData(from: string, to: string) {
-    const { createds, assigneds }: TaskStatsResult = yield getLeaderTaskStats({ from, to })
+    const { createds, assigneds }: TaskStatsResult = yield getTaskStats({ from, to })
     this.reports = mergeStatList(createds, assigneds)
     this.exportedDate = moment().toISOString()
   }

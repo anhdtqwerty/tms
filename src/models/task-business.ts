@@ -35,6 +35,8 @@ export const getComradeTaskStats = async (
       to
     })
   }
+  assigneds = assigneds.filter(st => st.id === authStore.comrade.id)
+  createds = createds.filter(st => st.id === authStore.comrade.id)
   return { createds, assigneds }
 }
 

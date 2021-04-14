@@ -36,7 +36,7 @@ export class DashboardLeaderViewModel {
   }
 
   @asyncAction *loadUnitStats(from: string, to: string) {
-    const { createds }: TaskStatsResult = yield getLeaderTaskStats({ from, to, hasAssigneds: false })
+    const { createds }: TaskStatsResult = yield getLeaderTaskStats({ from, to, hasCreateds: true })
     this.unitStats = createds
   }
 
