@@ -161,7 +161,7 @@ export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
     .join(' | ')
   return { ...changes, keywords }
 }
-export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren = true): any[] => {
+export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
   const resultParams = []
 
   const { department, unit, ministry } = authStore.unitParams
@@ -176,17 +176,14 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
   let leaderAssignedParam = {}
   let leaderSupervisosParam = {}
   let leaderSupportParam = {}
-  let exlucdeChildren = {}
   if (authStore.isLeader) {
     if (department) {
       leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
       leaderAssignedParam = { _or: [{ executedDepartment: department }, { executedComrade: authStore.comrade.id }] }
       leaderOwnerAndAssigned = {
         _or: [
-          { createdDepartment: department },
-          { createdBy: authStore.comrade.id },
-          { executedDepartment: department },
-          { executedComrade: authStore.comrade.id }
+          [{ createdDepartment: department }, { createdBy: authStore.comrade.id }],
+          [{ executedDepartment: department }, { executedComrade: authStore.comrade.id }]
         ]
       }
       leaderSupervisosParam = {
@@ -196,14 +193,21 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
         _or: [{ supportedDepartments_contains: department }, { supportedComrades_contains: authStore.comrade.id }]
       }
     } else if (comradeUnitId) {
-      leaderOwnerParam = { _or: [{ createdUnit: comradeUnitId }, { createdBy: authStore.comrade.id }] }
-      leaderAssignedParam = { _or: [{ executedUnit: comradeUnitId }, { executedComrade: authStore.comrade.id }] }
+      leaderOwnerParam = {
+        _or: [[{ createdUnit: comradeUnitId }, { createdDepartment_null: true }], [{ createdBy: authStore.comrade.id }]]
+      }
+      leaderAssignedParam = {
+        _or: [
+          [{ executedUnit: comradeUnitId }, { createdUnit: authStore.ministry.id }],
+          [{ executedComrade: authStore.comrade.id }]
+        ]
+      }
       leaderOwnerAndAssigned = {
         _or: [
-          { createdUnit: comradeUnitId },
-          { createdBy: authStore.comrade.id },
-          { executedUnit: comradeUnitId },
-          { executedComrade: authStore.comrade.id }
+          [{ createdUnit: comradeUnitId }, { createdDepartment_null: true }],
+          [{ createdBy: authStore.comrade.id }],
+          [{ executedUnit: comradeUnitId }, { createdUnit: authStore.ministry.id }],
+          [{ executedComrade: authStore.comrade.id }]
         ]
       }
       leaderSupervisosParam = {
@@ -212,7 +216,6 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
       leaderSupportParam = {
         _or: [{ supportedUnits_contains: comradeUnitId }, { supportedComrades_contains: authStore.comrade.id }]
       }
-      exlucdeChildren = { createdDepartment_null: true }
     }
   }
 
@@ -223,7 +226,6 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
       } else {
         resultParams.push({ createdBy: authStore.comrade.id })
       }
-      if (!includeChildren && !isEmpty(exlucdeChildren)) resultParams.push(exlucdeChildren)
       break
     case 'task-assigned':
       if (authStore.isLeader) {
@@ -231,7 +233,6 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
       } else {
         resultParams.push({ executedComrade: authStore.comrade.id })
       }
-      if (!includeChildren && !isEmpty(exlucdeChildren)) resultParams.push(exlucdeChildren)
       break
     case 'task-following':
       if (authStore.isLeader) {

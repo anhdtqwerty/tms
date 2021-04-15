@@ -23,6 +23,7 @@ export const getComradeTaskStats = async (
   if (hasAssigneds) {
     assigneds = await apiService.getComradeTaskReport({
       comrade: authStore.comrade.id,
+      joinBy: 'executedComrade',
       from,
       to
     })
@@ -61,7 +62,7 @@ export const getLeaderTaskStats = async (
       assigneds = await apiService.getDepartmentsTaskReport({
         unit,
         joinUnitBy: 'executedUnit',
-        joinBy: 'executedComrade',
+        joinBy: 'executedDepartment',
         from,
         to
       })
@@ -72,18 +73,28 @@ export const getLeaderTaskStats = async (
       createds = await apiService.getDepartmentsTaskReport({
         unit,
         joinUnitBy: 'createdUnit',
-        joinBy: 'createdBy',
+        joinBy: 'createdUnit',
         from,
         to
       })
     }
     if (hasAssigneds) {
-      assigneds = await apiService.getUnitsTaskReport({ joinUnitBy: 'executedUnit', ministry: authStore.ministry?.id })
+      assigneds = await apiService.getUnitsTaskReport({
+        joinUnitBy: 'createdUnit',
+        joinBy: 'executedUnit',
+        ministry: authStore.ministry?.id
+      })
       assigneds = assigneds.filter(t => t.id === unit)
     }
   } else if (ministry) {
     if (hasCreateds) {
-      createds = await apiService.getUnitsTaskReport({ joinUnitBy: 'createdUnit', ministry, from, to })
+      createds = await apiService.getUnitsTaskReport({
+        joinUnitBy: 'createdUnit',
+        joinBy: 'executedUnit',
+        ministry,
+        from,
+        to
+      })
     }
   }
   return { createds, assigneds }

@@ -236,7 +236,7 @@ export class ApiService {
     unit?: string
     department?: string
     joinUnitBy?: 'executedUnit' | 'createdUnit'
-    joinBy?: 'executedComrade' | 'createdBy'
+    joinBy?: 'executedDepartment' | 'createdDepartment' | 'executedUnit' | 'createdUnit'
   }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/department/statistic`, { params })
     return res.data
@@ -246,6 +246,7 @@ export class ApiService {
     from?: string
     to?: string
     joinUnitBy?: 'executedUnit' | 'createdUnit'
+    joinBy?: 'executedUnit' | 'createdUnit'
     ministry: string
   }): Promise<TaskStatModel[]> {
     const res = await this.axios.get(`tasks/unit/statistic`, { params })
