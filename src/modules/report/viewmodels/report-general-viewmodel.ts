@@ -13,7 +13,12 @@ export class ReportGeneralViewModel {
   constructor(private provider: AppProvider) {}
 
   @asyncAction *loadData(from: string, to: string) {
-    const { createds, assigneds }: TaskStatsResult = yield getTaskStats({ from, to })
+    const { createds, assigneds }: TaskStatsResult = yield getTaskStats({
+      from,
+      to,
+      hasAssigneds: true,
+      hasCreateds: true
+    })
     this.reports = mergeStatList(createds, assigneds)
     this.exportedDate = moment().toISOString()
   }
