@@ -167,7 +167,9 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType, includeChildren 
   const { department, unit, ministry } = authStore.unitParams
   const comradeUnitId = (authStore.comrade.unit as UnitModel)?.id
 
-  const comradeOwnerAndAssigned = {}
+  const comradeOwnerAndAssigned = {
+    _or: [{ createdBy: authStore.comrade.id }, { executedComrade: authStore.comrade.id }]
+  }
 
   let leaderOwnerAndAssigned = {}
   let leaderOwnerParam = {}
