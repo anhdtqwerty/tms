@@ -113,7 +113,7 @@ export class DashboardLeaderViewModel {
               case 'todo':
                 return s.todo + s.todoOutDate
               case 'doing':
-                return s.doing + s.doingOutDate
+                return s.doing + s.doingOutDate + s.approving + s.approvingOutDate
               case 'done':
                 return s.done + s.doneOutDate
               case 'recovered':

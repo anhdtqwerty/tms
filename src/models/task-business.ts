@@ -53,7 +53,7 @@ export const getLeaderTaskStats = async (
       createds = await apiService.getComradeTaskReport({
         department,
         joinDepartmentBy: 'createdDepartment',
-        joinBy: 'createdBy',
+        joinBy: 'executedComrade',
         from,
         to
       })
@@ -73,7 +73,7 @@ export const getLeaderTaskStats = async (
       createds = await apiService.getDepartmentsTaskReport({
         unit,
         joinUnitBy: 'createdUnit',
-        joinBy: 'createdUnit',
+        joinBy: 'executedDepartment',
         from,
         to
       })
