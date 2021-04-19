@@ -70,14 +70,20 @@ export class DashboardLeaderViewModel {
           break
       }
       const results: any = yield Promise.all([
-        api.task.find<TaskStatModel[]>(createdsParams.length === 1 ? createdsParams[0] : { _where: createdsParams }, {
-          _limit: 5,
-          _sort: 'updated_at:DESC'
-        }),
-        api.task.find<TaskStatModel[]>(executedParams.length === 1 ? executedParams[0] : { _where: executedParams }, {
-          _limit: 5,
-          _sort: 'updated_at:DESC'
-        })
+        api.task.find<TaskStatModel[]>(
+          { _where: [...createdsParams] },
+          {
+            _limit: 5,
+            _sort: 'updated_at:DESC'
+          }
+        ),
+        api.task.find<TaskStatModel[]>(
+          { _where: [...executedParams] },
+          {
+            _limit: 5,
+            _sort: 'updated_at:DESC'
+          }
+        )
       ])
       this.latestTasks = uniqBy([...results[0], ...results[1]], t => t.id)
     } catch (error) {

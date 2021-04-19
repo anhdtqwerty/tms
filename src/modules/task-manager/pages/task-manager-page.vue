@@ -166,11 +166,11 @@ export default class TaskManagerPage extends Vue {
     { text: 'Trích yếu', value: 'title', sortable: true },
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'ĐV theo dõi', value: 'supervisorUnitDep', sortable: false },
-    { text: 'CV theo dõi', value: 'supervisors', sortable: false },
-    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: false },
-    { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false, defaultHide: true },
-    { text: 'Hạn xử lý', value: 'expiredDate', sortable: false, defaultHide: true },
-    { text: 'Trạng thái', value: 'state', sortable: false, defaultHide: true },
+    { text: 'CV theo dõi', value: 'supervisors', sortable: false, defaultHide: true },
+    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: false, defaultHide: true },
+    { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false },
+    { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
+    { text: 'Trạng thái', value: 'state', sortable: false },
     { value: 'actions', align: 'right', sortable: false }
   ]
 
