@@ -25,7 +25,7 @@
             <v-list-item
               link
               v-for="menu in item.children"
-              v-show="$permission(menu.permission)"
+              v-show="$permission(menu.permission, menu.requiredLeader)"
               :key="menu.title"
               :input-value="menu.selected"
               :to="menu.link"
@@ -41,7 +41,7 @@
           link
           :to="item.link"
           :key="item.title"
-          v-if="!item.children && $permission(item.permission)"
+          v-if="!item.children && $permission(item.permission, item.requiredLeader)"
           active-class="left-primary-border"
           :input-value="item.selected"
           color="primary"

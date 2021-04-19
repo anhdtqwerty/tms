@@ -11,15 +11,23 @@ export class MenuViewModel {
   children: MenuViewModel[]
   link: string
   permission: string | string[]
+  requiredLeader: boolean
 
   constructor(
     public title: string,
-    options?: { icon?: string; children?: MenuViewModel[]; link?: string; permission?: string | string[] }
+    options?: {
+      icon?: string
+      children?: MenuViewModel[]
+      link?: string
+      permission?: string | string[]
+      requiredLeader?: boolean
+    }
   ) {
     this.icon = options?.icon
     this.children = options?.children
     this.link = options?.link
     this.permission = options?.permission
+    this.requiredLeader = options?.requiredLeader
   }
 
   @action.bound changeSelected(value: boolean) {
@@ -33,19 +41,21 @@ export class MainContainerViewModel {
   @observable menuConfigs: MenuViewModel[] = [
     new MenuViewModel('Trang chủ', {
       icon: 'dashboard',
-      children: authStore.isLeader
-        ? [
-            new MenuViewModel('Cá nhân', { link: '/dashboard-comrade' }),
-            new MenuViewModel('Đơn vị', { link: '/dashboard-leader' })
-          ]
-        : [new MenuViewModel('Cá nhân', { link: '/dashboard-comrade' })]
+      children: [
+        new MenuViewModel('Cá nhân', { link: '/dashboard-comrade' }),
+        new MenuViewModel('Đơn vị', {
+          link: '/dashboard-leader',
+          requiredLeader: true
+        })
+      ]
     }),
     new MenuViewModel('Quản lý nhiệm vụ', {
       icon: 'list',
       children: [
         new MenuViewModel(taskRouteNameMap['task-created'], {
           link: '/tasks/task-created',
-          permission: ['task.main.add', 'task.sub.add']
+          permission: ['task.main.add', 'task.sub.add'],
+          requiredLeader: true
         }),
         new MenuViewModel(taskRouteNameMap['task-assigned'], { link: '/tasks/task-assigned' }),
         new MenuViewModel(taskRouteNameMap['task-expired'], { link: '/tasks/task-expired' }),
