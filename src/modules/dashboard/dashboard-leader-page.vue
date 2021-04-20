@@ -117,7 +117,9 @@ export default class DashboardLeaderPage extends Vue {
   @Provide() vm = new DashboardLeaderViewModel(this.providers)
 
   headers = [
-    { text: 'Tên nhiệm vụ', value: 'title', sortable: false },
+    { text: 'Số/ký hiệu', value: 'code', sortable: false },
+    { text: 'Trích yếu', value: 'title', sortable: false },
+    { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'Thời gian cập nhật', value: 'updated_at', sortable: false }
   ]
 
