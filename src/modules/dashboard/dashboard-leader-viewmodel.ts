@@ -52,7 +52,7 @@ export class DashboardLeaderViewModel {
         case 'expired':
           moreParam = {
             type: 'hasDeadline',
-            expiredDate_lt: moment().toISOString()
+            expiredDate_lt: moment().format('YYYY-MM-DD')
           }
           createdsParams.push(moreParam)
           executedParams.push(moreParam)
@@ -62,8 +62,8 @@ export class DashboardLeaderViewModel {
           const max = moment().add(config.data?.earlyExpiredDays ?? 10, 'd')
           moreParam = {
             type: 'hasDeadline',
-            expiredDate_gt: moment().toISOString(),
-            expiredDate_lt: max.toISOString()
+            expiredDate_gte: moment().format('YYYY-MM-DD'),
+            expiredDate_lt: max.format('YYYY-MM-DD')
           }
           createdsParams.push(moreParam)
           executedParams.push(moreParam)

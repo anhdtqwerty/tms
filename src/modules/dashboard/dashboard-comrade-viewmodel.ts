@@ -50,8 +50,8 @@ export class DashboardComradeViewModel {
     const max = moment().add(config.data?.earlyExpiredDays ?? 10, 'd')
     const moreParam = {
       type: 'hasDeadline',
-      expiredDate_gt: moment().toISOString(),
-      expiredDate_lt: max.toISOString()
+      expiredDate_gte: moment().format('YYYY-MM-DD'),
+      expiredDate_lt: max.format('YYYY-MM-DD')
     }
     const executedParams: any[] = [...taskTypeToFilterParams('task-assigned'), moreParam]
     this.unupdatedTasks = yield api.task.find({ _where: executedParams }, { _limit: 10 })
@@ -68,7 +68,7 @@ export class DashboardComradeViewModel {
         case 'expired':
           moreParam = {
             type: 'hasDeadline',
-            expiredDate_lt: moment().toISOString()
+            expiredDate_lt: moment().format('YYYY-MM-DD')
           }
           executedParams.push(moreParam)
           break
@@ -77,8 +77,8 @@ export class DashboardComradeViewModel {
           const max = moment().add(config.data?.earlyExpiredDays ?? 10, 'd')
           moreParam = {
             type: 'hasDeadline',
-            expiredDate_gt: moment().toISOString(),
-            expiredDate_lt: max.toISOString()
+            expiredDate_gte: moment().format('YYYY-MM-DD'),
+            expiredDate_lt: max.format('YYYY-MM-DD')
           }
           executedParams.push(moreParam)
           break

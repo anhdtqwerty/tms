@@ -256,7 +256,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
       }
       break
     case 'task-expired':
-      resultParams.push({ type: 'hasDeadline', expiredDate_lt: moment().toISOString() })
+      resultParams.push({ type: 'hasDeadline', expiredDate_lt: moment().format('YYYY-MM-DD') })
       if (authStore.isLeader) {
         resultParams.push(leaderOwnerAndAssigned)
       } else {

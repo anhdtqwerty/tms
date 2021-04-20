@@ -243,11 +243,11 @@ export default class TaskSearchComponent extends Vue {
         params.type = 'hasDeadline'
         switch (this.searchProcessingExpire) {
           case 'inProcessing':
-            _.set(params, 'expiredDate_gt', moment().toISOString())
+            _.set(params, 'expiredDate_gte', moment().format('YYYY-MM-DD'))
             break
           case 'expired':
             params.type = 'hasDeadline'
-            _.set(params, 'expiredDate_lt', moment().toISOString())
+            _.set(params, 'expiredDate_lt', moment().format('YYYY-MM-DD'))
             break
           case 'almostExpired':
             break
@@ -255,8 +255,8 @@ export default class TaskSearchComponent extends Vue {
         if (this.searchProcessingExpire === 'almostExpired') {
           const config = await this.providers.api.getConfig()
           const max = moment().add(config.data?.earlyExpiredDays ?? 10, 'd')
-          _.set(params, 'expiredDate_gt', moment().toISOString())
-          _.set(params, 'expiredDate_lt', max.toISOString())
+          _.set(params, 'expiredDate_gte', moment().format('YYYY-MM-DD'))
+          _.set(params, 'expiredDate_lt', max.format('YYYY-MM-DD'))
         }
       }
       if (_.get(this.searchSupervisorUnitDep, 'unit'))
