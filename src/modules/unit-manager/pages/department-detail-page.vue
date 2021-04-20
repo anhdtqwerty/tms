@@ -113,7 +113,7 @@ export default class DepartmentDetailPage extends Vue {
     { text: 'Mã cán bộ', value: 'code', sortable: false },
     { text: 'Tên truy cập', value: 'user.username', sortable: false },
     { text: 'Trạng Thái', value: 'user.blocked', sortable: false },
-    { text: 'Chức vụ', value: 'data.title', sortable: true },
+    { text: 'Chức vụ', value: 'data.title', sortable: false },
     { text: 'Email', value: 'user.email', sortable: false },
     { text: 'Xóa', value: 'actions', sortable: false }
   ]

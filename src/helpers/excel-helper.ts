@@ -15,7 +15,7 @@ const exportFile = (data: any[], header: string[]) => {
 
 // { text: 'Số/ký hiệu', value: 'code', sortable: false },
 // { text: 'Ngày ban hành', value: 'publishedDate', sortable: false },
-// { text: 'Trích yếu', value: 'title', sortable: true },
+// { text: 'Trích yếu', value: 'title', sortable: false },
 // { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
 // { text: 'ĐV theo dõi', value: 'supervisorUnit.title', sortable: false },
 // { text: 'CV theo dõi', value: 'supervisors', sortable: false },

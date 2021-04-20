@@ -606,13 +606,13 @@ export default class TaskDetailPage extends Vue {
   subtaskHeaders = [
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
-    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: true },
+    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: false },
     { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
     { text: 'Tình hình thực hiện', value: 'explainState', sortable: false },
     { text: 'Số/ký hiệu', value: 'code', sortable: false, defaultHide: true },
     { text: 'Ngày ban hành', value: 'publishedDate', sortable: false, defaultHide: true },
-    { text: 'Trích yếu', value: 'title', sortable: true, defaultHide: true },
+    { text: 'Trích yếu', value: 'title', sortable: false, defaultHide: true },
     { text: 'ĐV theo dõi', value: 'supervisorUnitDep', sortable: false, defaultHide: true },
     { value: 'actions', align: 'right', sortable: false }
   ]
@@ -639,7 +639,7 @@ export default class TaskDetailPage extends Vue {
     { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
     { text: 'Ngày gia hạn', value: 'created_at', sortable: false },
     { text: 'Hạn xử lý cũ', value: 'data.oldExpiredDate', sortable: false },
-    { text: 'Hạn xử lý mới', value: 'data.newExpiredDate', sortable: true },
+    { text: 'Hạn xử lý mới', value: 'data.newExpiredDate', sortable: false },
     { text: 'Lý do gia hạn', value: 'description', sortable: false }
   ]
 
@@ -647,7 +647,7 @@ export default class TaskDetailPage extends Vue {
     { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
     { text: 'Ngày phê duyệt', value: 'created_at', sortable: false },
     { text: 'Người phê duyệt', value: 'requestor.name', sortable: false },
-    { text: 'Trạng thái phê duyệt', value: 'type', sortable: true },
+    { text: 'Trạng thái phê duyệt', value: 'type', sortable: false },
     { text: 'Lý do', value: 'description', sortable: false },
     { text: 'File đính kèm', value: 'attachFile', sortable: false }
   ]

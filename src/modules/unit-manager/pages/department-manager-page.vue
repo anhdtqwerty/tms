@@ -101,7 +101,7 @@ export default class DepartmentManagerPage extends Vue {
     { text: 'Tên phòng ban', value: 'title', sortable: false },
     { text: 'Đơn vị cha', value: 'unit.title', sortable: false },
     { text: 'Mã phòng', value: 'code', sortable: false },
-    { text: 'Email phòng', value: 'email', sortable: true },
+    { text: 'Email phòng', value: 'email', sortable: false },
     { text: 'SĐT phỏng', value: 'phone', sortable: false },
     { text: 'Địa chỉ', value: 'data.address', sortable: false },
     { text: 'Mô tả', value: 'description', sortable: false },

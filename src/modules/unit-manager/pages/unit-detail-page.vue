@@ -175,7 +175,7 @@ export default class UnitDetailPage extends Vue {
     { text: 'Mã phòng ban', value: 'code', sortable: false },
     { text: 'Số điện thoại', value: 'phone', sortable: false },
     { text: 'Địa chỉ', value: 'data.address', sortable: false },
-    { text: 'Email', value: 'email', sortable: true },
+    { text: 'Email', value: 'email', sortable: false },
     { text: 'Mô tả', value: 'description', sortable: false },
     { value: 'actions', sortable: false, align: 'right' }
   ]
@@ -184,9 +184,9 @@ export default class UnitDetailPage extends Vue {
     { text: 'Họ và Tên', value: 'name', sortable: false },
     { text: 'Mã cán bộ', value: 'code', sortable: false },
     { text: 'Tên truy cập', value: 'user.username', sortable: false },
-    { text: 'Phòng ban', value: 'department.title', sortable: true },
+    { text: 'Phòng ban', value: 'department.title', sortable: false },
     { text: 'Trạng Thái', value: 'user.blocked', sortable: false },
-    { text: 'Chức vụ', value: 'data.title', sortable: true },
+    { text: 'Chức vụ', value: 'data.title', sortable: false },
     { text: 'Email', value: 'user.email', sortable: false },
     { text: 'Xóa', value: 'actions', sortable: false }
   ]

@@ -117,7 +117,7 @@ export default class MinistryManagerPage extends Vue {
   headers = [
     { text: 'Tên đơn vị', value: 'title', sortable: false },
     { text: 'Mã đơn vị', value: 'code', sortable: false },
-    { text: 'Email đơn vị', value: 'email', sortable: true },
+    { text: 'Email đơn vị', value: 'email', sortable: false },
     { text: 'SĐT đơn vị', value: 'phone', sortable: false },
     { text: 'Địa chỉ', value: 'data.address', sortable: false },
     { text: 'Mô tả', value: 'description', sortable: false },
