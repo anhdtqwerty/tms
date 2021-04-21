@@ -17,7 +17,6 @@
 <script lang="ts">
 import { UnitModel } from '@/models/unit-model'
 import { Component, Inject, Prop, PropSync, Vue } from 'vue-property-decorator'
-import _ from 'lodash'
 import { AppProvider } from '@/app-provider'
 import { authStore } from '@/stores/auth-store'
 import { DepartmentModel } from '@/models/department-model'
@@ -48,7 +47,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
         this.items = [
           {
             display: department.code + ' - ' + department.title,
-            value: { unit: (department.unit as UnitModel).id, department: department }
+            value: { unit: (department.unit as UnitModel).id, department: department.id }
           }
         ]
       } else if (userUnit && userUnit.type !== 'ministry') {
