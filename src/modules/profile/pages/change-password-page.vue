@@ -58,7 +58,7 @@ export default class ChangePasswordPage extends Vue {
     const { api, authStore, snackbar, router } = this.providers
     try {
       const user: UserModel = await api.user.findOne(authStore.user.id)
-      await api.user.update(user.id, { ...user, password: this.password })
+      await api.user.update(user.id, { password: this.password })
       snackbar.updateSuccess()
       router.replace(authStore.isLeader ? 'dashboard-leader' : 'dashboard-comrade')
     } catch (error) {
