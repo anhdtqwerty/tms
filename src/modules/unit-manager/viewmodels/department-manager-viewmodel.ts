@@ -1,5 +1,6 @@
 import { AppProvider } from '@/app-provider'
 import { DepartmentModel } from '@/models/department-model'
+import { authStore } from '@/stores/auth-store'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -18,6 +19,9 @@ export class DepartmentManagerViewModel {
     if (title) input = { ...input, title_contains: title.trim() }
     if (parentUnit) input = { ...input, 'unit.title_contains': parentUnit.trim() }
     if (code) input = { ...input, code_contains: code.trim() }
+    const { unit, ministry, department } = authStore.unitParams
+    if (unit) input = { ...input, unit }
+    if (department) input = { ...input, id: department }
     this._searchParams = input
     const results = yield Promise.all([
       api.department.count(this._searchParams),

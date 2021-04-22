@@ -1,5 +1,6 @@
 import { AppProvider } from '@/app-provider'
 import { ComradeModel } from '@/models/comrade-model'
+import { authStore } from '@/stores/auth-store'
 import { action, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -19,6 +20,9 @@ export class UserManagerViewModel {
     if (unit) input = { ...input, unit }
     if (department) input = { ...input, department }
     if (typeof blocked === 'boolean') input = { ...input, 'user.blocked': blocked }
+    // const { unit: userUnitId, department: userDepartmentId } = authStore.unitParams
+    // if (userDepartmentId) input = { ...input, department: userDepartmentId }
+    // if (userUnitId) input = { ...input, unit: userUnitId, department_unit: userUnitId }
     this._searchParams = input
     this.searchPage()
   }
