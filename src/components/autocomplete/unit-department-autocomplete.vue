@@ -40,7 +40,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
 
       // Follow user belong to ministry/unit
       const userUnit = authStore.comrade.unit as UnitModel
-      const defautlUnit = {
+      const defaultUnit = {
         ...userUnit,
         display: userUnit.code + ' - ' + userUnit.title,
         value: { unit: userUnit.id }
@@ -66,7 +66,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
           value: { unit: (d.unit as UnitModel).id, department: d.id }
         }))
 
-        this.items = [defautlUnit, ...this.items]
+        this.items = [defaultUnit, ...this.items]
 
         if (this.autoselect && this.items.length > 0 && !this.syncedValue) {
           this.syncedValue = (this.items[0] as any).value
@@ -83,7 +83,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
           value: { unit: u.id, department: undefined }
         }))
 
-        this.items = [defautlUnit, ...this.items]
+        this.items = [defaultUnit, ...this.items]
 
         if (this.autoselect && this.items.length > 0 && !this.syncedValue) {
           this.syncedValue = (this.items[0] as any).value
