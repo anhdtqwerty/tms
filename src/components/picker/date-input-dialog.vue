@@ -15,7 +15,7 @@
             <v-col cols="12" class="pa-2">
               <v-menu
                 v-model="show"
-                :close-on-content-click="true"
+                :close-on-content-click="false"
                 nudge-top="14"
                 transition="scale-transition"
                 offset-y
@@ -30,9 +30,11 @@
                     @click:append="show = true"
                     validate-on-blur
                     clearable
+                    autofocus
                     @click:clear="selectDate = null"
                     v-model="selectedDate"
                     type="date"
+                    @keyup.enter="save"
                   />
                 </template>
                 <v-date-picker locale="vi" v-model="selectedDate" @input="selectDate" type="date"></v-date-picker>
