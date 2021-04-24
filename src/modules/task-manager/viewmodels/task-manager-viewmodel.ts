@@ -41,7 +41,8 @@ export class TaskManagerViewModel {
   @asyncAction *search(page = 1) {
     const params = {
       _where: [{ ...this._simpleParams, ...this._advanceParams }, ...this._taskTypeParams],
-      _start: (page - 1) * 25
+      _start: (page - 1) * 25,
+      _sort: 'updated_at:DESC'
     }
     const results = yield Promise.all([this.provider.api.task.find(params), this.provider.api.task.count(params)])
     this.tasks = results[0]
