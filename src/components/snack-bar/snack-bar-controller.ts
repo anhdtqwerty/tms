@@ -1,6 +1,10 @@
 import { action, observable } from 'mobx'
 import _ from 'lodash'
 
+const errorMessages: { [key: string]: string } = {
+  'Auth.form.error.invalid': 'Tài khoản hoặc mật khẩu không chính xác',
+  'Auth.form.error.email.taken': 'Email đã tồn tại'
+}
 export interface SnakBarConfig {
   icon?: string
   message?: string
@@ -19,18 +23,22 @@ export class SnackBarController {
     // strapi error
     const apiError = _.get(err, 'response.data.message')
     console.error(apiError, err)
+    let errorId = ''
     if (apiError) {
       if (apiError instanceof Array) {
         let errMsg = _.first(apiError)
         if (errMsg) errMsg = errMsg.messages
         if (errMsg) errMsg = _.first(errMsg)
-        if (errMsg) errMsg = errMsg.message
+        if (errMsg) {
+          errorId = errMsg.id
+          errMsg = errMsg.message
+        }
         if (errMsg) message = errMsg
       } else if (apiError instanceof String) {
         message = apiError as string
       }
     }
-    this.error(message)
+    this.error(errorMessages[errorId] || message)
   }
 
   @action success(message: string) {

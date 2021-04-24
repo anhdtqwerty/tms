@@ -631,7 +631,11 @@ export default class TaskDetailPage extends Vue {
     { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
     { text: 'Ngày trả lại', value: 'created_at', sortable: false },
     { text: 'Lý do trả lại', value: 'description', sortable: false },
-    { text: 'Đơn vị gửi trả', value: 'metadata.unitTitle', sortable: false },
+    {
+      text: 'Đơn vị gửi trả',
+      value: authStore.unitParams.department ? 'metadata.departmentTitle' : 'metadata.unitTitle',
+      sortable: false
+    },
     { text: 'Người gửi trả', value: 'requestor.name', sortable: false }
   ]
 

@@ -59,7 +59,7 @@ export default class ComradeAutoComplete extends Vue {
       if (this.unitDep && this.multiple) {
         if (Array.isArray(this.unitDep) && this.unitDep.length > 0) {
           params['unit_in'] = (this.unitDep.map(u => u.unit) as []) ?? []
-          params['department_in'] = (this.unitDep.map(d => d.department) as []) ?? []
+          if (!params['unit_in'].length) params['department_in'] = (this.unitDep.map(d => d.department) as []) ?? []
         }
       } else if (this.unitDep) {
         params['unit'] = _.get(this.unitDep, 'unit')
