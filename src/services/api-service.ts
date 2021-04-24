@@ -309,7 +309,7 @@ export class ApiService {
                 _or: [
                   { createdUnit: unit.id },
                   { executedUnit: unit.id },
-                  { supportedUnits_contains: unit.id },
+                  { 'supportedUnits.id': unit.id },
                   { supervisorUnit: unit.id }
                 ]
               }
@@ -369,8 +369,8 @@ export class ApiService {
               _or: [
                 { createdBy: comrade.id },
                 { executedComrade: comrade.id },
-                { supportedComrades_contains: comrade.id },
-                { supervisors_contains: comrade.id }
+                { 'supportedComrades.id': comrade.id },
+                { 'supervisors.id': comrade.id }
               ]
             }
           },

@@ -58,10 +58,10 @@ export const taskPriorityNameMap: { [name in TaskPriorityType]: string } = {
 }
 export const taskPriorityNames: { type: TaskPriorityType; name: string }[] = Object.entries(taskPriorityNameMap).map(
   ([type, value]) =>
-  ({
-    type,
-    value
-  } as any)
+    ({
+      type,
+      value
+    } as any)
 )
 
 export type TaskProcessingExpireType = 'inProcessing' | 'expired' | 'almostExpired'
@@ -74,10 +74,10 @@ export const taskProcessingExpireNames: { type: TaskProcessingExpireType; name: 
   taskProcessingExpireNameMap
 ).map(
   ([type, value]) =>
-  ({
-    type,
-    value
-  } as any)
+    ({
+      type,
+      value
+    } as any)
 )
 
 export type TaskDeadlineType = 'hasDeadline' | 'noDeadline'
@@ -87,10 +87,10 @@ export const taskDeadlineNameMap: { [name in TaskDeadlineType]: string } = {
 }
 export const taskDeadlineNames: { type: TaskDeadlineType; name: string }[] = Object.entries(taskDeadlineNameMap).map(
   ([type, value]) =>
-  ({
-    type,
-    value
-  } as any)
+    ({
+      type,
+      value
+    } as any)
 )
 
 export type TaskApprovementStatusType = 'approving' | 'approved' | 'rejected' | 'reopen'
@@ -104,10 +104,10 @@ export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name
   taskApprovementStatusNameMap
 ).map(
   ([type, value]) =>
-  ({
-    type,
-    value
-  } as any)
+    ({
+      type,
+      value
+    } as any)
 )
 export type RequestType = TaskStateType | 'returned' | 'extended' | TaskApprovementStatusType
 export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered'
@@ -120,10 +120,10 @@ export const taskStateNameMap: { [name in TaskStateType]: string } = {
 }
 export const taskStateNames: { type: TaskStateType; name: string }[] = Object.entries(taskStateNameMap).map(
   ([type, value]) =>
-  ({
-    type,
-    value
-  } as any)
+    ({
+      type,
+      value
+    } as any)
 )
 
 export type TaskRouteType =
@@ -147,10 +147,10 @@ export const taskRouteNameMap: { [name in TaskRouteType]: string } = {
 }
 export const taskRouteNames: { type: TaskRouteType; name: string }[] = Object.entries(taskRouteNameMap).map(
   ([type, name]) =>
-  ({
-    type,
-    name
-  } as any)
+    ({
+      type,
+      name
+    } as any)
 )
 
 export const createTaskBody = (task: TaskModel, changes: TaskModel) => {
@@ -194,10 +194,10 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
         ]
       }
       leaderSupervisosParam = {
-        _or: [{ supervisorDepartment: department }, { supervisors_contains: authStore.comrade.id }]
+        _or: [{ supervisorDepartment: department }, { 'supervisors.id': authStore.comrade.id }]
       }
       leaderSupportParam = {
-        _or: [{ supportedDepartments_contains: department }, { supportedComrades_contains: authStore.comrade.id }]
+        _or: [{ 'supportedDepartments.id': department }, { 'supportedComrades.id': authStore.comrade.id }]
       }
     } else if (comradeUnitId) {
       leaderOwnerParam = {
@@ -218,10 +218,10 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
         ]
       }
       leaderSupervisosParam = {
-        _or: [{ supervisorUnit: comradeUnitId }, { supervisors_contains: authStore.comrade.id }]
+        _or: [{ supervisorUnit: comradeUnitId }, { 'supervisors.id': authStore.comrade.id }]
       }
       leaderSupportParam = {
-        _or: [{ supportedUnits_contains: comradeUnitId }, { supportedComrades_contains: authStore.comrade.id }]
+        _or: [{ 'supportedUnits.id': comradeUnitId }, { 'supportedComrades.id': authStore.comrade.id }]
       }
     }
   }
@@ -245,14 +245,14 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
       if (authStore.isLeader) {
         resultParams.push(leaderSupervisosParam)
       } else {
-        resultParams.push({ supervisors_contains: authStore.comrade.id })
+        resultParams.push({ 'supervisors.id': authStore.comrade.id })
       }
       break
     case 'task-support':
       if (authStore.isLeader) {
         resultParams.push(leaderSupportParam)
       } else {
-        resultParams.push({ supportedComrades_contains: authStore.comrade.id })
+        resultParams.push({ 'supportedComrades.id': authStore.comrade.id })
       }
       break
     case 'task-expired':
@@ -373,7 +373,7 @@ export const actionConfigs: TaskActionConfig[] = [
     type: 'extend',
     icon: 'access_time',
     title: 'Gia hạn nhiệm vụ',
-    checkEnable: function (t) {
+    checkEnable: function(t) {
       return (
         t.status !== 'approved' &&
         isOwnerTask(t) &&
