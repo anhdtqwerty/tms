@@ -116,8 +116,6 @@ export class DashboardLeaderViewModel {
             switch (this.taskStateFilter) {
               case 'waiting':
                 return s.waiting + s.waitingOutDate
-              case 'todo':
-                return s.todo + s.todoOutDate
               case 'doing':
                 return s.doing + s.doingOutDate + s.approving + s.approvingOutDate
               case 'done':

@@ -56,7 +56,7 @@ import { TaskStateType } from '@/models/task-model'
 export default class TaskColumnChartCard extends Vue {
   @Inject() vm: DashboardLeaderViewModel
 
-  taskStateIncludes: TaskStateType[] = ['waiting', 'todo', 'doing', 'done', 'recovered']
+  taskStateIncludes: TaskStateType[] = ['waiting', 'doing', 'done', 'recovered']
 
   selectedMonth = moment().toISOString()
 

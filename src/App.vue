@@ -22,4 +22,11 @@ export default class App extends Vue {
   margin-top: 0px !important;
   margin-bottom: 0px !important;
 }
+.v-navigation-drawer.v-navigation-drawer--fixed.v-navigation-drawer--open {
+  width: 260px !important;
+}
+.required label::after {
+  content: ' *';
+  color: red;
+}
 </style>
