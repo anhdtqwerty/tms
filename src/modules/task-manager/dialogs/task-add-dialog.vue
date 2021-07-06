@@ -50,7 +50,6 @@
               <app-text-field
                 class="mb-6"
                 :value.sync="expiredDateDisplay"
-                :rules="$appRules.taskExpiredDate"
                 @click="showExpiredDateInputDialog = true"
                 append-icon="expand_more"
                 @click:append="showExpiredDateInputDialog = true"
@@ -60,6 +59,7 @@
                 @click:clear="clearExpiredDate"
                 label="Hạn xử lý"
               />
+              <date-input-dialog :value.sync="showExpiredDateInputDialog" @ok="handleExpiredDateInput" />
             </v-col>
             <v-col class="pa-2 py-0" cols="12" md="6">
               <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" />
@@ -115,7 +115,6 @@ import { Component, Inject, PropSync, Prop, Ref, Vue, Watch } from 'vue-property
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
-    TaskDeadlineTypeSelect: () => import('@/components/autocomplete/task-deadline-type-select.vue'),
     DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
   }
 })
@@ -187,7 +186,7 @@ export default class TaskAddDialog extends Vue {
               state: 'waiting',
               publishedDate: _.get(this.taskParent, 'publishedDate') ?? this.publishedDate,
               type: this.deadlineType,
-              expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : undefined,
+              expiredDate: this.expiredDate,
               parent: this.taskParent?.id ?? undefined,
 
               executedUnit: _.get(this.executedUnitDep, 'unit'),

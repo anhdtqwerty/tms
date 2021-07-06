@@ -17,28 +17,11 @@
               <v-col cols="12" md="4" lg="3" class="d-none d-sm-flex pa-2 align-center">
                 <app-text-field hide-details v-model="searchTitle" label="Trích yếu" />
               </v-col>
-              <v-col cols="12" md="4" lg="3" class="d-none d-sm-flex pa-2 align-center">
-                <task-priority-select
-                  hide-details
-                  :value.sync="searchPriority"
-                  label="Mức độ quan trọng"
-                  :unitRequired="false"
-                />
-              </v-col>
-              <v-col cols="12" md="4" lg="3" class="d-none d-sm-flex pa-2 align-center">
-                <task-approvement-status-select
-                  hide-details
-                  :value.sync="searchApprovementStatus"
-                  label="Trạng thái phê duyệt"
-                  :unitRequired="false"
-                />
-              </v-col>
-
               <v-col cols="12" md="4" lg="3" class="pa-2">
                 <unit-department-autocomplete
                   hide-details
                   :value.sync="searchExecuteUnitDep"
-                  label="Đơn vị được giao"
+                  label="Đơn vị thực hiện"
                 />
               </v-col>
               <v-col cols="12" md="4" lg="3" class="pa-2">
@@ -46,7 +29,7 @@
                   hide-details
                   :value.sync="searchExecuteStaff"
                   :unitDep="searchExecuteUnitDep"
-                  label="Cá nhân được giao"
+                  label="Chuyên viên thực hiện"
                 />
               </v-col>
               <v-col cols="12" md="4" lg="3" class="pa-2">
@@ -66,21 +49,6 @@
                 />
               </v-col>
 
-              <v-col cols="12" md="4" lg="3" class="pa-2">
-                <unit-department-autocomplete
-                  hide-details
-                  :value.sync="searchSupervisorUnitDep"
-                  label="Đơn vị theo dõi"
-                />
-              </v-col>
-              <v-col cols="12" md="4" lg="3" class="pa-2">
-                <comrade-autocomplete
-                  hide-details
-                  :value.sync="searchSupervisor"
-                  :unitDep="searchSupervisorUnitDep"
-                  label="Cá nhân theo dõi"
-                />
-              </v-col>
               <v-col cols="12" md="4" lg="3" class="pa-2 no-calender">
                 <app-text-field
                   hide-details
@@ -104,7 +72,7 @@
                   readonly
                   clearable
                   @click:clear="clearExpiredDate"
-                  label="Thời hạn xử lý"
+                  label="Khoảng thời hạn xử lý"
                 />
               </v-col>
             </v-row>

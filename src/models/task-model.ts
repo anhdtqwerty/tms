@@ -393,7 +393,7 @@ export const actionConfigs: TaskActionConfig[] = [
     permission: 'approve',
     type: 'approve',
     icon: 'offline_pin',
-    title: 'Phê duyệt nhiệm vụ',
+    title: 'Phê duyệt tiến độ thực hiện',
     checkEnable: t => t.status === 'approving' && isOwnerTask(t) && t.state === 'done'
   },
   {

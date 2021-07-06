@@ -15,6 +15,7 @@
           right-text="Giao"
           :left-value="vm.totalExecuted"
           :right-value="vm.totalCreated"
+          :color="`#4BCA81`"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
@@ -24,6 +25,7 @@
           :value="vm.topTotalDoing"
           :left-value="vm.topDoing"
           :right-value="vm.topDoingOutDate"
+          :color="`#0084FF`"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
@@ -33,10 +35,11 @@
           :value="vm.topTotalDone"
           :left-value="vm.topDone"
           :right-value="vm.topDoneOutDate"
+          :color="`#FFC410`"
         />
       </v-col>
       <v-col cols="6" lg="3" class="pa-2">
-        <overview-card icon="restore" title="Đã quá hạn" :value="vm.topOutOfDate" />
+        <overview-card icon="restore" title="Đã quá hạn" :value="vm.topOutOfDate" :color="`#FF1D30`" />
       </v-col>
     </v-row>
     <v-row>

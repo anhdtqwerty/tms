@@ -2,10 +2,10 @@
   <v-card class="px-4 pt-4 pb-2">
     <div class="d-flex flex-column">
       <div class="d-flex align-center">
-        <v-icon class="v-icon--outline" color="primary" size="32">{{ icon }}</v-icon>
+        <v-icon class="v-icon--outline" :color="color" size="32">{{ icon }}</v-icon>
         <div class="ml-4">
           <div class="body-2 text-no-wrap" :class="{ caption: $vuetify.breakpoint.sm }">{{ title }}</div>
-          <div class="text-h4 font-weight-medium">{{ value }}</div>
+          <div class="text-h4 font-weight-medium" :style="{ color }">{{ value }}</div>
         </div>
       </div>
       <div class="d-flex justify-space-between caption mt-4">
@@ -33,6 +33,7 @@ export default class OverviewCard extends Vue {
   @Prop() title!: string
   @Prop() value!: number
   @Prop() icon!: string
+  @Prop({ default: 'black' }) color!: string
   @Prop({ default: 'Trong hạn' }) leftText: string
   @Prop({ default: 'Quá hạn' }) rightText: string
   @Prop({ default: 0 }) leftValue: number

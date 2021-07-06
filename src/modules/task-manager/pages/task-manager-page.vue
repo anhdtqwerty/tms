@@ -6,7 +6,12 @@
         <breadcrumbs />
       </v-col>
       <v-col cols="4" align="right" class="pa-2">
-        <v-btn v-if="$permission('task.main.add')" medium color="success" @click="showAddTask = true">
+        <v-btn
+          v-if="$permission('task.main.add') && showAddTaskButton"
+          medium
+          color="success"
+          @click="showAddTask = true"
+        >
           <v-icon left>add</v-icon>
           <span>Thêm nhiệm vụ</span>
         </v-btn>
@@ -40,6 +45,7 @@
                   </v-btn>
                 </div>
               </task-search-component>
+              <div class="font-weight-bold pa-4">Tổng số nhiệm vụ: {{ viewmodel.totalCount }}</div>
             </template>
 
             <template v-slot:[`item.supervisorUnitDep`]="{ item }">
@@ -147,6 +153,7 @@ export default class TaskManagerPage extends Vue {
   showModifyRequest = false
   showReopenDialog = false
   showDeletingDialog = false
+  showAddTaskButton = false
 
   selectedTask: TaskModel = null
 
@@ -156,6 +163,7 @@ export default class TaskManagerPage extends Vue {
     if (val) {
       this.pageTitle = taskRouteNameMap[val]
       this.viewmodel.changeTaskType(val)
+      this.showAddTaskButton = val === 'task-created'
     }
   }
 
@@ -165,7 +173,7 @@ export default class TaskManagerPage extends Vue {
     { text: 'Ngày ban hành', value: 'publishedDate', sortable: false },
     { text: 'Trích yếu', value: 'title', sortable: false },
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
-    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: false, defaultHide: true },
+    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: false },
     { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false },
     { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
     { text: 'Trạng thái', value: 'state', sortable: false },
@@ -229,7 +237,8 @@ export default class TaskManagerPage extends Vue {
   }
 
   executedUnitDepDisplay(task: TaskModel) {
-    if (_.get(task.executedDepartment, 'title')) return _.get(task.executedDepartment, 'title')
+    if (_.get(task.executedDepartment, 'title'))
+      return _.get(task.executedUnit, 'title') + ' / ' + _.get(task.executedDepartment, 'title')
     return _.get(task.executedUnit, 'title')
   }
 
@@ -242,6 +251,9 @@ export default class TaskManagerPage extends Vue {
     const lastest = maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
     const news = lastest && moment().isBefore(moment(lastest.created_at).add(1, 'day'))
     if (news) return 'blue lighten-4'
+
+    // sap het han
+    if (moment().isBefore(moment(task.expiredDate).add(3, 'days'))) return 'red lighten-4'
   }
 }
 </script>
