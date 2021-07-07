@@ -7,6 +7,7 @@
     :temporary="$vuetify.breakpoint.xs"
     :mini-variant.sync="mini"
     permanent
+    :style="mini ? `width: 62px` : `width: 268px`"
   >
     <div class="primary darken-1 d-flex align-center px-6 mobile-drawer-logo" style="position: relative">
       <v-img v-if="!mini" :height="40" src="@/assets/ministry.svg" contain position="center"></v-img>
