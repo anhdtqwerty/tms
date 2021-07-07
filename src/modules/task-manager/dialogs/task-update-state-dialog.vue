@@ -171,7 +171,7 @@ export default class TaskUpdateStateDialog extends Vue {
             this.task.id,
             createTaskBody(this.task, {
               state: this.state,
-              status: this.state === 'done' ? 'approving' : null,
+              status: 'approving',
               doneDate: this.state === 'done' ? moment().toISOString() : null,
               explainState: this.explain
             })

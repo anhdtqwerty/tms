@@ -29,4 +29,7 @@ export default class App extends Vue {
 .v-data-table > .v-data-table__wrapper > table > thead > tr > th {
   color: #0084ff !important;
 }
+.v-toolbar__content {
+  background: #006fc9 !important;
+}
 </style>

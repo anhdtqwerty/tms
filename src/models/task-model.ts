@@ -5,7 +5,7 @@ import moment from 'moment'
 import { ComradeModel } from './comrade-model'
 import { DepartmentModel } from './department-model'
 import { FileModel } from './file-model'
-import { TaskPermissionConfig } from './position-model'
+import { PositionModel, TaskPermissionConfig } from './position-model'
 import { canChangeRequest, RequestModel } from './request-model'
 import { UnitModel } from './unit-model'
 
@@ -175,7 +175,8 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
   let leaderSupportParam = {}
   if (authStore.isLeader) {
     if (department) {
-      leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
+      if (!(authStore.comrade.position as PositionModel).config.task.main.viewAll)
+        leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
       leaderAssignedParam = {
         _or: [
           [{ executedDepartment: department }, { createdDepartment_null: true }],
@@ -197,20 +198,18 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
         _or: [{ 'supportedDepartments.id': department }, { 'supportedComrades.id': authStore.comrade.id }]
       }
     } else if (comradeUnitId) {
-      leaderOwnerParam = {
-        _or: [[{ createdUnit: comradeUnitId }, { createdDepartment_null: true }], [{ createdBy: authStore.comrade.id }]]
-      }
+      if (!(authStore.comrade.position as PositionModel).config.task.main.viewAll)
+        leaderOwnerParam = {
+          _or: [[{ createdUnit: comradeUnitId }], [{ createdBy: authStore.comrade.id }]]
+        }
       leaderAssignedParam = {
-        _or: [
-          [{ executedUnit: comradeUnitId }, { createdUnit: authStore.ministry.id }],
-          [{ executedComrade: authStore.comrade.id }]
-        ]
+        _or: [[{ executedUnit: comradeUnitId }], [{ executedComrade: authStore.comrade.id }]]
       }
       leaderOwnerAndAssigned = {
         _or: [
           [{ createdUnit: comradeUnitId }, { createdDepartment_null: true }],
           [{ createdBy: authStore.comrade.id }],
-          [{ executedUnit: comradeUnitId }, { createdUnit: authStore.ministry.id }],
+          [{ executedUnit: comradeUnitId }],
           [{ executedComrade: authStore.comrade.id }]
         ]
       }
@@ -254,7 +253,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
       }
       break
     case 'task-approving':
-      resultParams.push({ state: 'done', status: 'approving' })
+      resultParams.push({ status: 'approving' })
       if (authStore.isLeader) {
         resultParams.push(leaderOwnerAndAssigned)
       } else {
@@ -394,7 +393,7 @@ export const actionConfigs: TaskActionConfig[] = [
     type: 'approve',
     icon: 'offline_pin',
     title: 'Phê duyệt tiến độ thực hiện',
-    checkEnable: t => t.status === 'approving' && isOwnerTask(t) && t.state === 'done'
+    checkEnable: t => t.status === 'approving' && isOwnerTask(t)
   },
   {
     permission: 'update',

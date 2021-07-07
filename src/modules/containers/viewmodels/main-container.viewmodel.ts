@@ -93,9 +93,9 @@ export class MainContainerViewModel {
   }
 
   @action buildMenu() {
-    const ministrySubMenu = new MenuViewModel('Bộ', { link: '/ministries' })
-    const unitSubMenu = new MenuViewModel('Đơn vị', { link: '/units' })
-    const devSubMenu = new MenuViewModel('Phòng ban', { link: '/departments' })
+    const ministrySubMenu = new MenuViewModel('Bộ', { icon: 'horizontal_split', link: '/ministries' })
+    const unitSubMenu = new MenuViewModel('Đơn vị', { icon: 'view_module', link: '/units' })
+    const devSubMenu = new MenuViewModel('Phòng ban', { icon: 'vertical_split', link: '/departments' })
     const { ministry, unit, department } = authStore.unitParams
     let submenus: MenuViewModel[] = []
     if (ministry) submenus = [ministrySubMenu, unitSubMenu, devSubMenu]
@@ -110,8 +110,12 @@ export class MainContainerViewModel {
       new MenuViewModel('Trang chủ', {
         icon: 'dashboard',
         children: [
-          new MenuViewModel('Cá nhân', { link: '/dashboard-comrade' }),
+          new MenuViewModel('Cá nhân', {
+            icon: 'account_box',
+            link: '/dashboard-comrade'
+          }),
           new MenuViewModel('Đơn vị', {
+            icon: 'view_list',
             link: '/dashboard-leader',
             requiredLeader: true
           })
@@ -121,33 +125,64 @@ export class MainContainerViewModel {
         icon: 'list',
         children: [
           new MenuViewModel(taskRouteNameMap['task-created'], {
+            icon: 'assignment',
             link: '/tasks/task-created',
-            permission: ['task.main.add', 'task.sub.add'],
+            permission: ['task.main.add'],
             requiredLeader: true
           }),
-          new MenuViewModel(taskRouteNameMap['task-assigned'], { link: '/tasks/task-assigned' }),
-          new MenuViewModel(taskRouteNameMap['task-expired'], { link: '/tasks/task-expired' }),
-          new MenuViewModel(taskRouteNameMap['task-done'], { link: '/tasks/task-done' }),
-          new MenuViewModel(taskRouteNameMap['task-unfinished'], { link: '/tasks/task-unfinished' }),
-          new MenuViewModel(taskRouteNameMap['task-approving'], { link: '/tasks/task-approving' }),
-          new MenuViewModel(taskRouteNameMap['task-support'], { link: '/tasks/task-support' })
+          new MenuViewModel(taskRouteNameMap['task-assigned'], {
+            icon: 'assignment_returned',
+            link: '/tasks/task-assigned'
+          }),
+          new MenuViewModel(taskRouteNameMap['task-expired'], {
+            icon: 'timer',
+            link: '/tasks/task-expired'
+          }),
+          new MenuViewModel(taskRouteNameMap['task-done'], {
+            icon: 'assignment_turned_in',
+            link: '/tasks/task-done'
+          }),
+          new MenuViewModel(taskRouteNameMap['task-unfinished'], {
+            icon: 'event_busy',
+            link: '/tasks/task-unfinished'
+          }),
+          new MenuViewModel(taskRouteNameMap['task-approving'], {
+            icon: 'more',
+            link: '/tasks/task-approving'
+          }),
+          new MenuViewModel(taskRouteNameMap['task-support'], {
+            icon: 'category',
+            link: '/tasks/task-support'
+          })
         ]
       }),
       new MenuViewModel('Tổng hợp báo cáo', {
         icon: 'description',
         children: [
-          new MenuViewModel('Báo cáo tổng hợp', { link: '/report-general', permission: 'report.general.read' }),
-          new MenuViewModel('Báo cáo chi tiết', { link: '/report-detail', permission: 'report.detail.read' })
+          new MenuViewModel('Báo cáo tổng hợp', {
+            icon: 'collections_bookmark',
+            link: '/report-general',
+            permission: 'report.general.read'
+          }),
+          new MenuViewModel('Báo cáo chi tiết', {
+            icon: 'library_books',
+            link: '/report-detail',
+            permission: 'report.detail.read'
+          })
         ]
       }),
       unitMenu,
       new MenuViewModel('Quản trị hệ thống', {
         icon: 'usb',
         children: [
-          new MenuViewModel('Người dùng', { link: '/users', permission: 'system.user.read' }),
-          new MenuViewModel('Vai trò', { link: '/roles', permission: 'system.role.read' }),
-          new MenuViewModel('Tra cứu log', { link: '/logs', permission: 'system.log.read' }),
-          new MenuViewModel('Cấu hình hệ thống', { link: '/configs', permission: 'system.log.read' })
+          new MenuViewModel('Người dùng', {
+            icon: 'supervisor_account',
+            link: '/users',
+            permission: 'system.user.read'
+          }),
+          new MenuViewModel('Vai trò', { icon: 'present_to_all', link: '/roles', permission: 'system.role.read' }),
+          new MenuViewModel('Tra cứu log', { icon: 'pageview', link: '/logs', permission: 'system.log.read' }),
+          new MenuViewModel('Cấu hình hệ thống', { icon: 'settings', link: '/configs', permission: 'system.log.read' })
         ]
       })
     ]

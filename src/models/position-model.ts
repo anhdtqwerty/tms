@@ -22,6 +22,7 @@ export type GroupType = 'leader' | 'member'
 
 export type TaskPermissionType = 'main' | 'sub'
 export interface TaskPermissionConfig {
+  viewAll?: boolean
   full?: boolean
   read?: boolean
   add?: boolean
@@ -85,8 +86,8 @@ export const generatePermissionConfigs = (config: PositionConfigModel = {}): Per
         type: 'main',
         name: 'Quản lý nhiệm vụ chính',
         config: { ...defaultTaskConfig, ...(config?.task?.main ?? {}) }
-      },
-      { type: 'sub', name: 'Quản lý nhiệm vụ phụ', config: { ...defaultTaskConfig, ...(config?.task?.sub ?? {}) } }
+      }
+      // { type: 'sub', name: 'Quản lý nhiệm vụ phụ', config: { ...defaultTaskConfig, ...(config?.task?.sub ?? {}) } }
     ],
     system: [
       { type: 'unit', name: 'Quản lý đơn vị', config: { ...defaultSystemConfig, ...(config?.system?.unit ?? {}) } },

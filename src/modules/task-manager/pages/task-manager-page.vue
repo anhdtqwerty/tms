@@ -250,10 +250,19 @@ export default class TaskManagerPage extends Vue {
   row_classes(task: TaskModel) {
     const lastest = maxBy(task.requests, r => moment(_.get(r, 'created_at'))) as RequestModel
     const news = lastest && moment().isBefore(moment(lastest.created_at).add(1, 'day'))
-    if (news) return 'blue lighten-4'
+    if (task.state === 'waiting' && news) return 'blue lighten-4'
 
     // sap het han
-    if (moment().isBefore(moment(task.expiredDate).add(3, 'days'))) return 'red lighten-4'
+    if (
+      task.state !== 'done' &&
+      moment().isBetween(
+        moment(task.expiredDate).startOf('day'),
+        moment(task.expiredDate)
+          .add(3, 'days')
+          .endOf('day')
+      )
+    )
+      return 'red lighten-4'
   }
 }
 </script>
