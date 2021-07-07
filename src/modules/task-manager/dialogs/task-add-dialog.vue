@@ -62,22 +62,29 @@
               <date-input-dialog :value.sync="showExpiredDateInputDialog" @ok="handleExpiredDateInput" />
             </v-col>
             <v-col class="pa-2 py-0" cols="12" md="6">
-              <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" />
+              <!-- <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" /> -->
+              <unit-autocomplete :value.sync="executedUnit" label="Đơn vị thực hiện" :ignoreUserUnit="true" />
             </v-col>
             <v-col class="pa-2 py-0" cols="12" md="6">
               <comrade-autocomplete
                 :value.sync="executedComradeId"
-                :unitDep="executedUnitDep"
+                :unitDep="executedUnitFilter"
                 label="Chuyên viên thực hiện"
               />
             </v-col>
             <v-col class="pa-2 py-0" cols="12" md="6">
-              <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" />
+              <!-- <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" /> -->
+              <unit-autocomplete
+                :value.sync="supportedUnits"
+                label="Đơn vị phối hợp"
+                :multiple="true"
+                :ignoreUserUnit="true"
+              />
             </v-col>
             <v-col class="pa-2 py-0" cols="12" md="6">
               <comrade-autocomplete
                 :value.sync="supportedComradeIds"
-                :unitDep="supportedUnitDeps"
+                :unitDep="supportedUnitFilters"
                 :multiple="true"
                 hide-details
                 label="Chuyên viên phối hợp"
@@ -115,7 +122,8 @@ import { Component, Inject, PropSync, Prop, Ref, Vue, Watch } from 'vue-property
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
-    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue'),
+    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue')
   }
 })
 export default class TaskAddDialog extends Vue {
@@ -138,7 +146,10 @@ export default class TaskAddDialog extends Vue {
   supervisorId: string = null
   selectedFiles: File[] = []
 
+  executedUnit: string = null
   executedUnitDep = {}
+
+  supportedUnits: any[] = []
   supportedUnitDeps: { department: string; unit: string }[] = []
   supervisorUnitDep = {}
 
@@ -148,9 +159,24 @@ export default class TaskAddDialog extends Vue {
   expiredDateDisplay: string = null
   showExpiredDateInputDialog = false
 
+  executedUnitFilter: any = null
+  supportedUnitFilters: any = null
+
   @Watch('deadlineType') onDeadlineTypeChange(val: TaskDeadlineType) {
     if (val !== 'hasDeadline') {
       this.expiredDate = null
+    }
+  }
+  @Watch('executedUnit') onExecutedUnitChanged(unitId: string) {
+    this.executedUnitFilter = unitId ? { unit: unitId } : null
+  }
+  @Watch('supportedUnits') onSupportedUnitsChanged(unitIds: string[]) {
+    if (unitIds && unitIds.length > 0) {
+      this.supportedUnitFilters = unitIds.map(unit => {
+        return { unit }
+      })
+    } else {
+      this.supportedUnitFilters = null
     }
   }
 
@@ -189,22 +215,24 @@ export default class TaskAddDialog extends Vue {
               expiredDate: this.expiredDate,
               parent: this.taskParent?.id ?? undefined,
 
-              executedUnit: _.get(this.executedUnitDep, 'unit'),
+              executedUnit: this.executedUnit,
               executedComrade: this.executedComradeId,
-              executedDepartment: _.get(this.executedUnitDep, 'department'),
+              // executedUnit: _.get(this.executedUnitDep, 'unit'),
+              // executedDepartment: _.get(this.executedUnitDep, 'department'),
 
-              supervisors: this.supervisorId ? [this.supervisorId] : [],
-              supervisorUnit: _.get(this.supervisorUnitDep, 'unit'),
-              supervisorDepartment: _.get(this.supervisorUnitDep, 'department'),
+              // supervisors: this.supervisorId ? [this.supervisorId] : [],
+              // supervisorUnit: _.get(this.supervisorUnitDep, 'unit'),
+              // supervisorDepartment: _.get(this.supervisorUnitDep, 'department'),
 
               supportedComrades: this.supportedComradeIds,
-              supportedUnits: this.supportedUnitDeps.map(u => u.unit),
-              supportedDepartments: this.supportedUnitDeps.map(d => d.department),
+              supportedUnits: this.supportedUnits,
+              // supportedUnits: this.supportedUnitDeps.map(u => u.unit),
+              // supportedDepartments: this.supportedUnitDeps.map(d => d.department),
 
               createdBy: authStore.comrade.id,
               createdDepartment: _.get(authStore.comrade.department, 'id'),
-              createdUnit: _.get(authStore.comrade.unit, 'id'),
-              documentInfo: _.get(this.taskParent, 'documentInfo') ?? this.docsInfo
+              createdUnit: _.get(authStore.comrade.unit, 'id')
+              // documentInfo: _.get(this.taskParent, 'documentInfo') ?? this.docsInfo
             }
           )
         )

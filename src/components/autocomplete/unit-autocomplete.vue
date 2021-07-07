@@ -29,6 +29,7 @@ export default class UnitAutoComplete extends Vue {
   @Prop({ default: false }) multiple: boolean
   @Prop({ default: false }) autoselect: boolean
   @Prop({ default: false }) includeMinistry: boolean
+  @Prop({ default: false }) ignoreUserUnit: boolean
 
   items: UnitModel[] = []
   loading = false
@@ -41,7 +42,7 @@ export default class UnitAutoComplete extends Vue {
 
       // Follow user belong to ministry/unit
       const userUnit = authStore.comrade.unit as UnitModel
-      if (userUnit && userUnit.type !== 'ministry') {
+      if (!this.ignoreUserUnit && userUnit && userUnit.type !== 'ministry') {
         params['id'] = userUnit.id
       }
 
