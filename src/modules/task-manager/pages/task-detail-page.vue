@@ -40,18 +40,6 @@
                   <read-more-component :text="vm.task.title" :isBold="true" />
                 </div>
               </v-col>
-              <v-col cols="6">
-                <div>Mức độ</div>
-              </v-col>
-              <v-col cols="6">
-                <div class="font-weight-bold">{{ vm.task.priority | taskPriority }}</div>
-              </v-col>
-              <v-col cols="6">
-                <div>Trạng thái</div>
-              </v-col>
-              <v-col cols="6">
-                <task-state-component :state="vm.task.state" />
-              </v-col>
             </v-row>
           </div>
         </v-card>
@@ -70,12 +58,6 @@
                   </template>
                   <task-files-component :task="vm.task" :requests="vm.requestHistories" @fileDeleted="vm.fileDeleted" />
                 </v-menu>
-              </v-col>
-              <v-col cols="6">
-                <div>Văn bản đến</div>
-              </v-col>
-              <v-col cols="6">
-                <div class="blue--text" style="cursor: pointer" @click="showDocsInfo">Xem</div>
               </v-col>
               <v-col cols="6">
                 <div>Thời hạn xử lý</div>
@@ -99,39 +81,43 @@
       </v-col>
       <v-col cols="12" md="6" lg="3" class="pa-2">
         <v-card height="100%" class="pa-4">
-          <!-- supervisor -->
-          <v-row cols="12">
-            <v-col cols="6">
-              <div>Theo dõi</div>
-            </v-col>
-            <v-col cols="6">
-              <div v-if="vm.task" class="font-weight-bold">{{ supervisorUnitDepDisplay() }}</div>
-            </v-col>
-            <v-col cols="6">
-              <div>Chuyên viên</div>
-            </v-col>
-            <v-col cols="6" v-if="!$_empty(vm.task.supervisors)" class="d-flex">
-              <app-avatar :avatar="vm.task.supervisors[0].avatar" size="24" />
-              <div class="ml-2 font-weight-bold">
-                {{ vm.task.supervisors[0].name }}
-              </div>
-            </v-col>
-          </v-row>
-
           <!-- execute -->
           <v-row cols="12">
             <v-col cols="6">
-              <div>Thực hiện</div>
+              <div>Đơn vị thực hiện</div>
             </v-col>
             <v-col cols="6">
               <div v-if="vm.task" class="font-weight-bold">{{ executedUnitDepDisplay() }}</div>
             </v-col>
             <v-col cols="6">
-              <div>Chuyên viên</div>
+              <div>Chuyên viên thực hiện</div>
             </v-col>
             <v-col cols="6" v-if="vm.task.executedComrade" class="d-flex">
               <app-avatar :avatar="vm.task.executedComrade.avatar" size="24" />
               <div class="ml-2 font-weight-bold">{{ vm.task.executedComrade.name }}</div>
+            </v-col>
+          </v-row>
+
+          <!-- supported -->
+          <v-row cols="12">
+            <v-col cols="6">
+              <div>Đơn vị phối hợp</div>
+            </v-col>
+            <v-col cols="6">
+              <div v-if="vm.task" class="font-weight-bold">{{ vm.supportedUnitDepDisplay }}</div>
+            </v-col>
+            <v-col cols="6">
+              <div>Chuyên viên phối hợp</div>
+            </v-col>
+            <v-col cols="6" v-if="!$_empty(vm.task.supportedComrades)">
+              <div class="d-flex flex-column">
+                <div v-for="comrade in vm.task.supportedComrades" :key="comrade.id" class="d-flex">
+                  <app-avatar :avatar="comrade.avatar" size="24" />
+                  <div class="ml-2 font-weight-bold">
+                    {{ comrade.name }}
+                  </div>
+                </div>
+              </div>
             </v-col>
           </v-row>
         </v-card>
@@ -151,13 +137,13 @@
               </div>
             </v-col>
             <v-col cols="6">
-              <div>Ngày thực hiện</div>
+              <div>Ngày cập nhật</div>
             </v-col>
             <v-col cols="6">
-              <div class="font-weight-bold">{{ vm.lastRequest && vm.lastRequest.startedDate | ddmmyyyy }}</div>
+              <div class="font-weight-bold">{{ vm.lastRequest && vm.lastRequest.updated_at | ddmmyyyy }}</div>
             </v-col>
             <v-col cols="6">
-              <div>Diễn giải trạng thái</div>
+              <div>Tình hình thực hiện</div>
             </v-col>
             <v-col cols="6">
               <div class="font-weight-bold">{{ vm.lastRequest | _get('description') }}</div>
@@ -174,67 +160,6 @@
               </v-menu>
             </v-col>
           </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- child task list -->
-    <v-row v-if="$permission('task.sub.read')">
-      <v-col cols="12" class="pa-2">
-        <v-card>
-          <v-data-table
-            item-key="id"
-            :items="vm.subtasks"
-            :headers="selectedHeaders"
-            :server-items-length="vm.subtaskTotalCount"
-            @update:page="vm.search($event)"
-            :footer-props="{ itemsPerPageOptions: [25] }"
-            mobile-breakpoint="0"
-          >
-            <template v-slot:top>
-              <task-search-component
-                title="Danh sách các nhiệm vụ chia nhỏ"
-                @advance-search="vm.advanceSearch($event)"
-                @simple-search="vm.simpleSearch($event)"
-              >
-                <div>
-                  <v-btn
-                    v-if="$permission('task.sub.add') && vm.task && !vm.task.createdDepartment && vm.isAssignedTask"
-                    small
-                    color="success"
-                    class="mr-2"
-                    @click="showAddSubtask = true"
-                  >
-                    <v-icon left>add</v-icon>
-                    <span>Thêm</span>
-                  </v-btn>
-                  <table-header-setting :headers="subtaskHeaders" @change="selectedHeaders = $event" />
-                  <v-btn icon small @click="vm.exportExcel()">
-                    <v-icon>more_horiz</v-icon>
-                  </v-btn>
-                </div>
-              </task-search-component>
-            </template>
-
-            <template v-slot:[`item.description`]="{ item }">
-              <max-length-text :text="item.description" />
-            </template>
-            <template v-slot:[`item.executedUnitDep`]="{ item }">
-              {{ executedUnitDepSubTask(item) }}
-            </template>
-            <template v-slot:[`item.supervisorUnitDep`]="{ item }">
-              {{ supervisorUnitDepSubTask(item) }}
-            </template>
-            <template v-slot:[`item.explainState`]="{ item }">
-              <max-length-text :text="item.explainState" />
-            </template>
-            <template v-slot:[`item.state`]="{ item }">
-              <task-state-component :state="item.state" />
-            </template>
-            <template v-slot:[`item.actions`]="{ item }">
-              <task-sub-action-menu :task="item" @task-action="subTaskAction($event, item)" />
-            </template>
-          </v-data-table>
         </v-card>
       </v-col>
     </v-row>
@@ -406,7 +331,6 @@
       </v-col>
     </v-row>
 
-    <task-add-dialog :value.sync="showAddSubtask" :taskParent="vm.task" @success="vm.taskAdded" />
     <task-edit-dialog :value.sync="showEditDialog" :task="editingTask" @success="vm.taskUpdated" />
     <task-recover-dialog :value.sync="showRetriveDialog" :task="editingTask" @success="vm.taskRecovered" />
     <task-extend-dialog :value.sync="showExtendDialog" :task="editingTask" @success="vm.taskUpdated" />
@@ -444,7 +368,6 @@ import _ from 'lodash'
 @Component({
   components: {
     TaskAddDialog: () => import('../dialogs/task-add-dialog.vue'),
-    TaskSearchComponent: () => import('../components/task-search-component.vue'),
     TaskActionComponent: () => import('../components/task-action-component.vue'),
     TaskSubActionMenu: () => import('../components/task-sub-action-menu.vue'),
     TaskEditDialog: () => import('../dialogs/task-edit-dialog.vue'),
@@ -468,7 +391,6 @@ export default class TaskDetailPage extends Vue {
   @Inject() providers!: AppProvider
   @Provide() vm = new TaskDetailViewModel(this.providers)
 
-  showAddSubtask = false
   showEditDialog = false
   showDeletingDialog = false
   showDetailDialog = false
@@ -492,48 +414,6 @@ export default class TaskDetailPage extends Vue {
 
   async showReadMore(text: string) {
     await this.providers.alert.info('Chi tiết', text)
-  }
-
-  subTaskAction(typeAction: TaskActionType, task: TaskModel) {
-    this.editingTask = task
-    switch (typeAction) {
-      case 'read':
-        this.$router.push({ path: '/task/' + task.id })
-        break
-      case 'edit':
-        this.showEditDialog = true
-        break
-      case 'revoke':
-        this.showRetriveDialog = true
-        break
-      case 'extend':
-        this.showExtendDialog = true
-        break
-      case 'return':
-        this.showReturnDialog = true
-        break
-      case 'assign':
-        this.showAssignDialog = true
-        break
-      case 'approve':
-        this.showApproveDialog = true
-        break
-      case 'update':
-        this.showEditStateDialog = true
-        break
-      case 'modify-update':
-        this.showModifyRequest = true
-        break
-      case 'reopen':
-        this.showReopenDialog = true
-        break
-      case 'delete':
-        this.showDeletingDialog = true
-        break
-      default:
-        console.warn('subTaskAction doesnt handle', typeAction)
-        break
-    }
   }
 
   taskActionCommon(typeAction: TaskActionType) {
@@ -592,38 +472,12 @@ export default class TaskDetailPage extends Vue {
     return _.get(this.vm.task, 'supervisorUnit.title')
   }
 
-  executedUnitDepSubTask(task: TaskModel) {
-    if (_.get(task.executedDepartment, 'title')) return _.get(task.executedDepartment, 'title')
-    return _.get(task.executedUnit, 'title')
-  }
-
-  supervisorUnitDepSubTask(task: TaskModel) {
-    if (_.get(task.supervisorDepartment, 'title')) return _.get(task.supervisorDepartment, 'title')
-    return _.get(task.supervisorUnit, 'title')
-  }
-
-  selectedHeaders: any[] = []
-  subtaskHeaders = [
-    { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
-    { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
-    { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: false },
-    { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false },
-    { text: 'Trạng thái', value: 'state', sortable: false },
-    { text: 'Tình hình thực hiện', value: 'explainState', sortable: false },
-    { text: 'Số/ký hiệu', value: 'code', sortable: false, defaultHide: true },
-    { text: 'Ngày ban hành', value: 'publishedDate', sortable: false, defaultHide: true },
-    { text: 'Trích yếu', value: 'title', sortable: false, defaultHide: true },
-    { text: 'ĐV theo dõi', value: 'supervisorUnitDep', sortable: false, defaultHide: true },
-    { value: 'actions', align: 'right', sortable: false }
-  ]
-
   processingHeaders = [
-    { text: 'Ngày cập nhật', value: 'updated_at', sortable: false },
-    { text: 'Ngày thực hiện', value: 'startedDate', sortable: false },
-    { text: 'Trạng thái', value: 'type', sortable: true },
-    { text: 'Diễn giải trạng thái', value: 'description', sortable: false },
     { text: 'Nội dung nhiệm vụ', value: 'task.description', sortable: false },
-    { text: 'Người cập nhật', value: 'requestor.name', sortable: false },
+    { text: 'Ngày cập nhật', value: 'updated_at', sortable: false },
+    { text: 'Trạng thái', value: 'type', sortable: true },
+    { text: 'Tình hình thực hiện', value: 'description', sortable: false },
+    { text: 'Chuyên viên cập nhật', value: 'requestor.name', sortable: false },
     { text: 'File đính kèm', value: 'attachFile', sortable: false }
   ]
 

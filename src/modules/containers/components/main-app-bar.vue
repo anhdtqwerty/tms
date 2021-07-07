@@ -24,7 +24,7 @@
             :class="{ 'mr-4': !$vuetify.breakpoint.xs, 'mr-n6': $vuetify.breakpoint.xs }"
             size="40"
           />
-          <div class="d-none d-sm-flex black--text">
+          <div class="d-none d-sm-flex white--text">
             {{ providers.authStore.comrade | _get('name') }}
           </div>
         </v-btn>

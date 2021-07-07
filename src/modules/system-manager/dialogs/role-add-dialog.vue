@@ -30,6 +30,9 @@
                 <template v-slot:[`item.name`]="{ item }">
                   <div class="font-weight-medium">{{ item.name }}</div>
                 </template>
+                <template v-slot:[`item.config.viewAll`]="{ item }">
+                  <v-simple-checkbox :ripple="false" v-model="item.config.viewAll" />
+                </template>
                 <template v-slot:[`item.config.full`]="{ item }">
                   <v-simple-checkbox :ripple="false" v-model="item.config.full" />
                 </template>
@@ -158,6 +161,14 @@ export default class RoleAddDialog extends Vue {
 
   taskHeaders = [
     { text: 'Quản lý nhiệm vụ', value: 'name', sortable: false, class: 'grey lighten-4', width: '165' },
+    {
+      text: 'Xem tất cả nhiệm vụ',
+      value: 'config.viewAll',
+      sortable: false,
+      class: 'grey lighten-4 px-2',
+      align: 'center',
+      width: '90'
+    },
     {
       text: 'Toàn quyền',
       value: 'config.full',

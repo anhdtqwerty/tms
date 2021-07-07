@@ -139,8 +139,8 @@ export default class TaskApproveDialog extends Vue {
           const modifyTask = await api.task.update(
             this.task.id,
             createTaskBody(this.task, {
-              status: this.approveStatusResult,
-              state: this.approveStatusResult === 'approved' ? 'done' : 'doing'
+              status: this.task.state === 'done' ? this.approveStatusResult : null,
+              state: this.approveStatusResult === 'approved' ? this.task.state : 'doing'
             })
           )
 

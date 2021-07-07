@@ -1,9 +1,11 @@
 import { AppProvider } from '@/app-provider'
 import { excelHelper } from '@/helpers/excel-helper'
 import { mailBuilder } from '@/helpers/mail-helper'
+import { DepartmentModel } from '@/models/department-model'
 import { FileModel } from '@/models/file-model'
 import { RequestModel } from '@/models/request-model'
 import { createTaskBody, getLastRequest, RequestType, TaskModel, isAssignedTask } from '@/models/task-model'
+import { UnitModel } from '@/models/unit-model'
 import { action, computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 
@@ -153,7 +155,7 @@ export class TaskDetailViewModel {
   }
 
   @computed get progressHistory() {
-    const progressTypes: RequestType[] = ['doing', 'done', 'recovered', 'todo']
+    const progressTypes: RequestType[] = ['doing', 'done', 'recovered']
     return this.requestHistories.filter(r => progressTypes.includes(r.type))
   }
 
@@ -165,6 +167,18 @@ export class TaskDetailViewModel {
     return this.requestHistories.filter(r => r.type === 'extended')
     // const progressTypes: TaskStateType[] = ['doing', 'done', 'recovered', 'todo']
     // return this.requestHistories.filter(r => progressTypes.includes(r.type))
+  }
+
+  @computed get supportedUnitDepDisplay() {
+    if (this.task.supportedDepartments && this.task.supportedDepartments.length > 0) {
+      const list = (this.task.supportedDepartments as DepartmentModel[]).map(d => d.title)
+      return list.join(',')
+    }
+    if (this.task.supportedUnits && this.task.supportedUnits.length > 0) {
+      const list = (this.task.supportedUnits as UnitModel[]).map(u => u.title)
+      return list.join(',')
+    }
+    return ''
   }
 
   @computed get approvementHistory() {

@@ -11,12 +11,14 @@
 
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
-          <v-row v-if="task && !task.parent">
+          <v-row>
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
-            <v-col cols="12" sm="6" class="pa-2">
-              <app-text-field v-model="code" disabled label="Số/ký hiệu" />
+            <v-col cols="12" md="6" class="px-2 py-0">
+              <app-text-field class="required" v-model="code" disabled label="Số/ký hiệu" />
+            </v-col>
+            <v-col cols="12" md="6" class="px-2 py-0">
               <app-text-field
                 :value.sync="publishedDateDisplay"
                 @click="showPublishedDateInputDialog = true"
@@ -28,51 +30,31 @@
                 label="Ngày ban hành"
               />
               <date-input-dialog :value.sync="showPublishedDateInputDialog" @ok="handlePublishedDateInput" />
-
-              <app-text-field v-model="title" :rules="$appRules.taskTitle" label="Trích yếu" />
             </v-col>
-            <v-col cols="12" sm="6" class="pa-2">
-              <task-priority-select :value.sync="priority" :rules="$appRules.taskPriority" label="Mức độ quan trọng" />
+            <v-col cols="12" class="px-2 py-0">
+              <app-text-field class="required" v-model="title" :rules="$appRules.taskTitle" label="Trích yếu" />
+            </v-col>
+            <v-col cols="12" class="px-2 py-0">
               <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
-              <app-text-field v-model="docsInfo" :rules="$appRules.taskDocsInfo" label="Thông tin văn bản đến" />
             </v-col>
           </v-row>
 
           <v-row>
-            <v-col cols="12" class="pa-2">
+            <v-col cols="12" class="px-2">
               <div class="text-subtitle-2">Thông tin nhiệm vụ</div>
             </v-col>
-            <v-col cols="12" sm="6" class="pa-2">
-              <app-text-field v-model="description" :rules="$appRules.taskDescription" label="Nội dung nhiệm vụ" />
-              <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" />
-              <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" />
-
-              <comrade-autocomplete
-                :value.sync="executedComradeId"
-                :unitDep="executedUnitDep"
-                label="Chuyên viên thực hiện"
-              />
-              <comrade-autocomplete
-                :value.sync="supportedComradeIds"
-                :unitDep="supportedUnitDeps"
-                :multiple="true"
-                hide-details
-                label="Chuyên viên phối hợp"
+            <v-col cols="12" class="px-2 py-0">
+              <app-text-field
+                v-model="description"
+                class="required"
+                :rules="$appRules.taskDescription"
+                label="Nội dung nhiệm vụ"
               />
             </v-col>
-            <v-col cols="12" sm="6" class="pa-2">
-              <task-deadline-type-select
-                class="mb-6"
-                hide-details
-                :value.sync="deadlineType"
-                :rules="$appRules.taskDeadlineType"
-                label="Loại hạn xử lý"
-              />
+            <v-col cols="12" class="px-2 py-0">
               <app-text-field
                 class="mb-6"
                 :value.sync="expiredDateDisplay"
-                v-if="deadlineType === 'hasDeadline'"
-                :rules="$appRules.taskExpiredDate"
                 @click="showExpiredDateInputDialog = true"
                 append-icon="expand_more"
                 @click:append="showExpiredDateInputDialog = true"
@@ -83,13 +65,38 @@
                 label="Hạn xử lý"
               />
               <date-input-dialog :value.sync="showExpiredDateInputDialog" @ok="handleExpiredDateInput" />
-
-              <unit-department-autocomplete :value.sync="supervisorUnitDep" label="Đơn vị theo dõi" />
+            </v-col>
+            <v-col class="pa-2 py-0" cols="12" md="6">
+              <!-- <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" /> -->
+              <unit-autocomplete :value.sync="executedUnit" label="Đơn vị thực hiện" :ignoreUserUnit="true" />
+            </v-col>
+            <v-col class="pa-2 py-0" cols="12" md="6">
               <comrade-autocomplete
-                :value.sync="supervisorId"
-                :unitDep="supervisorUnitDep"
-                label="Chuyên viên theo dõi"
+                :value.sync="executedComradeId"
+                :unitDep="executedUnitFilter"
+                label="Chuyên viên thực hiện"
               />
+            </v-col>
+            <v-col class="pa-2 py-0" cols="12" md="6">
+              <!-- <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" /> -->
+              <unit-autocomplete
+                :value.sync="supportedUnits"
+                label="Đơn vị phối hợp"
+                :multiple="true"
+                :ignoreUserUnit="true"
+              />
+            </v-col>
+            <v-col class="pa-2 py-0" cols="12" md="6">
+              <comrade-autocomplete
+                :value.sync="supportedComradeIds"
+                :unitDep="supportedUnitFilters"
+                :multiple="true"
+                hide-details
+                label="Chuyên viên phối hợp"
+              />
+            </v-col>
+
+            <v-col cols="12" sm="6" class="pa-2">
               <task-state-select :value.sync="state" disabled hide-details label="Trạng thái" />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
@@ -125,8 +132,8 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
     TaskStateSelect: () => import('@/components/autocomplete/task-state-select.vue'),
-    TaskDeadlineTypeSelect: () => import('@/components/autocomplete/task-deadline-type-select.vue'),
-    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue')
+    DateInputDialog: () => import('@/components/picker/date-input-dialog.vue'),
+    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue')
   }
 })
 export default class TaskEditDialog extends Vue {
@@ -157,6 +164,11 @@ export default class TaskEditDialog extends Vue {
   expiredDate: string = null
   selectedFiles: File[] = []
 
+  executedUnit: string = null
+  supportedUnits: any[] = []
+  executedUnitFilter: any = null
+  supportedUnitFilters: any = null
+
   executedUnitDep = {}
   supportedUnitDeps: { department?: string; unit?: string }[] = []
   supervisorUnitDep = {}
@@ -180,17 +192,21 @@ export default class TaskEditDialog extends Vue {
       this.state = val.state
       this.priority = val.priority
 
-      this.executedUnitId = _.get(val.executedUnit, 'id')
+      this.executedUnit = _.get(val.executedUnit, 'id')
+
+      // this.executedUnitId = _.get(val.executedUnit, 'id')
       this.executedDepartmentId = _.get(val.executedDepartment, 'id')
       this.executedComradeId = _.get(val.executedComrade, 'id')
-      this.executedUnitDep = { unit: this.executedUnitId, department: this.executedDepartmentId }
+      // this.executedUnitDep = { unit: this.executedUnitId, department: this.executedDepartmentId }
 
-      this.supervisorUnitId = _.get(val.supervisorUnit, 'id')
-      this.supervisorDepartmentId = _.get(val.supervisorDepartment, 'id')
-      this.supervisorId = _.first(val.supervisors as ComradeModel[])?.id
-      this.supervisorUnitDep = { unit: this.supervisorUnitId, department: this.supervisorDepartmentId }
+      // this.supervisorUnitId = _.get(val.supervisorUnit, 'id')
+      // this.supervisorDepartmentId = _.get(val.supervisorDepartment, 'id')
+      // this.supervisorId = _.first(val.supervisors as ComradeModel[])?.id
+      // this.supervisorUnitDep = { unit: this.supervisorUnitId, department: this.supervisorDepartmentId }
 
-      this.supportedUnitIds = _.map(val.supportedUnits, 'id')
+      this.supportedUnits = _.map(val.supportedUnits, 'id')
+
+      // this.supportedUnitIds = _.map(val.supportedUnits, 'id')
       this.supportedDepartmentIds = _.map(val.supportedDepartments, 'id')
       this.supportedComradeIds = _.map(val.supportedComrades, 'id')
       if (val.supportedDepartments.length) {
@@ -202,13 +218,19 @@ export default class TaskEditDialog extends Vue {
         this.supportedUnitDeps = val.supportedUnits.map(u => ({ department: undefined, unit: (u as UnitModel).id }))
       }
 
-      this.docsInfo = val.documentInfo
+      // this.docsInfo = val.documentInfo
     }
   }
-
-  @Watch('deadlineType') onDeadlineTypeChange(val: TaskDeadlineType) {
-    if (val !== 'hasDeadline') {
-      this.expiredDate = null
+  @Watch('executedUnit') onExecutedUnitChanged(unitId: string) {
+    this.executedUnitFilter = unitId ? { unit: unitId } : null
+  }
+  @Watch('supportedUnits') onSupportedUnitsChanged(unitIds: string[]) {
+    if (unitIds && unitIds.length > 0) {
+      this.supportedUnitFilters = unitIds.map(unit => {
+        return { unit }
+      })
+    } else {
+      this.supportedUnitFilters = null
     }
   }
 
@@ -250,24 +272,27 @@ export default class TaskEditDialog extends Vue {
           description: this.description,
           publishedDate: this.publishedDate,
           type: this.deadlineType,
-          expiredDate: this.deadlineType === 'hasDeadline' ? this.expiredDate : null,
+          expiredDate: this.expiredDate,
           title: this.title,
           state: this.state,
           priority: this.priority,
 
-          executedUnit: _.get(this.executedUnitDep, 'unit') ?? null,
+          executedUnit: this.executedUnit,
           executedComrade: this.executedComradeId,
-          executedDepartment: _.get(this.executedUnitDep, 'department') ?? null,
+          // executedUnit: _.get(this.executedUnitDep, 'unit') ?? null,
+          // executedComrade: this.executedComradeId,
+          // executedDepartment: _.get(this.executedUnitDep, 'department') ?? null,
 
-          supervisors: this.supervisorId ? [this.supervisorId] : [],
-          supervisorUnit: _.get(this.supervisorUnitDep, 'unit') ?? null,
-          supervisorDepartment: _.get(this.supervisorUnitDep, 'department') ?? null,
+          // supervisors: this.supervisorId ? [this.supervisorId] : [],
+          // supervisorUnit: _.get(this.supervisorUnitDep, 'unit') ?? null,
+          // supervisorDepartment: _.get(this.supervisorUnitDep, 'department') ?? null,
 
           supportedComrades: this.supportedComradeIds,
-          supportedUnits: this.supportedUnitDeps.map(u => u.unit),
-          supportedDepartments: this.supportedUnitDeps.map(d => d.department),
+          supportedUnits: this.supportedUnits
+          // supportedUnits: this.supportedUnitDeps.map(u => u.unit),
+          // supportedDepartments: this.supportedUnitDeps.map(d => d.department),
 
-          documentInfo: this.docsInfo
+          // documentInfo: this.docsInfo
         }
         task = await this.providers.api.task.update(this.task.id, createTaskBody(this.task, task))
 

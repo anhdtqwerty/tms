@@ -5,7 +5,7 @@ import moment from 'moment'
 import { ComradeModel } from './comrade-model'
 import { DepartmentModel } from './department-model'
 import { FileModel } from './file-model'
-import { TaskPermissionConfig } from './position-model'
+import { PositionModel, TaskPermissionConfig } from './position-model'
 import { canChangeRequest, RequestModel } from './request-model'
 import { UnitModel } from './unit-model'
 
@@ -110,10 +110,9 @@ export const taskApprovementStatusNames: { type: TaskApprovementStatusType; name
     } as any)
 )
 export type RequestType = TaskStateType | 'returned' | 'extended' | TaskApprovementStatusType
-export type TaskStateType = 'waiting' | 'todo' | 'doing' | 'done' | 'recovered'
+export type TaskStateType = 'waiting' | 'doing' | 'done' | 'recovered'
 export const taskStateNameMap: { [name in TaskStateType]: string } = {
   waiting: 'Chưa cập nhật tiến độ',
-  todo: 'Chưa thực hiện',
   doing: 'Đang thực hiện',
   done: 'Đã hoàn thành',
   recovered: 'Bị thu hồi'
@@ -129,7 +128,6 @@ export const taskStateNames: { type: TaskStateType; name: string }[] = Object.en
 export type TaskRouteType =
   | 'task-created'
   | 'task-assigned'
-  | 'task-following'
   | 'task-expired'
   | 'task-unfinished'
   | 'task-approving'
@@ -137,13 +135,12 @@ export type TaskRouteType =
   | 'task-done'
 export const taskRouteNameMap: { [name in TaskRouteType]: string } = {
   'task-created': 'Nhiệm vụ giao',
-  'task-assigned': 'Được giao',
-  'task-expired': 'Đã quá hạn',
-  'task-unfinished': 'Chưa hoàn thành',
-  'task-approving': 'Chờ xác nhận',
-  'task-following': 'Đang theo dõi',
-  'task-support': 'Phối hợp',
-  'task-done': 'Đã hoàn thành'
+  'task-assigned': 'Nhiệm vụ được giao',
+  'task-expired': 'Nhiệm vụ quá hạn',
+  'task-done': 'Nhiệm vụ đã hoàn thành',
+  'task-unfinished': 'Nhiệm vụ chưa hoàn thành',
+  'task-approving': 'Nhiệm vụ chờ phê duyệt',
+  'task-support': 'Nhiệm vụ phối hợp'
 }
 export const taskRouteNames: { type: TaskRouteType; name: string }[] = Object.entries(taskRouteNameMap).map(
   ([type, name]) =>
@@ -178,7 +175,8 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
   let leaderSupportParam = {}
   if (authStore.isLeader) {
     if (department) {
-      leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
+      if (!(authStore.comrade.position as PositionModel).config.task.main.viewAll)
+        leaderOwnerParam = { _or: [{ createdDepartment: department }, { createdBy: authStore.comrade.id }] }
       leaderAssignedParam = {
         _or: [
           [{ executedDepartment: department }, { createdDepartment_null: true }],
@@ -200,20 +198,18 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
         _or: [{ 'supportedDepartments.id': department }, { 'supportedComrades.id': authStore.comrade.id }]
       }
     } else if (comradeUnitId) {
-      leaderOwnerParam = {
-        _or: [[{ createdUnit: comradeUnitId }, { createdDepartment_null: true }], [{ createdBy: authStore.comrade.id }]]
-      }
+      if (!(authStore.comrade.position as PositionModel).config.task.main.viewAll)
+        leaderOwnerParam = {
+          _or: [[{ createdUnit: comradeUnitId }], [{ createdBy: authStore.comrade.id }]]
+        }
       leaderAssignedParam = {
-        _or: [
-          [{ executedUnit: comradeUnitId }, { createdUnit: authStore.ministry.id }],
-          [{ executedComrade: authStore.comrade.id }]
-        ]
+        _or: [[{ executedUnit: comradeUnitId }], [{ executedComrade: authStore.comrade.id }]]
       }
       leaderOwnerAndAssigned = {
         _or: [
           [{ createdUnit: comradeUnitId }, { createdDepartment_null: true }],
           [{ createdBy: authStore.comrade.id }],
-          [{ executedUnit: comradeUnitId }, { createdUnit: authStore.ministry.id }],
+          [{ executedUnit: comradeUnitId }],
           [{ executedComrade: authStore.comrade.id }]
         ]
       }
@@ -241,13 +237,6 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
         resultParams.push({ executedComrade: authStore.comrade.id })
       }
       break
-    case 'task-following':
-      if (authStore.isLeader) {
-        resultParams.push(leaderSupervisosParam)
-      } else {
-        resultParams.push({ 'supervisors.id': authStore.comrade.id })
-      }
-      break
     case 'task-support':
       if (authStore.isLeader) {
         resultParams.push(leaderSupportParam)
@@ -264,7 +253,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
       }
       break
     case 'task-approving':
-      resultParams.push({ state: 'done', status: 'approving' })
+      resultParams.push({ status: 'approving' })
       if (authStore.isLeader) {
         resultParams.push(leaderOwnerAndAssigned)
       } else {
@@ -296,7 +285,7 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
 }
 
 export const getLastRequest = (task: TaskModel) => {
-  const updateTaskTypes: RequestType[] = ['doing', 'todo', 'waiting', 'done']
+  const updateTaskTypes: RequestType[] = ['doing', 'waiting', 'done']
   const requestsFilter = task.requests.filter(r => updateTaskTypes.includes(_.get(r, 'type')))
   const lastest = _.maxBy(requestsFilter, r => moment(_.get(r, 'created_at'))) as RequestModel
 
@@ -403,8 +392,8 @@ export const actionConfigs: TaskActionConfig[] = [
     permission: 'approve',
     type: 'approve',
     icon: 'offline_pin',
-    title: 'Phê duyệt nhiệm vụ',
-    checkEnable: t => t.status === 'approving' && isOwnerTask(t) && t.state === 'done'
+    title: 'Phê duyệt tiến độ thực hiện',
+    checkEnable: t => t.status === 'approving' && isOwnerTask(t)
   },
   {
     permission: 'update',

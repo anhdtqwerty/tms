@@ -22,4 +22,14 @@ export default class App extends Vue {
   margin-top: 0px !important;
   margin-bottom: 0px !important;
 }
+.required label::after {
+  content: ' *';
+  color: red;
+}
+.v-data-table > .v-data-table__wrapper > table > thead > tr > th {
+  color: #0084ff !important;
+}
+.v-toolbar__content {
+  background: #006fc9 !important;
+}
 </style>

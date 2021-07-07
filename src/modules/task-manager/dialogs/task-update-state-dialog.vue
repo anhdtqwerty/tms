@@ -14,35 +14,16 @@
       <v-form ref="form" style="overflow-y: auto">
         <v-container fluid px-5 py-2>
           <v-row>
-            <v-col cols="12" class="pa-2">
+            <v-col cols="12" md="6" class="pa-2">
               <task-state-select
+                class="required"
                 :rules="$appRules.taskState"
                 :includes="taskStateIncludes"
                 :value.sync="state"
                 label="Trạng thái"
               />
-              <app-text-field
-                class="mb-6"
-                v-model="startedDateDisplay"
-                :value.sync="startedDateDisplay"
-                :rules="$appRules.taskStartedDate"
-                @click="showDateInputDialog = true"
-                append-icon="expand_more"
-                @click:append="showDateInputDialog = true"
-                readonly
-                hide-details
-                clearable
-                @click:clear="clearStartedDate"
-                label="Ngày thực hiện"
-              />
-              <date-input-dialog :value.sync="showDateInputDialog" @ok="handleStartedDateInput" />
-
-              <app-text-field
-                v-model="explain"
-                :rules="$appRules.taskExplain"
-                counter="1000"
-                label="Diễn giải trạng thái"
-              />
+            </v-col>
+            <v-col cols="12" md="6" class="pa-2">
               <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
               <div class="d-flex">
                 <div class="d-flex">
@@ -55,6 +36,16 @@
                   </v-menu>
                 </div>
               </div>
+            </v-col>
+            <v-col>
+              <app-textarea
+                rows="3"
+                v-model="explain"
+                :rules="$appRules.taskExplain"
+                counter="1000"
+                class="required"
+                label="Tình hình thực hiện"
+              />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
               <v-btn depressed outlined medium @click="syncedValue = false">
@@ -101,12 +92,10 @@ export default class TaskUpdateStateDialog extends Vue {
   state: TaskStateType = null
   explain = ''
   startedDate: string = null
-  taskStateIncludes: TaskStateType[] = ['todo', 'doing', 'done']
+  taskStateIncludes: TaskStateType[] = ['doing', 'done']
   request: RequestModel = null
   selectedFiles: File[] = []
 
-  startedDateDisplay: string = null
-  showDateInputDialog = false
   oldTaskState: TaskStateType = null
 
   fileDeleted(id: string) {
@@ -127,20 +116,10 @@ export default class TaskUpdateStateDialog extends Vue {
           this.request = lastRequest
           this.state = lastRequest.type as TaskStateType
           this.startedDate = lastRequest.startedDate
-          this.startedDateDisplay = lastRequest.startedDate && moment(lastRequest.startedDate).format('DD/MM/YYYY')
           this.explain = lastRequest.description
         }
       }
     }
-  }
-
-  handleStartedDateInput(date: string) {
-    this.startedDate = date
-    this.startedDateDisplay = moment(date).format('DD/MM/YYYY')
-  }
-  clearStartedDate() {
-    this.startedDate = null
-    this.startedDateDisplay = null
   }
 
   async save() {
@@ -192,7 +171,7 @@ export default class TaskUpdateStateDialog extends Vue {
             this.task.id,
             createTaskBody(this.task, {
               state: this.state,
-              status: this.state === 'done' ? 'approving' : null,
+              status: 'approving',
               doneDate: this.state === 'done' ? moment().toISOString() : null,
               explainState: this.explain
             })
