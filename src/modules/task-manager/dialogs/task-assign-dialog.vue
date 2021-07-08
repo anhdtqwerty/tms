@@ -15,7 +15,15 @@
             <v-col cols="12" class="pa-2">
               <div class="font-weight-bold">Chuyển thực hiện</div>
             </v-col>
-            <v-col cols="12" class="pa-2">
+            <v-col v-if="taskOwner" cols="12" class="pa-2">
+              <unit-autocomplete :value.sync="executedUnit" label="Đơn vị thực hiện" :ignoreUserUnit="true" />
+              <comrade-autocomplete
+                :value.sync="executedComradeId"
+                :unitDep="executedUnitFilter"
+                label="Chuyên viên thực hiện"
+              />
+            </v-col>
+            <v-col v-else cols="12" class="pa-2">
               <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị xử lý" />
               <comrade-autocomplete
                 :value.sync="executedComradeId"
@@ -49,7 +57,8 @@ import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property
 @Component({
   components: {
     ComradeAutocomplete: () => import('@/components/autocomplete/comrade-autocomplete.vue'),
-    UnitDepartmentAutocomplete: () => import('@/components/autocomplete/unit-department-autocomplete.vue')
+    UnitDepartmentAutocomplete: () => import('@/components/autocomplete/unit-department-autocomplete.vue'),
+    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue')
   }
 })
 export default class TaskAssignDialog extends Vue {
@@ -64,16 +73,26 @@ export default class TaskAssignDialog extends Vue {
   executedDepartmentId = ''
 
   executedUnitDep = {}
+  executedUnit: string = null
+  executedUnitFilter: any = null
+
+  taskOwner = false
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
+      this.taskOwner = this.$route.params.tasktype === 'task-created'
+
       const unitId = _.get(val.executedUnit, 'id')
       const departmentId = _.get(val.executedDepartment, 'id')
 
       this.code = val.code
-      this.executedUnitDep = {
-        unit: unitId,
-        department: departmentId
+      if (this.taskOwner) {
+        this.executedUnit = unitId
+      } else {
+        this.executedUnitDep = {
+          unit: unitId,
+          department: departmentId
+        }
       }
 
       this.executedUnitId = unitId
@@ -81,15 +100,27 @@ export default class TaskAssignDialog extends Vue {
       this.executedComradeId = (val.executedComrade as ComradeModel)?.id
     }
   }
+  @Watch('executedUnit') onExecutedUnitChanged(unitId: string) {
+    this.executedUnitFilter = unitId ? { unit: unitId } : null
+  }
 
   async save() {
     if (this.form.validate()) {
       try {
-        let task: TaskModel = {
-          executedUnit: _.get(this.executedUnitDep, 'unit') ?? null,
-          executedComrade: this.executedComradeId,
-          executedDepartment: _.get(this.executedUnitDep, 'department') ?? null
+        let task: TaskModel = null
+        if (this.taskOwner) {
+          task = {
+            executedUnit: this.executedUnit,
+            executedComrade: this.executedComradeId
+          }
+        } else {
+          task = {
+            executedUnit: _.get(this.executedUnitDep, 'unit') ?? null,
+            executedComrade: this.executedComradeId,
+            executedDepartment: _.get(this.executedUnitDep, 'department') ?? null
+          }
         }
+
         task = await this.providers.api.task.update(this.task.id, task)
         this.providers.api.sendMail(mailBuilder.assignTask(task))
         this.$emit('success', task)
