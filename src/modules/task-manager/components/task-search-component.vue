@@ -11,20 +11,29 @@
         <div class="flex-grow-1">
           <v-container fluid class="px-1 py-0">
             <v-row>
-              <v-col cols="12" md="4" lg="3" class="d-none d-sm-flex pa-2 align-center">
+              <v-col cols="12" md="4" class="d-none d-sm-flex pa-2 align-center">
                 <app-text-field hide-details v-model="searchCode" label="Số/ký hiệu" />
               </v-col>
-              <v-col cols="12" md="4" lg="3" class="d-none d-sm-flex pa-2 align-center">
+              <v-col cols="12" md="4" class="d-none d-sm-flex pa-2 align-center">
                 <app-text-field hide-details v-model="searchTitle" label="Trích yếu" />
               </v-col>
-              <v-col cols="12" md="4" lg="3" class="pa-2">
-                <unit-department-autocomplete
+              <v-col cols="12" md="4" class="pa-2">
+                <!-- <unit-department-autocomplete
                   hide-details
                   :value.sync="searchExecuteUnitDep"
                   label="Đơn vị thực hiện"
+                /> -->
+                <unit-autocomplete hide-details :value.sync="unit" label="Đơn vị thực hiện" :includeMinistry="true" />
+              </v-col>
+              <v-col cols="12" md="4" class="pa-2">
+                <department-autocomplete
+                  hide-details
+                  :value.sync="department"
+                  :unit="unit"
+                  label="Phòng ban thực hiện"
                 />
               </v-col>
-              <v-col cols="12" md="4" lg="3" class="pa-2">
+              <v-col cols="12" md="4" class="pa-2">
                 <comrade-autocomplete
                   hide-details
                   :value.sync="searchExecuteStaff"
@@ -32,7 +41,7 @@
                   label="Chuyên viên thực hiện"
                 />
               </v-col>
-              <v-col cols="12" md="4" lg="3" class="pa-2">
+              <v-col cols="12" md="4" class="pa-2">
                 <task-state-select
                   hide-details
                   :value.sync="searchState"
@@ -40,7 +49,7 @@
                   :unitRequired="false"
                 />
               </v-col>
-              <v-col cols="12" md="4" lg="3" class="pa-2">
+              <v-col cols="12" md="4" class="pa-2">
                 <task-processing-expire-select
                   hide-details
                   :value.sync="searchProcessingExpire"
@@ -49,7 +58,7 @@
                 />
               </v-col>
 
-              <v-col cols="12" md="4" lg="3" class="pa-2 no-calender">
+              <v-col cols="12" md="4" class="pa-2 no-calender">
                 <app-text-field
                   hide-details
                   :value.sync="publishedDateDisplay"
@@ -62,7 +71,7 @@
                   label="Ngày ban hành"
                 />
               </v-col>
-              <v-col cols="12" md="4" lg="3" class="pa-2">
+              <v-col cols="12" md="4" class="pa-2">
                 <app-text-field
                   hide-details
                   :value.sync="expiredDateDisplay"
@@ -126,7 +135,7 @@ import {
   TaskStateType
 } from '@/models/task-model'
 import moment from 'moment'
-import { Component, Inject, Prop, Vue } from 'vue-property-decorator'
+import { Component, Inject, Prop, Vue, Watch } from 'vue-property-decorator'
 import _ from 'lodash'
 import { textHelpers } from '@/helpers/text-helper'
 import { AppProvider } from '@/app-provider'
@@ -142,7 +151,8 @@ import { AppProvider } from '@/app-provider'
     TaskProcessingExpireSelect: () => import('@/components/autocomplete/task-processing-expire-select.vue'),
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     DateRangePickerInput: () => import('@/components/picker/date-range-picker-input.vue'),
-    DateRangeDialog: () => import('../dialogs/date-range-dialog.vue')
+    DateRangeDialog: () => import('../dialogs/date-range-dialog.vue'),
+    DepartmentAutocomplete: () => import('@/components/autocomplete/department-autocomplete.vue')
   }
 })
 export default class TaskSearchComponent extends Vue {
@@ -173,6 +183,9 @@ export default class TaskSearchComponent extends Vue {
   showPublishedDateDialog = false
   showExpiredDateDialog = false
 
+  department: string = null
+  unit: string = null
+
   handlePublishedDate(dateRange: string[]) {
     this.searchPublishedDate = dateRange
     this.publishedDateDisplay = dateRange.map(d => moment(d).format('DD/MM/YYYY')).join(' - ')
@@ -191,6 +204,25 @@ export default class TaskSearchComponent extends Vue {
   clearExpiredDate() {
     this.searchExpiredDate = []
     this.expiredDateDisplay = null
+  }
+
+  @Watch('unit') onUnitChanged(unitId: string) {
+    if (unitId) {
+      this.department = null
+      this.searchExecuteStaff = null
+      this.searchExecuteUnitDep = { unit: unitId }
+    } else {
+      this.searchExecuteUnitDep = null
+    }
+  }
+
+  @Watch('department') onDepartmentChanged(departmentId: string) {
+    if (departmentId) {
+      this.searchExecuteStaff = null
+      this.searchExecuteUnitDep = { unit: this.unit, department: departmentId }
+    } else {
+      this.searchExecuteUnitDep = { unit: this.unit }
+    }
   }
 
   async search() {
