@@ -6,7 +6,7 @@ import { computed, observable } from 'mobx'
 import { asyncAction } from 'mobx-utils'
 import moment from 'moment'
 import { saveAs } from 'file-saver'
-import Excel from 'exceljs'
+// import Excel from 'exceljs'
 // import LoadAsset from 'load-asset'
 
 export class ReportGeneralViewModel {
