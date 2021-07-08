@@ -47,7 +47,12 @@
               </task-search-component>
               <div class="font-weight-bold pa-4">Tổng số nhiệm vụ: {{ viewmodel.totalCount }}</div>
             </template>
-
+            <template v-slot:[`item.publishedDate`]="{ item }">
+              {{ item.publishedDate | ddmmyyyy }}
+            </template>
+            <template v-slot:[`item.expiredDate`]="{ item }">
+              {{ item.expiredDate | ddmmyyyy }}
+            </template>
             <template v-slot:[`item.supervisorUnitDep`]="{ item }">
               {{ supervisorUnitDepDisplay(item) }}
             </template>
