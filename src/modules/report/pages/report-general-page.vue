@@ -27,6 +27,11 @@
         </v-card>
       </v-col>
       <v-col cols="12" class="pa-2">
+        <v-btn class="mr-2" color="primary" @click="viewmodel.exportExcel()">
+          <v-icon left>mdi-file-excel</v-icon> Xuất Excel
+        </v-btn>
+      </v-col>
+      <v-col cols="12" class="pa-2">
         <v-card>
           <div class="d-flex flex-column pa-4 align-center">
             <p class="text-h6 ma-0">BÁO CÁO TỔNG HỢP CÔNG VIỆC</p>
@@ -35,33 +40,38 @@
               <tr class="header-footer-row">
                 <th rowspan="2">Đơn vị</th>
                 <th rowspan="2">Tổng nhiệm vụ</th>
-                <th colspan="2">Đang thực hiện</th>
-                <th colspan="2">Đã hoàn thành</th>
-                <th rowspan="2">Chờ phê duyệt</th>
+                <th colspan="3">Đã hoàn thành</th>
+                <th colspan="3">Chưa hoàn thành</th>
               </tr>
               <tr class="header-footer-row">
                 <th>Trong hạn</th>
                 <th>Quá hạn</th>
+                <th>Phần trăm (%)</th>
                 <th>Trong hạn</th>
                 <th>Quá hạn</th>
+                <th>Phần trăm (%)</th>
               </tr>
               <tr v-for="report in viewmodel.reports" :key="report.id">
                 <td style="text-align: left;">{{ report.title }}</td>
                 <td>{{ report.total }}</td>
-                <td>{{ report.doing }}</td>
-                <td>{{ report.doingOutDate }}</td>
                 <td>{{ report.done }}</td>
                 <td>{{ report.doneOutDate }}</td>
-                <td>{{ report.approving }}</td>
+                <td>{{ report.donePercent || 0 }} %</td>
+
+                <td>{{ report.doing }}</td>
+                <td>{{ report.doingOutDate }}</td>
+                <td>{{ report.unFinishPercent || 0 }} %</td>
               </tr>
               <tr class="header-footer-row">
                 <td>Tổng</td>
                 <td>{{ viewmodel.totals.total }}</td>
-                <td>{{ viewmodel.totals.doing }}</td>
-                <td>{{ viewmodel.totals.doingOutDate }}</td>
                 <td>{{ viewmodel.totals.done }}</td>
                 <td>{{ viewmodel.totals.doneOutDate }}</td>
-                <td>{{ viewmodel.totals.approving }}</td>
+                <td v-if="viewmodel.totals.total >= 0">{{ viewmodel.totals.donePercent || 0 }} %</td>
+
+                <td>{{ viewmodel.totals.doing }}</td>
+                <td>{{ viewmodel.totals.doingOutDate }}</td>
+                <td v-if="viewmodel.totals.total >= 0">{{ viewmodel.totals.unFinishPercent || 0 }} %</td>
               </tr>
             </table>
           </div>
