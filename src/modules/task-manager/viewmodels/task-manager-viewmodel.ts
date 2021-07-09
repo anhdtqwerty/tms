@@ -86,6 +86,7 @@ export class TaskManagerViewModel {
 
   @action.bound taskDeleted(id: string) {
     this.tasks = this.tasks.filter(t => t.id !== id)
+    this.totalCount -= 1
   }
 
   @action.bound taskRecovered(item: TaskModel) {
