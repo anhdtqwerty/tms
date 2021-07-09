@@ -11,10 +11,10 @@
             <div class="text-subtitle-1 font-weight-medium">Quản lý báo cáo</div>
             <v-row>
               <v-col cols="5">
-                <date-picker-input class="mr-4" hide-details :value.sync="fromDate" />
+                <date-picker-input class="mr-4" hide-details :value.sync="fromDate" :attach="true" />
               </v-col>
               <v-col cols="5">
-                <date-picker-input class="mr-4" hide-details :value.sync="toDate" />
+                <date-picker-input class="mr-4" hide-details :value.sync="toDate" :attach="true" />
               </v-col>
               <v-col cols="2">
                 <v-btn depressed color="primary" medium block @click="search">
