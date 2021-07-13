@@ -11,13 +11,19 @@
         <div class="flex-grow-1">
           <v-container fluid class="px-1 py-0">
             <v-row>
-              <v-col cols="12" md="4" class="d-none d-sm-flex pa-2 align-center">
+              <v-col cols="12" md="3" class="d-none d-sm-flex pa-2 align-center">
                 <app-text-field hide-details v-model="searchCode" label="Số/ký hiệu" />
               </v-col>
-              <v-col cols="12" md="4" class="d-none d-sm-flex pa-2 align-center">
+              <v-col cols="12" md="3" class="d-none d-sm-flex pa-2 align-center">
                 <app-text-field hide-details v-model="searchTitle" label="Trích yếu" />
               </v-col>
-              <v-col cols="12" md="4" class="pa-2">
+              <v-col cols="12" md="3" class="d-none d-sm-flex pa-2 align-center">
+                <app-text-field hide-details label="Loại văn bản" />
+              </v-col>
+              <v-col cols="12" md="3" class="d-none d-sm-flex pa-2 align-center">
+                <app-text-field hide-details label="Lãnh đạo Bộ" />
+              </v-col>
+              <v-col cols="12" md="3" class="pa-2">
                 <!-- <unit-department-autocomplete
                   hide-details
                   :value.sync="searchExecuteUnitDep"
@@ -25,7 +31,7 @@
                 /> -->
                 <unit-autocomplete hide-details :value.sync="unit" label="Đơn vị thực hiện" :includeMinistry="true" />
               </v-col>
-              <v-col cols="12" md="4" class="pa-2">
+              <v-col cols="12" md="3" class="pa-2">
                 <department-autocomplete
                   hide-details
                   :value.sync="department"
@@ -33,23 +39,18 @@
                   label="Phòng ban thực hiện"
                 />
               </v-col>
-              <v-col cols="12" md="4" class="pa-2">
+              <v-col cols="12" md="3" class="pa-2">
                 <comrade-autocomplete
                   hide-details
                   :value.sync="searchExecuteStaff"
                   :unitDep="searchExecuteUnitDep"
-                  label="Chuyên viên thực hiện"
+                  label="Người thực hiện"
                 />
               </v-col>
-              <v-col cols="12" md="4" class="pa-2">
-                <task-state-select
-                  hide-details
-                  :value.sync="searchState"
-                  label="Tình hình thực hiện"
-                  :unitRequired="false"
-                />
+              <v-col cols="12" md="3" class="pa-2">
+                <task-state-select hide-details :value.sync="searchState" label="Trạng thái" :unitRequired="false" />
               </v-col>
-              <v-col cols="12" md="4" class="pa-2">
+              <v-col cols="12" md="3" class="pa-2">
                 <task-processing-expire-select
                   hide-details
                   :value.sync="searchProcessingExpire"
@@ -58,7 +59,7 @@
                 />
               </v-col>
 
-              <v-col cols="12" md="4" class="pa-2 no-calender">
+              <!-- <v-col cols="12" md="3" class="pa-2 no-calender">
                 <app-text-field
                   hide-details
                   :value.sync="publishedDateDisplay"
@@ -70,8 +71,8 @@
                   @click:clear="clearPublishedDate"
                   label="Ngày ban hành"
                 />
-              </v-col>
-              <v-col cols="12" md="4" class="pa-2">
+              </v-col> -->
+              <v-col cols="12" md="3" class="pa-2">
                 <app-text-field
                   hide-details
                   :value.sync="expiredDateDisplay"
@@ -82,6 +83,15 @@
                   clearable
                   @click:clear="clearExpiredDate"
                   label="Khoảng thời hạn xử lý"
+                />
+              </v-col>
+              <v-col cols="12" md="3" class="pa-2">
+                <comrade-autocomplete
+                  :value.sync="searchCreatedComrade"
+                  hide-details
+                  label="Người tạo"
+                  :unitDep="createdComradeFilter"
+                  :unitRequired="false"
                 />
               </v-col>
             </v-row>
@@ -168,6 +178,7 @@ export default class TaskSearchComponent extends Vue {
   searchApprovementStatus: TaskApprovementStatusType = null
 
   searchExecuteUnitDep = {}
+  createdComradeFilter = {}
 
   searchExecuteStaff = ''
   searchState: TaskStateType = null
@@ -185,6 +196,7 @@ export default class TaskSearchComponent extends Vue {
 
   department: string = null
   unit: string = null
+  searchCreatedComrade: string = null
 
   handlePublishedDate(dateRange: string[]) {
     this.searchPublishedDate = dateRange
@@ -239,6 +251,7 @@ export default class TaskSearchComponent extends Vue {
 
       if (this.searchExecuteStaff) params.executedComrade = this.searchExecuteStaff
       if (this.searchApprovementStatus) params.status = this.searchApprovementStatus
+      if (this.searchCreatedComrade) params.createdBy = this.searchCreatedComrade
       if (this.searchProcessingExpire) {
         params.type = 'hasDeadline'
         switch (this.searchProcessingExpire) {

@@ -15,38 +15,81 @@
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin văn bản chỉ đạo, điều hành</div>
             </v-col>
-            <v-col cols="12" md="6" class="pa-2 py-0">
+            <v-col cols="12" md="7" class="pa-2 py-0">
               <app-text-field v-model="code" class="required" :rules="$appRules.taskCode" label="Số/ký hiệu" />
             </v-col>
-            <v-col cols="12" md="6" class="pa-2 py-0">
-              <app-text-field
-                :value.sync="publishedDateDisplay"
-                @click="showPublishedDateInputDialog = true"
-                append-icon="expand_more"
-                @click:append="showPublishedDateInputDialog = true"
-                readonly
-                clearable
-                @click:clear="clearPublishedDate"
-                label="Ngày ban hành"
-              />
+            <v-col cols="12" md="4" class="pa-2 py-0">
+              <app-text-field label="Loại văn bản" />
             </v-col>
-            <date-input-dialog :value.sync="showPublishedDateInputDialog" @ok="handlePublishedDateInput" />
-            <v-col cols="12" class="pa-2 py-0">
+
+            <v-col cols="12" md="7" class="pa-2 py-0">
               <app-text-field class="required" v-model="title" :rules="$appRules.taskTitle" label="Trích yếu" />
+            </v-col>
+            <v-col cols="12" md="4" class="pa-2 py-0">
+              <date-iso-picker :date.sync="publishedDate" label="Ngày ban hành" :rules="[$rules.date]" dense outlined />
+            </v-col>
+            <v-col cols="12" md="7" class="pa-2 py-0">
               <app-file-input :value.sync="selectedFiles" label="File đính kèm" />
             </v-col>
+            <v-col cols="12" md="4" class="pa-2 py-0">
+              <app-text-field label="Lãnh đạo Bộ giao" />
+            </v-col>
+
             <v-col cols="12" class="pa-2">
               <div class="text-subtitle-2">Thông tin nhiệm vụ</div>
             </v-col>
-            <v-col cols="12" class="pa-2 py-0">
-              <app-text-field
+            <v-row class="pa-2" v-for="(task, index) in taskArray" :key="index">
+              <v-col class="pl-4 py-0" cols="12" md="7">
+                <app-textarea
+                  rows="4"
+                  v-model="task.description"
+                  class="required"
+                  :rules="$appRules.taskDescription"
+                  label="Nội dung nhiệm vụ"
+                />
+              </v-col>
+              <v-col class="pa-2 py-0" cols="12" md="4">
+                <date-iso-picker
+                  :date.sync="task.expiredDate"
+                  label="Hạn xử lý"
+                  :rules="[$rules.date]"
+                  dense
+                  outlined
+                />
+                <unit-autocomplete
+                  class="pt-3"
+                  hide-details
+                  :value.sync="task.executedUnit"
+                  label="Đơn vị thực hiện"
+                  :ignoreUserUnit="true"
+                />
+              </v-col>
+              <v-col cols="12" md="1" class="pl-0 py-0 d-flex justify-space-between flex-column">
+                <v-btn v-show="taskArray.length > 1 && index === taskArray.length - 1" @click="removeTask">
+                  <v-icon>close</v-icon></v-btn
+                >
+
+                <v-btn
+                  class="mb-7"
+                  v-if="taskArray.length < 5 && index === taskArray.length - 1"
+                  color="success"
+                  @click="addTask"
+                >
+                  <v-icon class="white--text">add</v-icon></v-btn
+                >
+              </v-col>
+            </v-row>
+
+            <!-- <v-col cols="12" md="8" class="pa-2 py-0">
+              <app-textarea
+                rows="2"
                 v-model="description"
                 class="required"
                 :rules="$appRules.taskDescription"
                 label="Nội dung nhiệm vụ"
               />
             </v-col>
-            <v-col cols="12" class="pa-2 py-0">
+            <v-col cols="12" md="4" class="pa-2 py-0">
               <app-text-field
                 class="mb-6"
                 :value.sync="expiredDateDisplay"
@@ -60,12 +103,13 @@
                 label="Hạn xử lý"
               />
               <date-input-dialog :value.sync="showExpiredDateInputDialog" @ok="handleExpiredDateInput" />
-            </v-col>
-            <v-col class="pa-2 py-0" cols="12" md="6">
-              <!-- <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" /> -->
+            </v-col> -->
+            <!-- <v-col class="pa-2 py-0" cols="12" md="6">
+              <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị thực hiện" />
               <unit-autocomplete :value.sync="executedUnit" label="Đơn vị thực hiện" :ignoreUserUnit="true" />
-            </v-col>
-            <v-col class="pa-2 py-0" cols="12" md="6">
+            </v-col> -->
+
+            <!-- <v-col class="pa-2 py-0" cols="12" md="6">
               <comrade-autocomplete
                 :value.sync="executedComradeId"
                 :unitDep="executedUnitFilter"
@@ -73,7 +117,7 @@
               />
             </v-col>
             <v-col class="pa-2 py-0" cols="12" md="6">
-              <!-- <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" /> -->
+              <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" />
               <unit-autocomplete
                 :value.sync="supportedUnits"
                 label="Đơn vị phối hợp"
@@ -89,7 +133,7 @@
                 hide-details
                 label="Chuyên viên phối hợp"
               />
-            </v-col>
+            </v-col> -->
 
             <v-col cols="12" class="pa-2 d-flex justify-space-between">
               <div class="d-flex flex-column">
@@ -101,6 +145,7 @@
               </v-btn>
             </v-col>
           </v-row>
+          <!-- <date-input-dialog :value.sync="showPublishedDateInputDialog" @ok="handlePublishedDateInput" /> -->
         </v-container>
       </v-form>
     </v-card>
@@ -123,7 +168,8 @@ import { Component, Inject, PropSync, Prop, Ref, Vue, Watch } from 'vue-property
     DatePickerInput: () => import('@/components/picker/date-picker-input.vue'),
     TaskPrioritySelect: () => import('@/components/autocomplete/task-priority-select.vue'),
     DateInputDialog: () => import('@/components/picker/date-input-dialog.vue'),
-    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue')
+    UnitAutocomplete: () => import('@/components/autocomplete/unit-autocomplete.vue'),
+    DateIsoPicker: () => import('@/components/picker/date-iso-picker.vue')
   }
 })
 export default class TaskAddDialog extends Vue {
@@ -136,17 +182,15 @@ export default class TaskAddDialog extends Vue {
   code = ''
   publishedDate: string = null
   title = ''
-  description = ''
-  deadlineType: TaskDeadlineType = 'noDeadline'
-  expiredDate: string = null
-  priority: TaskPriorityType = null
+  // descriptions: string[] = []
+  expiredDate: string[] = []
 
   executedComradeId: string = null
   supportedComradeIds: string[] = []
   supervisorId: string = null
   selectedFiles: File[] = []
 
-  executedUnit: string = null
+  // executedUnit: string = null
   executedUnitDep = {}
 
   supportedUnits: any[] = []
@@ -156,100 +200,86 @@ export default class TaskAddDialog extends Vue {
   publishedDateDisplay: string = null
   showPublishedDateInputDialog = false
 
-  expiredDateDisplay: string = null
-  showExpiredDateInputDialog = false
+  // expiredDateDisplay: string[] = []
+  // expiredDateDisplays = {}
 
-  executedUnitFilter: any = null
-  supportedUnitFilters: any = null
+  // showExpiredDateInputDialogs: boolean[] = []
+  showExpiredDateInputDialogs: { [key: number]: any } = {}
 
-  @Watch('deadlineType') onDeadlineTypeChange(val: TaskDeadlineType) {
-    if (val !== 'hasDeadline') {
-      this.expiredDate = null
-    }
+  showExpiredDateInputDialog: string = null
+
+  taskArray: { description: string; expiredDate: string; executedUnit: string }[] = [
+    { description: null, expiredDate: null, executedUnit: null }
+  ]
+
+  addTask() {
+    this.taskArray = [...this.taskArray, { description: null, expiredDate: null, executedUnit: null }]
   }
-  @Watch('executedUnit') onExecutedUnitChanged(unitId: string) {
-    this.executedUnitFilter = unitId ? { unit: unitId } : null
-  }
-  @Watch('supportedUnits') onSupportedUnitsChanged(unitIds: string[]) {
-    if (unitIds && unitIds.length > 0) {
-      this.supportedUnitFilters = unitIds.map(unit => {
-        return { unit }
-      })
-    } else {
-      this.supportedUnitFilters = null
-    }
+  removeTask() {
+    this.taskArray.splice(this.taskArray.length - 1, 1)
   }
 
-  handlePublishedDateInput(date: string) {
-    this.publishedDate = date
-    this.publishedDateDisplay = moment(date).format('DD/MM/YYYY')
-  }
-  clearPublishedDate() {
-    this.publishedDate = null
-    this.publishedDateDisplay = null
-  }
-
-  handleExpiredDateInput(date: string) {
-    this.expiredDate = date
-    this.expiredDateDisplay = moment(date).format('DD/MM/YYYY')
-  }
-  clearExpiredDate() {
-    this.expiredDate = null
-    this.expiredDateDisplay = null
+  reset() {
+    this.form.reset()
+    this.taskArray = [{ description: null, expiredDate: null, executedUnit: null }]
   }
 
   async save() {
     if (this.form.validate()) {
       try {
-        const task = await this.providers.api.task.create(
-          createTaskBody(
-            {},
-            {
-              code: _.get(this.taskParent, 'code') ?? this.code,
-              title: _.get(this.taskParent, 'title') ?? this.title,
-              description: this.description,
-              priority: this.taskParent ? this.taskParent.priority : this.priority,
-              state: 'waiting',
-              publishedDate: _.get(this.taskParent, 'publishedDate') ?? this.publishedDate,
-              type: this.deadlineType,
-              expiredDate: this.expiredDate,
-              parent: this.taskParent?.id ?? undefined,
+        await Promise.all(
+          this.taskArray.map(async t => {
+            const task = await this.providers.api.task.create(
+              createTaskBody(
+                {},
+                {
+                  code: _.get(this.taskParent, 'code') ?? this.code,
+                  title: _.get(this.taskParent, 'title') ?? this.title,
+                  description: t.description,
+                  state: 'waiting',
+                  publishedDate: this.publishedDate,
+                  expiredDate: t.expiredDate,
+                  executedUnit: t.executedUnit,
 
-              executedUnit: this.executedUnit,
-              executedComrade: this.executedComradeId,
-              // executedUnit: _.get(this.executedUnitDep, 'unit'),
-              // executedDepartment: _.get(this.executedUnitDep, 'department'),
+                  // priority: this.taskParent ? this.taskParent.priority : this.priority,
+                  // parent: this.taskParent?.id ?? undefined,
+                  // executedComrade: this.executedComradeId,
+                  // executedUnit: _.get(this.executedUnitDep, 'unit'),
+                  // executedDepartment: _.get(this.executedUnitDep, 'department'),
 
-              // supervisors: this.supervisorId ? [this.supervisorId] : [],
-              // supervisorUnit: _.get(this.supervisorUnitDep, 'unit'),
-              // supervisorDepartment: _.get(this.supervisorUnitDep, 'department'),
+                  // supervisors: this.supervisorId ? [this.supervisorId] : [],
+                  // supervisorUnit: _.get(this.supervisorUnitDep, 'unit'),
+                  // supervisorDepartment: _.get(this.supervisorUnitDep, 'department'),
 
-              supportedComrades: this.supportedComradeIds,
-              supportedUnits: this.supportedUnits,
-              // supportedUnits: this.supportedUnitDeps.map(u => u.unit),
-              // supportedDepartments: this.supportedUnitDeps.map(d => d.department),
+                  // supportedComrades: this.supportedComradeIds,
+                  // supportedUnits: this.supportedUnits,
+                  // supportedUnits: this.supportedUnitDeps.map(u => u.unit),
+                  // supportedDepartments: this.supportedUnitDeps.map(d => d.department),
 
-              createdBy: authStore.comrade.id,
-              createdDepartment: _.get(authStore.comrade.department, 'id'),
-              createdUnit: _.get(authStore.comrade.unit, 'id')
-              // documentInfo: _.get(this.taskParent, 'documentInfo') ?? this.docsInfo
-            }
-          )
+                  createdBy: authStore.comrade.id,
+                  createdDepartment: _.get(authStore.comrade.department, 'id'),
+                  createdUnit: _.get(authStore.comrade.unit, 'id')
+                  // documentInfo: _.get(this.taskParent, 'documentInfo') ?? this.docsInfo
+                }
+              )
+            )
+            this.providers.api.sendMail(mailBuilder.createTask(task))
+            const files = await Promise.all(
+              this.selectedFiles.map(f =>
+                this.providers.api.uploadFiles(f, {
+                  model: 'task',
+                  modelId: task.id,
+                  modelField: 'files'
+                })
+              )
+            )
+
+            this.$emit('success', { ...task, files: _.flatten(files) })
+          })
         )
-        this.providers.api.sendMail(mailBuilder.createTask(task))
-        const files = await Promise.all(
-          this.selectedFiles.map(f =>
-            this.providers.api.uploadFiles(f, {
-              model: 'task',
-              modelId: task.id,
-              modelField: 'files'
-            })
-          )
-        )
 
-        this.$emit('success', { ...task, files: _.flatten(files) })
         this.syncedValue = false
-        this.form.reset()
+        this.reset()
         this.providers.snackbar.addSuccess()
       } catch (error) {
         this.providers.snackbar.commonError(error)

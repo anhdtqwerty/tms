@@ -82,10 +82,10 @@ export default class ReportDetailPage extends Vue {
     { text: 'Trích yếu', value: 'title', sortable: false },
     { text: 'Nội dung nhiệm vụ', value: 'description', sortable: false },
     { text: 'ĐV thực hiện', value: 'executedUnitDep', sortable: false },
-    { text: 'CV thực hiện', value: 'executedComrade.name', sortable: false },
+    { text: 'Người thực hiện', value: 'executedComrade.name', sortable: false },
     { text: 'Hạn xử lý', value: 'expiredDate', sortable: false },
-    { text: 'Trạng thái', value: 'state', sortable: false },
-    { text: 'Tình hình thực hiện', value: 'explainState', sortable: false }
+    { text: 'Tình hình thực hiện', value: 'explainState', sortable: false },
+    { text: 'Trạng thái', value: 'state', sortable: false }
   ]
 
   selectedTaskType: TaskRouteType = 'task-created'

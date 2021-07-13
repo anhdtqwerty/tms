@@ -30,7 +30,8 @@
     "vue-router": "^3.2.0",
     "vue-toasted": "^1.1.28",
     "vuetify": "^2.4.3",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.16.9",
+    "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
     "@mdi/font": "^5.8.55",

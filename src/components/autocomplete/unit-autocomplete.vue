@@ -47,7 +47,7 @@ export default class UnitAutoComplete extends Vue {
       }
 
       const items = await this.providers.api.unit.find<UnitModel>(params)
-      this.items = items.map(u => ({ ...u, display: u.code + ' - ' + u.title }))
+      this.items = items.map(u => ({ ...u, display: u.title }))
       if (this.autoselect && this.items.length > 0 && !this.syncedValue) {
         this.syncedValue = this.items[0].id
       }
