@@ -47,6 +47,9 @@ export interface TaskModel {
 
   explainState?: string
   documentInfo?: string
+  data?: {
+    opinion?: string
+  }
 }
 
 export type TaskPriorityType = 'level_1' | 'level_2' | 'level_3' | 'urgent'
@@ -131,16 +134,16 @@ export type TaskRouteType =
   | 'task-expired'
   | 'task-unfinished'
   | 'task-approving'
-  | 'task-support'
+  // | 'task-support'
   | 'task-done'
 export const taskRouteNameMap: { [name in TaskRouteType]: string } = {
   'task-created': 'Nhiệm vụ giao',
   'task-assigned': 'Nhiệm vụ được giao',
-  'task-expired': 'Nhiệm vụ quá hạn',
   'task-done': 'Nhiệm vụ đã hoàn thành',
   'task-unfinished': 'Nhiệm vụ chưa hoàn thành',
-  'task-approving': 'Nhiệm vụ chờ phê duyệt',
-  'task-support': 'Nhiệm vụ phối hợp'
+  'task-expired': 'Nhiệm vụ quá hạn',
+  'task-approving': 'Nhiệm vụ chờ phê duyệt'
+  // 'task-support': 'Nhiệm vụ phối hợp'
 }
 export const taskRouteNames: { type: TaskRouteType; name: string }[] = Object.entries(taskRouteNameMap).map(
   ([type, name]) =>
@@ -237,13 +240,13 @@ export const taskTypeToFilterParams = (taskType: TaskRouteType): any[] => {
         resultParams.push({ executedComrade: authStore.comrade.id })
       }
       break
-    case 'task-support':
-      if (authStore.isLeader) {
-        resultParams.push(leaderSupportParam)
-      } else {
-        resultParams.push({ 'supportedComrades.id': authStore.comrade.id })
-      }
-      break
+    // case 'task-support':
+    //   if (authStore.isLeader) {
+    //     resultParams.push(leaderSupportParam)
+    //   } else {
+    //     resultParams.push({ 'supportedComrades.id': authStore.comrade.id })
+    //   }
+    //   break
     case 'task-expired':
       resultParams.push({ type: 'hasDeadline', expiredDate_lt: moment().format('YYYY-MM-DD') })
       if (authStore.isLeader) {

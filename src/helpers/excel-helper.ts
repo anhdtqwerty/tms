@@ -47,11 +47,11 @@ export const excelHelper = {
       'ĐV theo dõi',
       'CV theo dõi',
       'ĐV thực hiện',
-      'CV thực hiện',
+      'Người thực hiện',
       'Hạn xử lý',
       'Phê duyệt',
-      'Trạng thái',
-      'Tình trạng thực hiện'
+      'Tình trạng thực hiện',
+      'Trạng thái'
     ]
     exportFile(data, header)
   }

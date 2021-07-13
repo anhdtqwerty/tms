@@ -1,6 +1,6 @@
 <template>
   <v-autocomplete
-    :disabled="unitRequired && unitDep | _empty"
+    :disabled="disabled"
     v-bind="$attrs"
     v-model="syncedValue"
     dense
@@ -52,10 +52,14 @@ export default class ComradeAutoComplete extends Vue {
     }
   }
 
+  get disabled() {
+    return this.unitRequired && _.isEmpty(this.unitDep)
+  }
+
   async getComrade() {
     this.loading = true
     try {
-      const params: any = {}
+      let params: any = {}
       if (this.unitDep && this.multiple) {
         if (Array.isArray(this.unitDep) && this.unitDep.length > 0) {
           params['unit_in'] = (this.unitDep.map(u => u.unit) as []) ?? []
@@ -74,6 +78,7 @@ export default class ComradeAutoComplete extends Vue {
         params['unit'] = unitParams.unit
       }
 
+      if (!this.unitRequired) params = {}
       this.items = await this.providers.api.comarde.find<ComradeModel>(params)
     } catch (error) {
       //

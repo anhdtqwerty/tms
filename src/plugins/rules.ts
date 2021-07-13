@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export const rules = {
   required: (v: string | number) =>
     (!!v && (typeof v !== 'string' || !!v.trim())) || v === 0 || 'Trường này là bắt buộc',
@@ -34,7 +36,8 @@ export const rules = {
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v) ||
     'Phải có ít nhất 8 ký tự, gồm có: chữ hoa, chữ thường, số, ký tự đặc biệt',
   nospace: (v: string) => !v || !/ /.test(v.trim()) || 'Chứa khoảng cách',
-  notEmpty: (v: string) => !Array.isArray(v) || !!v.length || 'Required'
+  notEmpty: (v: string) => !Array.isArray(v) || !!v.length || 'Required',
+  date: (v: string) => !v || moment(v, 'DD/MM/YYYY', true).isValid() || 'Ngày không hợp lệ'
 }
 
 export const appRules = {
@@ -68,6 +71,7 @@ export const appRules = {
   taskExtendDate: [rules.required],
   taskStartedDate: [rules.required],
   taskExplain: [rules.required, rules.maxLength(1000)],
+  taskOpinion: [rules.maxLength(1000)],
   taskDocsInfo: [rules.maxLength(1000)],
   taskState: [rules.required],
 

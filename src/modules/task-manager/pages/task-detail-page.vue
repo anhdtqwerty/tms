@@ -99,7 +99,7 @@
           </v-row>
 
           <!-- supported -->
-          <v-row cols="12">
+          <!-- <v-row cols="12">
             <v-col cols="6">
               <div>Đơn vị phối hợp</div>
             </v-col>
@@ -119,7 +119,7 @@
                 </div>
               </div>
             </v-col>
-          </v-row>
+          </v-row> -->
         </v-card>
       </v-col>
       <v-col cols="12" md="6" lg="3" class="pa-2">

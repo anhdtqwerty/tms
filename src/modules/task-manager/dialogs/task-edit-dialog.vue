@@ -77,8 +77,8 @@
                 label="Chuyên viên thực hiện"
               />
             </v-col>
-            <v-col class="pa-2 py-0" cols="12" md="6">
-              <!-- <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" /> -->
+            <!-- <v-col class="pa-2 py-0" cols="12" md="6">
+              <unit-department-autocomplete :value.sync="supportedUnitDeps" multiple label="Đơn vị phối hợp" />
               <unit-autocomplete
                 :value.sync="supportedUnits"
                 label="Đơn vị phối hợp"
@@ -94,7 +94,7 @@
                 hide-details
                 label="Chuyên viên phối hợp"
               />
-            </v-col>
+            </v-col> -->
 
             <v-col cols="12" sm="6" class="pa-2">
               <task-state-select :value.sync="state" disabled hide-details label="Trạng thái" />

@@ -15,20 +15,33 @@
             <v-col cols="12" class="pa-2">
               <div class="font-weight-bold">Chuyển thực hiện</div>
             </v-col>
-            <v-col v-if="taskOwner" cols="12" class="pa-2">
-              <unit-autocomplete :value.sync="executedUnit" label="Đơn vị thực hiện" :ignoreUserUnit="true" />
+            <v-col v-if="taskOwner" cols="12" class="pa-2 py-0">
+              <unit-autocomplete :value.sync="executedUnit" label="Đơn vị xử lý" :ignoreUserUnit="true" />
               <comrade-autocomplete
                 :value.sync="executedComradeId"
                 :unitDep="executedUnitFilter"
-                label="Chuyên viên thực hiện"
+                label="Người thực hiện"
               />
             </v-col>
-            <v-col v-else cols="12" class="pa-2">
-              <unit-department-autocomplete :value.sync="executedUnitDep" label="Đơn vị xử lý" />
+            <v-col v-else cols="12" class="pa-2 py-0">
+              <unit-department-autocomplete
+                v-if="showExecutedUnit"
+                :value.sync="executedUnitDep"
+                label="Đơn vị xử lý"
+              />
               <comrade-autocomplete
                 :value.sync="executedComradeId"
                 :unitDep="executedUnitDep"
-                label="Chuyên viên thực hiện"
+                label="Người thực hiện"
+              />
+            </v-col>
+            <v-col cols="12" class="pa-2 py-0">
+              <app-textarea
+                v-model="opinion"
+                rows="2"
+                label="Ý kiến chỉ đạo"
+                :rules="$appRules.taskOpinion"
+                counter="1000"
               />
             </v-col>
             <v-col cols="12" class="pa-2 d-flex justify-end">
@@ -53,6 +66,8 @@ import { ComradeModel } from '@/models/comrade-model'
 import { TaskModel } from '@/models/task-model'
 import _ from 'lodash'
 import { Component, Inject, Prop, PropSync, Ref, Vue, Watch } from 'vue-property-decorator'
+import { authStore } from '@/stores/auth-store'
+import { UnitModel } from '@/models/unit-model'
 
 @Component({
   components: {
@@ -77,6 +92,8 @@ export default class TaskAssignDialog extends Vue {
   executedUnitFilter: any = null
 
   taskOwner = false
+  opinion: string = null
+  showExecutedUnit = true
 
   @Watch('task', { immediate: true }) onTaskChanged(val: TaskModel) {
     if (val) {
@@ -98,6 +115,18 @@ export default class TaskAssignDialog extends Vue {
       this.executedUnitId = unitId
       this.executedDepartmentId = departmentId
       this.executedComradeId = (val.executedComrade as ComradeModel)?.id
+
+      // check hien thi don vi thuc hien
+      if (this.$route.params.tasktype === 'task-assigned') {
+        const userUnit = authStore.comrade.unit as UnitModel
+        console.log('showExecutedUnit', userUnit, authStore.comrade.department)
+
+        if (!userUnit?.departments || userUnit?.departments.length === 0) this.showExecutedUnit = false
+        if (authStore.comrade.department && authStore.isLeader) {
+          // leader department
+          this.showExecutedUnit = false
+        }
+      }
     }
   }
   @Watch('executedUnit') onExecutedUnitChanged(unitId: string) {
@@ -120,7 +149,7 @@ export default class TaskAssignDialog extends Vue {
             executedDepartment: _.get(this.executedUnitDep, 'department') ?? null
           }
         }
-
+        task = { ...task, data: { opinion: this.opinion } }
         task = await this.providers.api.task.update(this.task.id, task)
         this.providers.api.sendMail(mailBuilder.assignTask(task))
         this.$emit('success', task)

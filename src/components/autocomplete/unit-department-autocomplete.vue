@@ -42,7 +42,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
       const userUnit = authStore.comrade.unit as UnitModel
       const defaultUnit = {
         ...userUnit,
-        display: userUnit.code + ' - ' + userUnit.title,
+        display: userUnit.title,
         value: { unit: userUnit.id }
       }
 
@@ -51,7 +51,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
         const department = authStore.comrade.department as DepartmentModel
         this.items = [
           {
-            display: department.code + ' - ' + department.title,
+            display: department.title,
             value: { unit: (department.unit as UnitModel).id, department: department.id }
           }
         ]
@@ -62,7 +62,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
 
         this.items = items.map(d => ({
           ...d,
-          display: d.code + ' - ' + d.title,
+          display: d.title,
           value: { unit: (d.unit as UnitModel).id, department: d.id }
         }))
 
@@ -79,7 +79,7 @@ export default class UnitDepartmentAutoComplete extends Vue {
 
         this.items = items.map(u => ({
           ...u,
-          display: u.code + ' - ' + u.title,
+          display: u.title,
           value: { unit: u.id, department: undefined }
         }))
 

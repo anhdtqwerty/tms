@@ -134,10 +134,6 @@ export class MainContainerViewModel {
             icon: 'assignment_returned',
             link: '/tasks/task-assigned'
           }),
-          new MenuViewModel(taskRouteNameMap['task-expired'], {
-            icon: 'timer',
-            link: '/tasks/task-expired'
-          }),
           new MenuViewModel(taskRouteNameMap['task-done'], {
             icon: 'assignment_turned_in',
             link: '/tasks/task-done'
@@ -146,14 +142,18 @@ export class MainContainerViewModel {
             icon: 'event_busy',
             link: '/tasks/task-unfinished'
           }),
+          new MenuViewModel(taskRouteNameMap['task-expired'], {
+            icon: 'timer',
+            link: '/tasks/task-expired'
+          }),
           new MenuViewModel(taskRouteNameMap['task-approving'], {
             icon: 'more',
             link: '/tasks/task-approving'
-          }),
-          new MenuViewModel(taskRouteNameMap['task-support'], {
-            icon: 'category',
-            link: '/tasks/task-support'
           })
+          // new MenuViewModel(taskRouteNameMap['task-support'], {
+          //   icon: 'category',
+          //   link: '/tasks/task-support'
+          // })
         ]
       }),
       new MenuViewModel('Tổng hợp báo cáo', {
