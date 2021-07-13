@@ -119,8 +119,6 @@ export default class TaskAssignDialog extends Vue {
       // check hien thi don vi thuc hien
       if (this.$route.params.tasktype === 'task-assigned') {
         const userUnit = authStore.comrade.unit as UnitModel
-        console.log('showExecutedUnit', userUnit, authStore.comrade.department)
-
         if (!userUnit?.departments || userUnit?.departments.length === 0) this.showExecutedUnit = false
         if (authStore.comrade.department && authStore.isLeader) {
           // leader department

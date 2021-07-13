@@ -39,7 +39,7 @@
               <div class="text-subtitle-2">Thông tin nhiệm vụ</div>
             </v-col>
             <v-row class="pa-2" v-for="(task, index) in taskArray" :key="index">
-              <v-col class="pa-2 py-0" cols="12" md="7">
+              <v-col class="pl-4 py-0" cols="12" md="7">
                 <app-textarea
                   rows="4"
                   v-model="task.description"
