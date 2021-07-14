@@ -15,7 +15,6 @@
           <div class="name text-center white--text mt-16">PHẦN MỀM</div>
           <div class="name text-center white--text ">QUẢN LÝ VÀ THEO DÕI</div>
           <div class="name text-center white--text">NHIỆM VỤ CỦA BỘ GTVT</div>
-          <v-spacer></v-spacer>
         </v-col>
         <v-col cols="12" md="7">
           <div class="px-4 px-md-16 py-5 d-flex flex-column justify-center mt-4" style="height: 100%">
